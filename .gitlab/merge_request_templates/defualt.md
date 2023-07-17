@@ -1,3 +1,4 @@
+<!-- Please check the one that applies to this PR using "x". -->
 ## 어떤 이유로 MR를 하셨나요?
 - [ ] feature 병합(아래에 Issue Number를 남겨주세요)
 - [ ] 버그 수정(아래에 Issue Number를 남겨주세요)
