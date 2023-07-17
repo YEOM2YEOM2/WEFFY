@@ -15,3 +15,6 @@
 
 ## Relavant Issue Number
 - 관련된 이슈 넘버 작성
+
+## Jira Issue Number
+- 지라 번호 -ooo 작성
