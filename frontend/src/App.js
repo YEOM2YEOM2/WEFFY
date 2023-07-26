@@ -1,14 +1,21 @@
-// 기본 CSS 
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// 기본 CSS
+import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
+// 라이브러리
+import { Route, Routes, Outlet } from "react-router-dom";
 
-import Login from './pages/login.js';
+// 파일
+import Login from "./pages/login.js";
+import Im from "./pages/im.js";
 
 function App() {
   return (
     <div className="App">
-       <Login></Login>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/im" element={<Im />} />
+      </Routes>
     </div>
   );
 }
