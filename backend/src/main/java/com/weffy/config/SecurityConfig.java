@@ -1,22 +1,31 @@
 package com.weffy.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Autowired
+    DataSource dataSource;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -39,14 +48,38 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login")
                         .permitAll())
-                .rememberMe(Customizer.withDefaults());
+                .rememberMe(rememberMe -> rememberMe
+                        .key("rememberMe")
+                        .rememberMeParameter("remember")
+                        .tokenValiditySeconds(3600)
+                        .alwaysRemember(true)
+                        .tokenRepository(persistentTokenRepository())
+                        .rememberMeServices(rememberMeServices(persistentTokenRepository()))
+                        .userDetailsService(new UserDetailsServiceImpl(memberRepository)))
+        ;
         return http.build();
+    }
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
+        repo.setDataSource(dataSource);
+        return repo;
+    }
+
+    @Bean
+    public PersistentTokenBasedRememberMeServices rememberMeServices(PersistentTokenRepository tokenRepository) {
+        PersistentTokenBasedRememberMeServices rememberMeServices = new
+                PersistentTokenBasedRememberMeServices("rememberMeKey", new UserDetailsServiceImpl(memberRepository), tokenRepository);
+        rememberMeServices.setParameter("remember-me");
+        rememberMeServices.setAlwaysRemember(true);
+        return rememberMeServices;
     }
 
     // password encoder로 사용할 빈 등록
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     //CORS 설정
