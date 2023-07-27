@@ -5,19 +5,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -35,52 +35,60 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         // mysql 데이터베이스 콘솔, 정적 리소스, swagger 경로 인증 권한 설정
-                        .requestMatchers("/login", "/mysql-console/**", "/static/**", "/swagger-ui/**", "/api-docs/**").permitAll()
+                        .requestMatchers("/signin", "/signup", "/mysql-console/**", "/static/**", "/swagger-ui/**", "/api-docs/**").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
                         .defaultSuccessUrl("/")
-                        .failureUrl("/login")
+                        .failureUrl("/signin")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .loginProcessingUrl("/login_proc")
+                        .loginProcessingUrl("/signin")
                         .permitAll())
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
+                        .logoutSuccessUrl("/signin")
                         .permitAll())
                 .rememberMe(rememberMe -> rememberMe
                         .key("rememberMe")
                         .rememberMeParameter("remember")
                         .tokenValiditySeconds(3600)
                         .alwaysRemember(true)
-                        .tokenRepository(persistentTokenRepository())
-                        .rememberMeServices(rememberMeServices(persistentTokenRepository()))
-                        .userDetailsService(new UserDetailsServiceImpl(memberRepository)))
-        ;
+//                        .tokenRepository(persistentTokenRepository())
+//                        .rememberMeServices(rememberMeServices(persistentTokenRepository()))
+//                        .userDetailsService(new UserDetailsServiceImpl(memberRepository)))
+                );
         return http.build();
     }
 
-    @Bean
-    public PersistentTokenRepository persistentTokenRepository() {
-        JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
-        repo.setDataSource(dataSource);
-        return repo;
-    }
+//    @Bean
+//    public PersistentTokenRepository persistentTokenRepository() {
+//        JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
+//        repo.setDataSource(dataSource);
+//        return repo;
+//    }
 
-    @Bean
-    public PersistentTokenBasedRememberMeServices rememberMeServices(PersistentTokenRepository tokenRepository) {
-        PersistentTokenBasedRememberMeServices rememberMeServices = new
-                PersistentTokenBasedRememberMeServices("rememberMeKey", new UserDetailsServiceImpl(memberRepository), tokenRepository);
-        rememberMeServices.setParameter("remember-me");
-        rememberMeServices.setAlwaysRemember(true);
-        return rememberMeServices;
-    }
+//    @Bean
+//    public PersistentTokenBasedRememberMeServices rememberMeServices(PersistentTokenRepository tokenRepository) {
+//        PersistentTokenBasedRememberMeServices rememberMeServices = new
+//                PersistentTokenBasedRememberMeServices("rememberMeKey", new UserDetailsServiceImpl(memberRepository), tokenRepository);
+//        rememberMeServices.setParameter("remember-me");
+//        rememberMeServices.setAlwaysRemember(true);
+//        return rememberMeServices;
+//    }
 
     // password encoder로 사용할 빈 등록
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        PasswordEncoder defaultEncoder = new BCryptPasswordEncoder();
+        String idForEncode = "bcrypt";
+
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+        encoders.put(idForEncode, defaultEncoder);
+
+        return new DelegatingPasswordEncoder(idForEncode, encoders);
     }
+
 
     //CORS 설정
     @Bean
