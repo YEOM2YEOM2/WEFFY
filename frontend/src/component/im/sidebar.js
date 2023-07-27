@@ -1,5 +1,17 @@
-import React, { useState } from "react";
+import * as React from "react";
 import styles from "./sidebar.module.css";
+
+//외부 라이브러리
+import Drawer from "@mui/material/Drawer";
+import Button from "@mui/material/Button";
+import List from "@mui/material/List";
+import Divider from "@mui/material/Divider";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
 
 //이미지
 import defaultImg from "../../assets/images/defualt_image.png";
@@ -7,23 +19,35 @@ import dashboardIcon from "../../assets/images/icon_dashboard.png";
 import meetingIcon from "../../assets/images/icon_mymeeting.png";
 import settingIcon from "../../assets/images/icon_setting.png";
 import logoutIcon from "../../assets/images/icon_logout.png";
+import { useNavigate } from "react-router-dom";
+import { Grid } from "@mui/material";
 
-// import profileImg from ".\assets\images\impo_eunjjin.jpg"
+const icons = [
+  <img src={dashboardIcon} alt="dashboard" />,
+  <img src={meetingIcon} alt="meeting" />,
+  <img src={settingIcon} alt="setting" />,
+  <img src={logoutIcon} alt="logout" />,
+];
 
 const Sidebar = (props) => {
+  const navigate = useNavigate();
+
   const handleDashboardClick = () => {
     console.log("Dashboard was clicked");
     // Dashboard 클릭 시 수행할 동작
+    navigate("/im");
   };
 
   const handleMyMeetingClick = () => {
     console.log("My Meeting was clicked");
     // My Meeting 클릭 시 수행할 동작
+    navigate("/im/mylist");
   };
 
   const handleSettingClick = () => {
     console.log("Setting was clicked");
     // Profile 클릭 시 수행할 동작
+    navigate("/im/setting");
   };
 
   const handleLogoutClick = () => {
@@ -32,61 +56,42 @@ const Sidebar = (props) => {
   };
 
   return (
-    <div className={styles["container"]}>
-      <div className={styles["sidebar"]}>
-        <div className={styles["profileframe"]}>
-          <img
-            src={defaultImg}
-            alt="profileImg"
-            className={styles["profileImg"]}
-          />
-          <span className={styles["text"]}>
-            <span>Silver.jjin</span>
-          </span>
-        </div>
-        {/* dashboard button */}
-        <div className={styles["functions"]}>
-          <img src alt="selectbar" className={styles["selectbar"]} />
-          <div className={styles["dashboard"]} onClick={handleDashboardClick}>
-            <img
-              src={dashboardIcon}
-              alt="dachboard"
-              className={styles["icon"]}
-            />
-            <span className={styles["bar_text"]}>
-              <span>Dashboard</span>
-            </span>
-          </div>
-          {/* mymeeting button */}
-          {/* mymeeting button */}
-          <div className={styles["my-list"]} onClick={handleMyMeetingClick}>
-            <img
-              src={meetingIcon}
-              alt="setting"
-              className={styles["icon_list"]}
-            />
-            <span className={styles["bar_text"]}>
-              <span>My Meeting</span>
-            </span>
-          </div>
-
-          {/* setting button */}
-          <div className={styles["setting"]} onClick={handleSettingClick}>
-            <img src={settingIcon} alt="setting" className={styles["icon"]} />
-            <span className={styles["bar_text"]}>
-              <span>Settings</span>
-            </span>
-          </div>
-          {/* logout button */}
-          <div className={styles["logout"]} onClick={handleLogoutClick}>
-            <img src={logoutIcon} alt="logout" className={styles["icon"]} />
-            <span className={styles["bar_text"]}>
-              <span>logout</span>
-            </span>
-          </div>
-        </div>
+    <Grid container spacing={2}>
+      <div className={styles.sideBarBox}>
+        <Toolbar />
+        <Divider />
+        <Grid
+          item
+          xl={12} // 12칸 전체를 사용하도록 변경
+          container
+          direction="column" // 아이템들이 세로로 배열되게 변경
+          justify="center" // 아이템들이 가로로 중앙에 위치하게 변경
+          alignItems="center" // 아이템들이 세로로 중앙에 위치하게 변경
+          spacing={2}
+        >
+          <Grid item xs={12}>
+            {" "}
+            <img src={defaultImg} alt="Profile" className={styles.profileImg} />
+          </Grid>
+          <Grid item xs={12}>
+            {" "}
+            <span className={styles.nickName}>Silver.jjin</span>
+          </Grid>
+        </Grid>
+        <Grid xs={1}>
+          <List>
+            {["dashboard", "myList", "setting", "Logout"].map((text, index) => (
+              <ListItem key={text} disablePadding className={styles.listItem}>
+                <ListItemButton>
+                  <ListItemIcon>{icons[index]}</ListItemIcon>
+                  <ListItemText primary={text} className={styles.text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Grid>
       </div>
-    </div>
+    </Grid>
   );
 };
 
