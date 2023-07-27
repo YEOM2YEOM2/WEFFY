@@ -27,7 +27,7 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private Role role;
     private Boolean active;
-    private byte[] profile_img;
+    private String profile_img;
 
     @CreatedDate
     private String created_at;
@@ -49,7 +49,7 @@ public class User {
     }
 
     @Builder
-    public User(String identification, String email, String password, String name, String nickname, Role role, Boolean active, byte[] profile_img) {
+    public User(String identification, String email, String password, String name, String nickname, Role role, Boolean active, String profile_img) {
         this.identification = identification;
         this.email = email;
         this.password = password;
