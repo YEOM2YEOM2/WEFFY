@@ -1,137 +1,42 @@
-.container {
-    width: 100vw;
-    display: flex;
-    overflow: auto;
-    height: 90vh;
-    align-items: center;
-    flex-direction: column;
-  }
-  .sidebar {
-    
-    top: 30px;
-    bottom: 49px;
-    left: 30px;
-    width: 180px;
-    height: 100%;
-    display: flex;
-    overflow: hidden;
-    position: absolute;
-    box-shadow: 10.347240447998047px 11.496933937072754px 72.43067932128906px 0px rgba(0, 0, 0, 0.23999999463558197) ;
-    align-items: flex-start;
-    flex-shrink: 0;
-    border-radius: 30.822368621826172px;
-    background-color: rgba(46, 46, 72, 1);
-  }
-  .profileframe {
-    gap: 9px;
-    top: 50px;
-    left: 45px;
-    width: 90px;
-    display: flex;
-    position: relative;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-  }
-  .profileImg {
-    width: 65px;
-    height: 65px;
-    border-radius: 70px;
-  }
-  .text {
-    
-    color: rgba(255, 255, 255, 1);
-    width: 112px;
-    height: auto;
-    font-size: 16.952302932739258px;
-    font-style: Regular;
-    text-align: center;
-    font-family: Poppins;
-    font-weight: 400;
-    line-height: normal;
-    font-stretch: normal;
-    text-decoration: none;
-  }
-  .functions {
-    cursor: pointer;
-    gap: 10px;
-    top: 210px;
-    /* width: 180px;
-    height: 357px; */
-    display: flex;
-    position: absolute;
-    align-items: flex-start;
-    justify-content: center;
-  }
-  .selectbar {
-    top: 0px;
-    left: 0px;
-    width: 8px;
-    height: 45px;
-    position: absolute;
-  }
-  .dashboard {
-    gap: 5px;
-    top: 0px;
-    left: 40px;
-    display: flex;
-    position: absolute;
-    align-items: center;
-  }
-  .icon {
-    cursor: pointer;
-    width: 20px;
-    height: 20px;
-  }
-  .bar_text {
-    color: rgba(255, 255, 255, 1);
-    height: auto;
-    font-size: 16px;
-    font-style: Regular;
+.sideBarBox{
+  position: fixed;
+  box-shadow: 10.347240447998047px 11.496933937072754px 72.43067932128906px 0px rgba(0, 0, 0, 0.23999999463558197) ;
+  border-radius: 30.822368621826172px;
+  background-color: rgba(46, 46, 72, 1);
+  height: 95vh;
+  left: 3vw;
+  padding: auto;
+  top : 3vh;
+  bottom: 3vh;
+  width: 160px;
+  overflow: auto;
+  min-height: 50hv;
+}
+
+.text{
+  color: rgba(255, 255, 255, 1);
+  font-size: 2rem;
+    font-style: normal;
     text-align: left;
-    font-family: Poppins;
-    font-weight: 400;
-    line-height: normal;
-    font-stretch: normal;
-    text-decoration: none;
-  }
-  .my-list {
-    gap: 5px;
-    top: 105px;
-    left: 40px;
-    width: 144px;
-    display: flex;
-    position: absolute;
-    align-items: center;
-  }
-  .icon_setting {
-    cursor: pointer;
-    width: 20px;
-    height: 20px;
-  }
-  .setting {
-    gap: 5px;
-    top: 216px;
-    left: 40px;
-    width: 147px;
-    display: flex;
-    position: absolute;
-    align-items: flex-start;
-  }
-  /* .icon_setting {
-    width: 30px;
-    height: 30px;
-  } */
-  .logout {
-    gap: 5px;
-    top: 327px;
-    left: 40px;
-    width: 100px;
-    display: flex;
-    position: absolute;
-    align-items: center;
-  }
-  /* .icon_logout {
-    width: 30px;
-    height: 30px;
-  } */
+}
+.nickName{
+  color: rgba(255, 255, 255, 1);
+  font-size: 1.5rem;
+    font-style: normal;
+    text-align: center;
+}
+.listItem {
+  box-sizing: border-box;
+  top: 5vw;
+  margin-bottom: 2vh; /* 또는 원하는 크기로 조정 */
+  margin-top: 3vh;
+}
+
+.profileImg{
+  width: 50%;
+  height: 50%;
+    border-radius: 70px;
+}
+.functionsBtn{
+  
+}
