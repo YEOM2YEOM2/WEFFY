@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './login.module.css'
 
 import LoginForm from '../component/login/loginForm.js';
@@ -10,7 +9,24 @@ import People from '../assets/images/3d_people_all.png';
 import Grid from '@mui/material/Grid';
 import Hidden from '@mui/material/Hidden';
 
-function login() {
+import { useEffect, useState } from 'react';
+
+function Login() {
+  // const minViewHeight = 660;
+
+  // const [viewHeight, setViewHeight] = useState(window.innerHeight);
+
+  // const handelResize = () => {
+  //   setViewHeight(window.innerHeight)
+  // }
+
+  // useEffect(() => {
+  //   window.addEventListener('resize', handelResize)
+  //   return () => {
+  //     window.removeEventListener('resize', handelResize)
+  //   }
+  // }, []);
+
   return (
     <div className={styles.login} style={{ position: 'relative', zIndex: 0 }}>
         <div className={styles.moon_container}>
@@ -36,4 +52,4 @@ function login() {
   )
 }
 
-export default login;
+export default Login;
