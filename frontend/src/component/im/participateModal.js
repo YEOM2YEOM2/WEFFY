@@ -2,13 +2,13 @@ import React from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
-const NewPrivateModal = ({ show, handleClose }) => {
+const ParticipateModal = ({ show, handleClose }) => {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>New Private Modal</Modal.Title>
+        <Modal.Title>Participate Modal</Modal.Title>
       </Modal.Header>
-      <Modal.Body>Here is the content for New Private modal.</Modal.Body>
+      <Modal.Body>Here is the content for Participate modal.</Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
           Close
@@ -18,4 +18,4 @@ const NewPrivateModal = ({ show, handleClose }) => {
   );
 };
 
-export default NewPrivateModal;
+export default ParticipateModal;

@@ -55,6 +55,13 @@ const Sidebar = (props) => {
     // Profile 클릭 시 수행할 동작
   };
 
+  const handlers = [
+    handleDashboardClick,
+    handleMyMeetingClick,
+    handleSettingClick,
+    handleLogoutClick,
+  ];
+
   return (
     <Grid container spacing={2}>
       <div className={styles.sideBarBox}>
@@ -82,7 +89,7 @@ const Sidebar = (props) => {
           <List>
             {["dashboard", "myList", "setting", "Logout"].map((text, index) => (
               <ListItem key={text} disablePadding className={styles.listItem}>
-                <ListItemButton>
+                <ListItemButton onClick={handlers[index]}>
                   <ListItemIcon>{icons[index]}</ListItemIcon>
                   <ListItemText primary={text} className={styles.text} />
                 </ListItemButton>
