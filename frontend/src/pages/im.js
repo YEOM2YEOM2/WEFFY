@@ -2,15 +2,14 @@ import React, { useState } from "react";
 import SideBar from "../component/im/sidebar.js";
 import styles from "./im.module.css";
 
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
-import ListItemIcon from "@mui/material/ListItemIcon";
+import MmModal from "../component/im/mmModal.js";
+import PrivateModal from "../component/im/privateModal.js";
+import ParticipateModal from "../component/im/participateModal.js";
 
 //image
 import newMM from "../assets/images/newMM.png";
 import newPrivate from "../assets/images/newPrivate.png";
 import participate from "../assets/images/participate.png";
-import { Grid } from "@mui/material";
 
 const icons = [
   <img src={newMM} alt="newMM" />,
@@ -20,6 +19,23 @@ const icons = [
 
 const Im = (props) => {
   let [buttonStatus, setStatue] = useState(true);
+
+  // 모달 상태 선언
+  const [modalStatus, setModalStatus] = useState({
+    newMM: false,
+    newPrivate: false,
+    participate: false,
+  });
+
+  // 모달 핸들러
+  const handleOpen = (modal) => () => {
+    setModalStatus((prevState) => ({ ...prevState, [modal]: true }));
+  };
+
+  const handleClose = (modal) => () => {
+    setModalStatus((prevState) => ({ ...prevState, [modal]: false }));
+  };
+
   return (
     <div className={styles["container"]}>
       <span className={styles["logoText"]}>
@@ -30,9 +46,33 @@ const Im = (props) => {
       </div>
       <div className={styles["functionsBtn"]}>
         {buttonStatus &&
-          icons.map((icon, index) => (
-            <div className={styles["button"]} key={index}>
-              {icon}
+          ["newMM", "newPrivate", "participate"].map((modal, index) => (
+            <div
+              className={styles["button"]}
+              key={index}
+              onClick={handleOpen(modal)}
+            >
+              {icons[index]}
+
+              {/* 모달 */}
+              {modal === "newMM" && (
+                <MmModal
+                  show={modalStatus[modal]}
+                  handleClose={() => handleClose(modal)}
+                />
+              )}
+              {modal === "newPrivate" && (
+                <PrivateModal
+                  show={modalStatus[modal]}
+                  handleClose={() => handleClose(modal)}
+                />
+              )}
+              {modal === "participate" && (
+                <ParticipateModal
+                  show={modalStatus[modal]}
+                  handleClose={() => handleClose(modal)}
+                />
+              )}
             </div>
           ))}
       </div>
