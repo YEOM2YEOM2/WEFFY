@@ -31,21 +31,24 @@ public class SecurityConfig {
         http
                 // CSRF 토큰을 활성화, CSRF 토큰의 생성, 저장, 검증 등은 Spring Security가 자동으로 처리
                 .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/v1/users/signin")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         // mysql 데이터베이스 콘솔, 정적 리소스, swagger 경로 인증 권한 설정
-                        .requestMatchers("/signin", "/signup", "/mysql-console/**", "/static/**", "/swagger-ui/**", "/api-docs/**").permitAll()
+                        .requestMatchers("/api/v1/users/signin", "/signup", "/mysql-console/**", "/static/**", "/swagger-ui/**", "/api-docs/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin -> formLogin
-                        .defaultSuccessUrl("/")
-                        .failureUrl("/signin")
-                        .usernameParameter("email")
-                        .passwordParameter("password")
-                        .loginProcessingUrl("/signin")
-                        .permitAll())
+                        .disable())
+//                        .loginPage("/signin")
+//                        .defaultSuccessUrl("/")
+//                        .failureUrl("/signin")
+//                        .usernameParameter("email")
+//                        .passwordParameter("password")
+//                        .loginProcessingUrl("/signin")
+//                        .permitAll())
                 .logout(logout -> logout
                         .logoutSuccessUrl("/signin")
                         .permitAll())
