@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 @Entity
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class User {
+public class WeffyUser {
     @Id
     @GeneratedValue
     private Long id;
@@ -49,7 +49,7 @@ public class User {
     }
 
     @Builder
-    public User(String identification, String email, String password, String name, String nickname, Role role, Boolean active, String profile_img) {
+    public WeffyUser(String identification, String email, String password, String name, String nickname, Role role, Boolean active, String profile_img) {
         this.identification = identification;
         this.email = email;
         this.password = password;
