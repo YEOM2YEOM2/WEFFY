@@ -5,25 +5,17 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BaseResponseBody {
-    String message = null;
-    Integer statusCode = null;
+public class BaseResponseBody<T> {
 
-    public BaseResponseBody() {}
+    private int status;
+    private T data;
 
-    public BaseResponseBody(Integer statusCode){
-        this.statusCode = statusCode;
-    }
+    // getters and setters
 
-    public BaseResponseBody(Integer statusCode, String message){
-        this.statusCode = statusCode;
-        this.message = message;
-    }
-
-    public static BaseResponseBody of(Integer statusCode, String message) {
-        BaseResponseBody body = new BaseResponseBody();
-        body.message = message;
-        body.statusCode = statusCode;
+    public static <T> BaseResponseBody<T> of(int status, T data) {
+        BaseResponseBody<T> body = new BaseResponseBody<>();
+        body.setStatus(status);
+        body.setData(data);
         return body;
     }
 }
