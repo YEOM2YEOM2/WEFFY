@@ -60,4 +60,15 @@ public class TokenTest extends TestConfig{
         //then
         Assertions.assertThat(result).isFalse();
     }
+
+    @Test
+    @DisplayName("validToken() : 유효한 토큰일 때 유효성 검증에 성공한다.")
+    void validToken_O() {
+        //given
+        String token = JwtFactory.withDefaultValues().createToken(jwtProperties);
+        //when
+        boolean result = tokenProvider.validToken(token);
+        //then
+        Assertions.assertThat(result).isTrue();
+    }
 }
