@@ -1,5 +1,6 @@
-package com.weffy;
+package com.weffy.user;
 
+import com.weffy.TestConfig;
 import com.weffy.user.Entity.WeffyUser;
 import com.weffy.user.Repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -13,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Optional;
 
 @SpringBootTest
-public class UserTest extends TestConfig{
+public class UserTest extends TestConfig {
 
     @Autowired
     private UserRepository userRepository;
