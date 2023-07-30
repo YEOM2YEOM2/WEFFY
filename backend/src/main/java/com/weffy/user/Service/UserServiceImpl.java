@@ -2,6 +2,7 @@ package com.weffy.user.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weffy.mattermost.MattermostHandler;
+import com.weffy.token.TokenProvider;
 import com.weffy.user.Dto.Request.UserSignInReqDto;
 import com.weffy.user.Dto.Response.UserSignInResDto;
 import com.weffy.user.Entity.Role;
@@ -15,7 +16,10 @@ import net.bis5.mattermost.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Transactional
@@ -24,6 +28,7 @@ import java.util.Objects;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
     @Autowired
     private MattermostHandler mattermostHandler;
@@ -42,6 +47,7 @@ public class UserServiceImpl implements UserService {
         String profile_img = mattermostHandler.image(mmClient.getId());
 
         WeffyUser weffyUser;
+        Optional<WeffyUser> existingUser = userRepository.findByIdentification(mmClient.getId());
         if (userRepository.findByIdentification(mmClient.getId()).isEmpty()) {
             weffyUser = userRepository.save(
                     WeffyUser.builder()
@@ -55,10 +61,19 @@ public class UserServiceImpl implements UserService {
                         .profile_img(profile_img)
                         .build()
             );
+        } else {
+            weffyUser = existingUser.get();
         }
         String token = Objects.requireNonNull(userInfo.getRawResponse().getHeaders().get("Token").get(0).toString());
-
+        String jwtToken = tokenProvider.generateToken(weffyUser,  Duration.ofDays(14));
         UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), profile_img, token);
         return userSignInResDto;
     }
+
+    @Override
+    public WeffyUser findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+    }
+
 }
