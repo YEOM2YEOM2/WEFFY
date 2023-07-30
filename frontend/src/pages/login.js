@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './login.module.css'
 
 import LoginForm from '../component/login/loginForm.js';
@@ -7,9 +6,15 @@ import Moon from '../assets/images/Moon_slice.png';
 import Star from '../assets/images/raydown.png';
 import People from '../assets/images/3d_people_all.png';
 
-function login() {
+import Grid from '@mui/material/Grid';
+import Hidden from '@mui/material/Hidden';
+
+import { useEffect, useState } from 'react';
+
+function Login() {
+
   return (
-    <div className={styles.login}>
+    <div className={styles.login} style={{ position: 'relative', zIndex: 0 }}>
         <div className={styles.moon_container}>
             <img className={styles.moon} src={ Moon } alt="Moon" />
         </div>
@@ -18,12 +23,19 @@ function login() {
             <img className={styles.star2} src={ Star } alt="Star" />
             <img className={styles.star3} src={ Star } alt="Star" />
         </div>
-        <div className="">
+
+        <Grid container spacing={1}>
+          <Grid item md={6} xs={12} style={{ position: 'relative', zIndex: 1 }} >
             <LoginForm />
-            <img className={styles.people} src={ People } alt="people" />
-        </div>
+          </Grid>
+          <Hidden mdDown>
+            <Grid item md={6} className={styles.img_container} style={{ padding: '0' }}>
+              <img className={styles.people} src={ People } alt="people" />
+            </Grid>
+          </Hidden>
+        </Grid>
     </div>
   )
 }
 
-export default login;
+export default Login;
