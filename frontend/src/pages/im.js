@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
 import SideBar from "../component/im/sidebar.js";
 import styles from "./im.module.css";
+
+//Model js
 
 import MmModal from "../component/im/mmModal.js";
 import PrivateModal from "../component/im/privateModal.js";
@@ -12,29 +15,39 @@ import newPrivate from "../assets/images/newPrivate.png";
 import participate from "../assets/images/participate.png";
 
 const icons = [
-  <img src={newMM} alt="newMM" />,
-  <img src={newPrivate} alt="newPrivate" />,
-  <img src={participate} alt="participate" />,
+  { name: 'PrivateModal', src: newPrivate },
+  { name: 'MmModal', src: newMM },
+  { name: 'ParticipateModal', src: participate },
 ];
 
 const Im = (props) => {
-  let [buttonStatus, setStatue] = useState(true);
-
   // 모달 상태 선언
   const [modalStatus, setModalStatus] = useState({
-    newMM: false,
-    newPrivate: false,
-    participate: false,
+    'MmModal': false,
+    'newPrivate': false,
+    'participate': false,
   });
 
-  // 모달 핸들러
-  const handleOpen = (modal) => () => {
-    setModalStatus((prevState) => ({ ...prevState, [modal]: true }));
-  };
+  const handleModalOpen = (modalName) => {
+    //modalName에 맞는 modal true로 변경
+    setModalStatus({
+      ...modalStatus,
+      [modalName]: true,
+    });
+  }
 
-  const handleClose = (modal) => () => {
-    setModalStatus((prevState) => ({ ...prevState, [modal]: false }));
-  };
+
+  const handleModalClose = (modalName) => {
+    //modalName에 맞는 modal false 변경
+    setModalStatus({
+      ...modalStatus,
+      [modalName]: false,
+    });
+  }
+
+  const isModalOpen = Object.values(modalStatus).some(status => status === true);
+
+
 
   return (
     <div className={styles["container"]}>
@@ -44,39 +57,21 @@ const Im = (props) => {
       <div className={styles["sidebar"]}>
         <SideBar />
       </div>
-      <div className={styles["functionsBtn"]}>
-        {buttonStatus &&
-          ["newMM", "newPrivate", "participate"].map((modal, index) => (
-            <div
-              className={styles["button"]}
-              key={index}
-              onClick={handleOpen(modal)}
-            >
-              {icons[index]}
-
-              {/* 모달 */}
-              {modal === "newMM" && (
-                <MmModal
-                  show={modalStatus[modal]}
-                  handleClose={() => handleClose(modal)}
-                />
-              )}
-              {modal === "newPrivate" && (
-                <PrivateModal
-                  show={modalStatus[modal]}
-                  handleClose={() => handleClose(modal)}
-                />
-              )}
-              {modal === "participate" && (
-                <ParticipateModal
-                  show={modalStatus[modal]}
-                  handleClose={() => handleClose(modal)}
-                />
-              )}
-            </div>
-          ))}
-      </div>
-    </div>
+      {!isModalOpen && <div className={styles["functionsBtn"]}>
+        {icons.map((icon, index) => (
+          <div
+            className={styles["button"]}
+            key={index}
+            onClick={() => handleModalOpen(icon.name)}
+          >
+            <img src={icon.src} alt={icon.name} />
+          </div>
+        ))}
+      </div>}
+      {modalStatus.MmModal && <MmModal handleClose={() => handleModalClose('MmModal')} />}
+      {modalStatus.PrivateModal && <PrivateModal show={modalStatus.PrivateModal} handleClose={() => handleModalClose('PrivateModal')} />}
+      {modalStatus.ParticipateModal && <ParticipateModal show={modalStatus.ParticipateModal} handleClose={() => handleModalClose('ParticipateModal')} />}
+    </div >
   );
 };
 

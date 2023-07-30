@@ -1,20 +1,26 @@
 import React from "react";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
+import styles from "./participateModal.module.css";
 
-const ParticipateModal = ({ show, handleClose }) => {
+//이미지
+
+
+const ParticipateModal = ({ handleClose }) => {
+  const myList = ['item1', 'item2', 'item3', /* and so on... */]; // 원하는 아이템으로 변경 가능
+
   return (
-    <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Participate Modal</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>Here is the content for Participate modal.</Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
+    <div className={styles["modal"]} onClick={handleClose}>
+      <div className={styles["modalBody"]} onClick={(e) => e.stopPropagation()}>
+        <h2 className={styles["modalHeader"]}>미팅 참여하기</h2>
+        <ul>
+          {myList.slice(0, 10).map((item, index) => <li key={index}>{item}</li>)}
+        </ul>
+      </div>
+    </div>
+
+
+
+
+
   );
 };
 
