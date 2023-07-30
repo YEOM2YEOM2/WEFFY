@@ -7,6 +7,7 @@ import { Route, Routes, Outlet } from "react-router-dom";
 
 // 파일
 import Login from "./pages/login.js";
+import Signup from "./pages/signUp.js"
 import Im from "./pages/im.js";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
     <div className="App">
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/im" element={<Im />} />
       </Routes>
     </div>
