@@ -1,7 +1,5 @@
-package com.weffy.config.jwt;
+package com.weffy.token;
 
-import com.weffy.token.JwtProperties;
-import com.weffy.user.Entity.WeffyUser;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

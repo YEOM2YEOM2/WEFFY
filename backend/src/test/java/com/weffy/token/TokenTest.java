@@ -1,8 +1,6 @@
-package com.weffy.config.jwt;
+package com.weffy.token;
 
 import com.weffy.TestConfig;
-import com.weffy.token.JwtProperties;
-import com.weffy.token.TokenProvider;
 import com.weffy.user.Entity.WeffyUser;
 import com.weffy.user.Repository.UserRepository;
 import io.jsonwebtoken.Jwts;
