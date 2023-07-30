@@ -12,20 +12,6 @@ import Hidden from '@mui/material/Hidden';
 import { useEffect, useState } from 'react';
 
 function Login() {
-  // const minViewHeight = 660;
-
-  // const [viewHeight, setViewHeight] = useState(window.innerHeight);
-
-  // const handelResize = () => {
-  //   setViewHeight(window.innerHeight)
-  // }
-
-  // useEffect(() => {
-  //   window.addEventListener('resize', handelResize)
-  //   return () => {
-  //     window.removeEventListener('resize', handelResize)
-  //   }
-  // }, []);
 
   return (
     <div className={styles.login} style={{ position: 'relative', zIndex: 0 }}>
