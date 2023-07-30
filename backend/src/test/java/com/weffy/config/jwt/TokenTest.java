@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Duration;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 @SpringBootTest
@@ -46,6 +47,8 @@ public class TokenTest extends TestConfig{
                     .get("identification", String.class);
 
             Assertions.assertThat(identification).isEqualTo(weffyUser.get().getIdentification());
+        } else {
+            Assertions.fail(email + "을 가진 user가 없습니다.");
         }
     }
 
@@ -83,5 +86,22 @@ public class TokenTest extends TestConfig{
         Authentication authentication = tokenProvider.getAuthentication(token);
         //then
         Assertions.assertThat(((UserDetails) authentication.getPrincipal()).getUsername()).isEqualTo(email);
+    }
+
+    @Test
+    @DisplayName("getUserId() : 토큰 기반으로 user의 identification을 가져올 수 있다.")
+    void getUserId_O() {
+        //given
+        Optional<WeffyUser> weffyUser = userRepository.findByEmail(email);
+        if (weffyUser.isPresent()) {
+            String userID = weffyUser.get().getIdentification();
+            String token = JwtFactory.builder().claims(Map.of("identification", userID)).build().createToken(jwtProperties);
+            //when
+            String userIdentification = tokenProvider.getUserId(token);
+            //then
+            Assertions.assertThat(userIdentification).isEqualTo(userID);
+        } else {
+            Assertions.fail(email + "을 가진 user가 없습니다.");
+        }
     }
 }
