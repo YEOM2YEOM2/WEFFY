@@ -31,7 +31,7 @@ public class JwtFactory {
         return JwtFactory.builder().build();
     }
 
-    private String createToken(JwtProperties jwtProperties) {
+    public String createToken(JwtProperties jwtProperties) {
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setIssuer(jwtProperties.getIssuer())
