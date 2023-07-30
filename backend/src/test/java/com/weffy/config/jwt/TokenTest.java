@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Duration;
 import java.util.Date;
@@ -70,5 +72,16 @@ public class TokenTest extends TestConfig{
         boolean result = tokenProvider.validToken(token);
         //then
         Assertions.assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("getAuthentication() : 토큰 기반으로 인증 정보를 가져올 수 있다.")
+    void getAuthentication_O() {
+        //given
+        String token = JwtFactory.builder().subject(email).build().createToken(jwtProperties);
+        //when
+        Authentication authentication = tokenProvider.getAuthentication(token);
+        //then
+        Assertions.assertThat(((UserDetails) authentication.getPrincipal()).getUsername()).isEqualTo(email);
     }
 }
