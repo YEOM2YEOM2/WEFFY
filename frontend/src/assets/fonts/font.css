@@ -17,13 +17,46 @@
     font-style: normal;
   }
 
-  @font-face {
-    font-family: "Mogra";
-    font-display: fallback;
-  
-    src: url("./Mogra/Mogra-Regular.ttf") format("truetype"), url("./Mogra/Mogra-Regular.woff")
-        format("woff"), url("./Mogra/Mogra-Regular.eot?iefix") format("embedded-opentype");
-  
-    font-weight: 400;
-    font-style: normal;
-  }
+@font-face {
+  font-family: "Mogra";
+  font-display: fallback;
+
+  src: url("./Mogra/Mogra-Regular.ttf") format("truetype"), url("./Mogra/Mogra-Regular.woff")
+      format("woff"), url("./Mogra/Mogra-Regular.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Kalam";
+  font-display: fallback;
+
+  src: url("./Kalam/Kalam-Regular.ttf") format("truetype"), url("./Kalam/Kalam-Regular.woff")
+      format("woff"), url("./Kalam/Kalam-Regular.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HindGuntur";
+  font-display: fallback;
+
+  src: url("./HindGuntur/HindGuntur-Regular.ttf") format("truetype"), url("./HindGuntur/HindGuntur-Regular.woff")
+      format("woff"), url("./HindGuntur/HindGuntur-Regular.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HindGunturBold";
+  font-display: fallback;
+
+  src: url("./HindGuntur/HindGuntur-Bold.ttf") format("truetype"), url("./HindGuntur/HindGuntur-Bold.woff")
+      format("woff"), url("./HindGuntur/HindGuntur-Bold.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
