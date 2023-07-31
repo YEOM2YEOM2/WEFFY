@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserSignInResDto signIn(UserSignInReqDto signInInfo, Role role) {
+    public UserSignInResDto signIn(UserSignInReqDto signInInfo, String role) {
         ObjectMapper mapper = new ObjectMapper();
 
         // mattermost 로그인
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
                         .email(mmClient.getEmail())
                         .name(mmClient.getLastName() + mmClient.getFirstName())
                         .nickname(mmClient.getNickname())
-                        .role((role==null)? Role.USER: role)
+                        .role((role != null && role.equals("ADMIN"))? Role.ADMIN: Role.USER)
                         .active(true)
                         .profile_img(profile_img)
                         .build()
@@ -64,9 +64,14 @@ public class UserServiceImpl implements UserService {
         } else {
             weffyUser = existingUser.get();
         }
+
+        // Mattermost 세션 토큰
         String token = Objects.requireNonNull(userInfo.getRawResponse().getHeaders().get("Token").get(0).toString());
-        String jwtToken = tokenProvider.generateToken(weffyUser,  Duration.ofDays(14));
-        UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), profile_img, token);
+        // accessToken
+        String accessToken = tokenProvider.generateToken(weffyUser,  Duration.ofHours(1));
+        //  refreshToken
+        String refreshToken = tokenProvider.generateToken(weffyUser,  Duration.ofDays(14));
+        UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), profile_img, accessToken, refreshToken);
         return userSignInResDto;
     }
 
