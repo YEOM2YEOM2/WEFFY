@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 
+
 import SideBar from "../component/im/sidebar.js";
 import styles from "./im.module.css";
 
 //Model js
-
 import MmModal from "../component/im/mmModal.js";
 import PrivateModal from "../component/im/privateModal.js";
 import ParticipateModal from "../component/im/participateModal.js";
