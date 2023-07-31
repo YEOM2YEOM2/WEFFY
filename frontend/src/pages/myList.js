@@ -52,6 +52,7 @@ const MyList = (props) => {
                 variant="contained"
                 onClick={() => window.open(item.url, "_blank")}
                 color="error"
+                style={{ marginRight: "10px" }}
                 className={styles["deleteBtn"]}
               >
                 Deleted
