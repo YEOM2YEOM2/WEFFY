@@ -7,8 +7,9 @@ import { Route, Routes, Outlet } from "react-router-dom";
 
 // 파일
 import Login from "./pages/login.js";
-import Signup from "./pages/signUp.js"
+import Signup from "./pages/signUp.js";
 import Im from "./pages/im.js";
+import MyList from "./pages/myList.js";
 
 function App() {
   return (
@@ -16,7 +17,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/im" element={<Im />} />
+        <Route path="/im" element={<Im />}>
+          <Route path="mylist" element={<MyList />} />
+        </Route>
       </Routes>
     </div>
   );
