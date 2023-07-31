@@ -1,6 +1,7 @@
 package com.weffy.user;
 
 import com.weffy.TestConfig;
+import com.weffy.user.Dto.Response.UserSignInResDto;
 import com.weffy.user.Entity.WeffyUser;
 import com.weffy.user.Repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -20,7 +21,9 @@ public class UserTest extends TestConfig {
     private UserRepository userRepository;
 
     @Value("${mysecret.mattermost.email}")
-    private String email;
+    protected String email;
+    @Value("${mysecret.mattermost.password}")
+    protected String password;
 
     @Test
     @Transactional
@@ -29,5 +32,15 @@ public class UserTest extends TestConfig {
         Optional<WeffyUser> testUser = userRepository.findByIdentification("1ejz9ks8kpy7uyb4rsn4s44pse");
         //then
         Assertions.assertThat(testUser.get().getEmail()).isEqualTo(email);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("로그인이 성공하여야한다.")
+    void signInUser_O() {
+        UserSignInResDto res = userService.signIn(user, null);
+        Optional<WeffyUser> testUser = userRepository.findByEmail(email);
+        //then
+        Assertions.assertThat(testUser.get().getIdentification()).isEqualTo(res.getUserId());
     }
 }
