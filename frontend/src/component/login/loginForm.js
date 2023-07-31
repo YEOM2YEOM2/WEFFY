@@ -32,15 +32,11 @@ function LoginForm() {
           </div>
           <Button variant="contained" size="large" className={styles.login_btn} style={{ fontSize: '20px', fontFamily: 'Poppins', fontWeight: '500', backgroundColor: '#2672B9' }}>Sign in</Button>
           <Container className={styles.sign}>
-            <Row>
-              <Col><p style={{ marginBottom: '0', marginTop: '9px' }}>You don't have a account?</p></Col>
-              <Col>
-                <Button variant="text" onClick={()=> {navigate('/signup');}}
-                style={{ textDecorationLine: 'none', color: '#2672B9', fontFamily: 'Poppins', fontSize: '17px' }}>
-                  Sign up
-                </Button>
-              </Col>
-            </Row>
+              <p style={{ marginBottom: '0', marginTop: '9px' }}>You don't have a account?</p>
+              <Button variant="text" onClick={()=> {navigate('/signup');}}
+              style={{ textDecorationLine: 'none', color: '#2672B9', fontFamily: 'Poppins', fontSize: '17px' }}>
+                Sign up
+              </Button>
           </Container>
         </Form>
       </div>
