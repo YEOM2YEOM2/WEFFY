@@ -7,8 +7,8 @@ import styles from './loginForm.module.css';
 import Button from '@mui/material/Button';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+// import Row from 'react-bootstrap/Row';
+// import Col from 'react-bootstrap/Col';
 
 function LoginForm() {
 

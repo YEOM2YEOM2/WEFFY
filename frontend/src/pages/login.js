@@ -9,7 +9,7 @@ import People from '../assets/images/3d_people_all.png';
 import Grid from '@mui/material/Grid';
 import Hidden from '@mui/material/Hidden';
 
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 
 function Login() {
 

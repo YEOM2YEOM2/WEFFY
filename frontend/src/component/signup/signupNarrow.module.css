@@ -1,0 +1,6 @@
+.narrow {
+    width: 100vw;
+    height: 100%;
+    background: linear-gradient(223deg, #2E76B8 0%, #D1CCF4 45.31%, #FFBEF1 93.75%);
+    backdrop-filter: blur(12px);
+}
