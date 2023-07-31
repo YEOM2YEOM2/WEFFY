@@ -4,3 +4,40 @@
     background: linear-gradient(223deg, #2E76B8 0%, #D1CCF4 45.31%, #FFBEF1 93.75%);
     backdrop-filter: blur(12px);
 }
+
+.signupNarrowForm {
+    margin: 0;
+    padding: 1px 50px;
+    border-radius: 20px;
+    position: relative;
+}
+
+.signupNarrowForm::before {
+    content: '';
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 85%;
+    height: 100%;
+
+    background-color: white;
+    filter: blur(1px);
+    opacity: 0.4;
+    border-radius: inherit;
+
+    z-index: -1; 
+}
+
+
+.logo {
+    display: flex;
+    text-align: left;
+    margin-top: 55px;
+    font-family: "Mogra";
+    font-size: 60px;
+    color: rgb(120, 116, 229);
+}
+
