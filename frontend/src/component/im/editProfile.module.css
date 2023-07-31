@@ -8,6 +8,8 @@
   font-size: 20px;
   margin-left: 10px;
   margin-bottom: 10px;
+  margin-top: 10px;
+
 }
 
 .bar {
@@ -40,5 +42,13 @@
 
 .button {
   width: 10vw;
-  margin-right: 2vw; /* Add right margin to the button */
+  margin-right: 2vw;
+  /* Add right margin to the button */
+}
+
+.videoContainer {}
+
+.videoTitle {
+  color: rgba(245, 249, 255, 1);
+  font-size: 20px;
 }
