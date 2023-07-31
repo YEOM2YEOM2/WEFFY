@@ -60,3 +60,25 @@
   font-weight: 400;
   font-style: normal;
 }
+
+@font-face {
+  font-family: "NanumSquareNeo";
+  font-display: fallback;
+
+  src: url("./NanumSquareNeo/NanumSquareNeo.ttf") format("truetype"), url("./NanumSquareNeo/NanumSquareNeo.woff")
+      format("woff"), url("./NanumSquareNeo/NanumSquareNeo.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Agro";
+  font-display: fallback;
+
+  src: url("./Agro/Agro.ttf") format("truetype"), url("./Agro/Agro.woff")
+      format("woff"), url("./Agro/Agro.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
