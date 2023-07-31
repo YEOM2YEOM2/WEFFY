@@ -7,6 +7,6 @@ import com.weffy.user.Entity.WeffyUser;
 
 public interface UserService {
 
-    UserSignInResDto signIn(UserSignInReqDto signinInfo, Role role);
+    UserSignInResDto signIn(UserSignInReqDto signinInfo, String role);
     WeffyUser findById(Long userId);
 }
