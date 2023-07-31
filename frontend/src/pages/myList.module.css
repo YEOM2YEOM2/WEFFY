@@ -1,0 +1,48 @@
+.container {
+  background-color: red;
+  margin-left: 10vw;
+  width: 50vw;
+  height: 90vh;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(46, 46, 72, 0.8);
+  padding: 20px; /* 컨테이너 내부에 패딩 추가 */
+  box-sizing: border-box; /* 패딩이 컨테이너의 크기에 포함되도록 설정 */
+}
+.header {
+  color: #fff;
+  font-size: 5vh;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 25%;
+  text-transform: capitalize;
+  line-height: 1.5; /* 줄 간격을 적절하게 설정 */
+  float: left;
+}
+.list {
+  flex-direction: column;
+  justify-content: center;
+}
+
+.listItem {
+  width: 100%;
+  height: 100%;
+  margin-bottom: 1vh;
+  background-color: rgba(119, 119, 119, 1);
+  border-radius: 10px;
+}
+
+.listItem:hover {
+  background-color: #e0e0e0;
+}
+
+.itemText {
+  color: white;
+}
+.buttonBox {
+  display: flex;
+  justify-content: flex-end;
+}
+.deleteBtn {
+  margin-right: 20vw; /* 조정 가능한 마진 값 */
+}
