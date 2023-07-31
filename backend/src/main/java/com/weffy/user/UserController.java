@@ -38,7 +38,7 @@ public class UserController {
     })
     @PostMapping("/signin")
     public ResponseEntity<? extends BaseResponseBody> signin(@RequestBody UserSignInReqDto signinInfo, @RequestParam(name = "role", required = false) String role ) {
-        UserSignInResDto weffyUser = userService.signIn(signinInfo, Role.valueOf(role));
+        UserSignInResDto weffyUser = userService.signIn(signinInfo, role);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, weffyUser));
     }
 }
