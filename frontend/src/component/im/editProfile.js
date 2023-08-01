@@ -26,7 +26,7 @@ const EditProfile = (props) => {
         />
       </div>
       <div className={styles["buttonContainer"]}>
-        <Button variant="outlined" className={styles["button"]}>
+        <Button variant="outlined" className={styles["button"]} style={{ marginRight: "20px" }}>
           Cancle
         </Button>
         <Button variant="contained" className={styles["button"]}>
