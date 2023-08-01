@@ -30,7 +30,10 @@ function LoginForm() {
           <div className={styles.forgot_password}>
             <Button variant="text" href="https://meeting.ssafy.com/reset_password" style={{ textDecorationLine: 'none', color: 'black', fontFamily: 'Poppins' }}>Forgot Password?</Button>
           </div>
-          <Button variant="contained" size="large" className={styles.login_btn} style={{ fontSize: '20px', fontFamily: 'Poppins', fontWeight: '500', backgroundColor: '#2672B9' }}>Sign in</Button>
+          <Button variant="contained" size="large" className={styles.login_btn} style={{ fontSize: '20px', fontFamily: 'Poppins', fontWeight: '500', backgroundColor: '#2672B9' }}
+          onClick={()=> {navigate('/im')}}>
+            Sign in
+          </Button>
           <Container className={styles.sign}>
               <p style={{ marginBottom: '0', marginTop: '9px' }}>You don't have a account?</p>
               <Button variant="text" onClick={()=> {navigate('/signup');}}
