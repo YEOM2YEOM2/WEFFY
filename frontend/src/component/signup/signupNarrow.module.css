@@ -2,6 +2,7 @@
     width: 100vw;
     height: 100%;
     background: linear-gradient(223deg, #2E76B8 0%, #D1CCF4 45.31%, #FFBEF1 93.75%);
+    background-size: cover;
     backdrop-filter: blur(12px);
 }
 
@@ -15,10 +16,10 @@
 
 .signup_form {
     margin: 0;
-    padding: 0px 50px;
+    padding: 50px 50px;
     border-radius: 20px;
     display: flex;
-    height: 75%;
+    height: 600px;
     width: 70%;
     flex-direction: column;
 }
@@ -32,7 +33,7 @@
     transform: translate(-50%, -50%);
 
     width: 75%;
-    height: 90%;
+    height: 95%;
 
     background-color: white;
     filter: blur(1px);
