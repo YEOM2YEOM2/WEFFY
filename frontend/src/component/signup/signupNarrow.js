@@ -48,18 +48,18 @@ function SignupNarrow() {
                 <Container>
                     <Row className={styles.margin}>
                         <FormControl style={{ width: '100%' }} sx={{ m: 1, width: '25ch' }} variant="outlined">
-                            <InputLabel htmlFor="outlined-adornment-email">Email</InputLabel>
+                            <InputLabel htmlFor="outlined-adornment-email" style={{ fontFamily: 'Poppins' }}>Email</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-email"
                                 type={showPassword ? 'text' : 'email'}
-                                label="email"
+                                label="email" style={{ fontFamily: 'Poppins' }}
                             />
                         <FormHelperText id="outlined-weight-helper-text" style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600' }}>Mattermost Email을 입력해주세요.</FormHelperText>
                         </FormControl>
                     </Row>
                     <Row className={styles.margin}>
                         <FormControl style={{ width: '100%' }} sx={{ m: 1, width: '25ch' }} variant="outlined">
-                            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                            <InputLabel htmlFor="outlined-adornment-password" style={{ fontFamily: 'Poppins' }}>Password</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-password"
                                 type={showPassword ? 'text' : 'password'}
@@ -76,13 +76,14 @@ function SignupNarrow() {
                                 </InputAdornment>
                                 }
                                 label="Password"
+                                style={{ fontFamily: 'Poppins' }}
                             />
                         <FormHelperText id="outlined-weight-helper-text" style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600' }}>Mattermost Password을 입력해주세요.</FormHelperText>
                         </FormControl>
                     </Row>
                     <Row className={styles.margin}>
                         <FormControl style={{ width: '100%' }} sx={{ m: 1, width: '25ch' }} variant="outlined">
-                            <InputLabel htmlFor="outlined-adornment-password">Password Confirmation</InputLabel>
+                            <InputLabel htmlFor="outlined-adornment-password" style={{ fontFamily: 'Poppins' }}>Password Confirmation</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-password"
                                 type={showPasswordRe ? 'text' : 'password'}
@@ -99,6 +100,7 @@ function SignupNarrow() {
                                 </InputAdornment>
                                 }
                                 label="Password Confirmation"
+                                style={{ fontFamily: 'Poppins' }}
                             />
                         <FormHelperText id="outlined-weight-helper-text" style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600' }}>비밀번호를 재입력해주세요.</FormHelperText>
                         </FormControl>
