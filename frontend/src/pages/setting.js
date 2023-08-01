@@ -15,11 +15,17 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import SettingsIcon from "@mui/icons-material/Settings";
 
+
 //내 파일
 import EditProfile from "../component/im/editProfile.js";
+import DeviceSetting from "../component/im/deviceSetting";
 
 const Setting = (props) => {
   const [status, setStatus] = useState(true);
+  const handleListItemClick = (index) => {
+    setStatus(index === 0 ? true : false);
+  };
+
 
   return (
     <div className={styles["container"]}>
@@ -31,7 +37,7 @@ const Setting = (props) => {
           <List>
             {["Profile", "Device Setting"].map((text, index) => (
               <ListItem key={text} disablePadding>
-                <ListItemButton>
+                <ListItemButton onClick={() => handleListItemClick(index)}>
                   <ListItemIcon
                     className={styles["menuIcon"]}
                     style={{ color: "white" }}
@@ -47,7 +53,7 @@ const Setting = (props) => {
           </List>
         </Grid>
         <Grid item xs={9} className={styles["content"]}>
-          {status === true ? <EditProfile /> : null}
+          {status === true ? <EditProfile /> : <DeviceSetting />}
         </Grid>
       </Grid>
     </div>
