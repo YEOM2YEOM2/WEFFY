@@ -1,115 +1,111 @@
-import React, { useState, useEffect } from "react";
-import styles from "./deviceSetting.module.css";
+import React from 'react';
+import styles from '../im/deviceSetting.module.css'
+import { FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
 
-//img
-import defaultImg from "../../assets/images/defualt_image.png";
-
-//외부라이브러리
-import Divider from "@mui/material/Divider";
+//mui
 import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Grow from '@mui/material/Grow';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
-import MenuItem from '@mui/material/MenuItem';
-import MenuList from '@mui/material/MenuList';
+import Grid from "@mui/material/Grid";
+
+//icon
+import MicIcon from "@mui/icons-material/Mic";
+import VideocamIcon from "@mui/icons-material/Videocam";
 
 
-const options = ['Create a merge commit', 'Squash and merge', 'Rebase and merge'];
+const DeviceSetting = () => {
+    const [selectedCamera, setSelectedCamera] = React.useState('');
+    const [selectedMic, setSelectedMic] = React.useState('');
+    const [selectedSpeaker, setSelectedSpeaker] = React.useState('');
 
-const DeviceSetting = (props) => {
+    const cameras = ['cam1', 'cam2'];
+    const mics = ['mic1', 'mic2'];
+    const speakers = ['speaker1', 'speaker2'];
 
-    const [open, setOpen] = React.useState(false);
-    const anchorRef = React.useRef(null);
-    const [selectedIndex, setSelectedIndex] = React.useState(1);
-
-    const handleClick = () => {
-        console.info(`You clicked ${options[selectedIndex]}`);
+    const handleCameraChange = (event) => {
+        setSelectedCamera(event.target.value);
     };
 
-    const handleMenuItemClick = (event, index) => {
-        setSelectedIndex(index);
-        setOpen(false);
+    const handleMicChange = (event) => {
+        setSelectedMic(event.target.value);
     };
 
-    const handleToggle = () => {
-        setOpen((prevOpen) => !prevOpen);
+    const handleSpeakerChange = (event) => {
+        setSelectedSpeaker(event.target.value);
     };
-
-    const handleClose = (event) => {
-        if (anchorRef.current && anchorRef.current.contains(event.target)) {
-            return;
-        }
-
-        setOpen(false);
-    };
-
-
 
     return (
-        <div children={styles["container"]}>
-            <div className={styles["title"]}>Device Settings</div>
-            <Divider className={styles["bar"]} style={{ backgroundColor: "white" }} />
-            <div className={styles["videoContainer"]}>
-                <div className={styles["videoTitle"]}>Vedio</div>
-                <React.Fragment>
-                    <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button">
-                        <Button onClick={handleClick}>{options[selectedIndex]}</Button>
-                        <Button
-                            size="small"
-                            aria-controls={open ? 'split-button-menu' : undefined}
-                            aria-expanded={open ? 'true' : undefined}
-                            aria-label="select merge strategy"
-                            aria-haspopup="menu"
-                            onClick={handleToggle}
-                        >
-                            <ArrowDropDownIcon />
-                        </Button>
-                    </ButtonGroup>
-                    <Popper
-                        sx={{
-                            zIndex: 1,
-                        }}
-                        open={open}
-                        anchorEl={anchorRef.current}
-                        role={undefined}
-                        transition
-                        disablePortal
-                    >
-                        {({ TransitionProps, placement }) => (
-                            <Grow
-                                {...TransitionProps}
-                                style={{
-                                    transformOrigin:
-                                        placement === 'bottom' ? 'center top' : 'center bottom',
-                                }}
-                            >
-                                <Paper>
-                                    <ClickAwayListener onClickAway={handleClose}>
-                                        <MenuList id="split-button-menu" autoFocusItem>
-                                            {options.map((option, index) => (
-                                                <MenuItem
-                                                    key={option}
-                                                    disabled={index === 2}
-                                                    selected={index === selectedIndex}
-                                                    onClick={(event) => handleMenuItemClick(event, index)}
-                                                >
-                                                    {option}
-                                                </MenuItem>
-                                            ))}
-                                        </MenuList>
-                                    </ClickAwayListener>
-                                </Paper>
-                            </Grow>
-                        )}
-                    </Popper>
-                </React.Fragment>
-            </div>
+        <div className={styles["container"]}>
+            <Grid
+                container
+                direction="column"
+                alignItems="center"
+                justifyContent="center"
+                spacing={2}
+            >
+                <Grid item xs={12} className={styles["deviceBox"]}>
+                    <h5>Video</h5>
+                    <FormControl className={styles["buttonContainer"]}>
+                        <InputLabel id="camera-label"><VideocamIcon /> Camera</InputLabel>
+                        <Select
+                            labelId="camera-label"
+                            id="camera-select"
+                            value={selectedCamera}
+                            onChange={handleCameraChange}
+                            className={styles["buttonContainer"]}>
 
+                            {cameras.map((camera, index) => (
+                                <MenuItem key={index} value={camera}>
+                                    <VideocamIcon /> {camera}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} className={styles["deviceBox"]}>
+                    <h5>Audio</h5>
+                    <FormControl className={styles["buttonContainer"]}>
+                        <InputLabel id="mic-label"><MicIcon /> Microphone</InputLabel>
+                        <Select
+                            labelId="mic-label"
+                            id="mic-select"
+                            value={selectedMic}
+                            onChange={handleMicChange}
+                            className={styles["buttonContainer"]}>
+                            {mics.map((mic, index) => (
+                                <MenuItem key={index} value={mic}>
+                                    <MicIcon /> {mic}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} className={styles["deviceBox"]}>
+                    <h5>Speaker</h5>
+                    <Grid container spacing={2} className={styles["buttonContainer"]}>
+                        <Grid item xs={12} sm={6}>
+                            <FormControl fullWidth>
+                                <InputLabel id="speaker-label"><MicIcon /> Speaker</InputLabel>
+                                <Select
+                                    labelId="speaker-label"
+                                    id="speaker-select"
+                                    value={selectedSpeaker}
+                                    onChange={handleSpeakerChange}
+                                    className={styles["buttonContainer"]}
+                                >
+                                    {speakers.map((speaker, index) => (
+                                        <MenuItem key={index} value={speaker}>
+                                            <MicIcon /> {speaker}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Button variant="contained" fullWidth className={styles.button}>Test</Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
 
-
+            </Grid>
         </div>
     );
 };
