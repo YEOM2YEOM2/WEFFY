@@ -51,6 +51,14 @@ dependencies {
     // https://mvnrepository.com/artifact/net.bis5.mattermost4j/mattermost4j-core
     implementation 'net.bis5.mattermost4j:mattermost4j-core:0.25.0'
 
+    // kms
+    implementation 'com.amazonaws:aws-java-sdk-core:1.11.1019'
+    implementation 'com.amazonaws:aws-java-sdk-kms:1.11.1019'
+    implementation 'com.amazonaws:jmespath-java:1.11.1019'
+    // https://mvnrepository.com/artifact/software.amazon.awssdk/kms
+    implementation 'software.amazon.awssdk:kms:2.20.115'
+
+    //test
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     testAnnotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.projectlombok:lombok'

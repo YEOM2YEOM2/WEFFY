@@ -39,7 +39,7 @@ public class TokenTest extends TestConfig{
             String token = tokenProvider.generateToken(weffyUser.get(), Duration.ofDays(14));
             //then
             String identification = Jwts.parser()
-                    .setSigningKey(jwtProperties.getSecretKey())
+                    .setSigningKey(kmsService.decryptData(jwtProperties.getSecretKey()))
                     .parseClaimsJws(token)
                     .getBody()
                     .get("identification", String.class);
