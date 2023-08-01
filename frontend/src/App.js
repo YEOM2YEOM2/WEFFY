@@ -10,6 +10,8 @@ import Login from "./pages/login.js";
 import Signup from "./pages/signUp.js";
 import Im from "./pages/im.js";
 import MyList from "./pages/myList.js";
+import Setting from "./pages/setting.js";
+import Meeting from "./pages/meeting.js"
 
 function App() {
   return (
@@ -19,7 +21,9 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/im" element={<Im />}>
           <Route path="mylist" element={<MyList />} />
+          <Route path="setting" element={<Setting />} />
         </Route>
+        <Route path="/meeting" element={<Meeting />} />
       </Routes>
     </div>
   );

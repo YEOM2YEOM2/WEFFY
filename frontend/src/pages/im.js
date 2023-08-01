@@ -58,9 +58,11 @@ const Im = (props) => {
 
   return (
     <div className={styles["container"]}>
-      <span className={styles["logoText"]}>
-        <span>WEFFY</span>
-      </span>
+      {isImPage && (
+        <span className={styles["logoText"]}>
+          <span>WEFFY</span>
+        </span>
+      )}
       <div className={styles["sidebar"]}>
         <SideBar />
       </div>
