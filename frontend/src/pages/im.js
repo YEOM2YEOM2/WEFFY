@@ -1,126 +1,333 @@
-import React, { useState } from "react";
-import SideBar from "../component/im/sidebar.js";
-import styles from "./im.module.css";
+import React, { useState, useEffect } from "react";
+import { Route, Routes, Outlet, useLocation } from "react-router-dom";
+import styles from "../pages/im.module.css";
+import { useNavigate } from "react-router-dom";
+
+//mui 라이브라리
+import { styled, useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import MuiDrawer from "@mui/material/Drawer";
+import MuiAppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import CssBaseline from "@mui/material/CssBaseline";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+
+//icons
+import GridViewIcon from "@mui/icons-material/GridView";
+import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
+import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
+
+//image
+import defaultImg from "../assets/images/defualt_image.png";
+//buttons
 import newMM from "../assets/images/newMM.png";
 import newPrivate from "../assets/images/newPrivate.png";
 import participate from "../assets/images/participate.png";
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 
-const Im = (props) => {
+//Model js
+import MmModal from "../component/im/mmModal.js";
+import PrivateModal from "../component/im/privateModal.js";
+import ParticipateModal from "../component/im/participateModal.js";
 
-  const [showPrivate, setShowPrivate] = useState(false);
-  const [showMM, setShowMM] = useState(false);
-  const [showParticipate, setShowParticipate] = useState(false);
+const buttons = [
+  { name: "PrivateModal", src: newPrivate },
+  { name: "MmModal", src: newMM },
+  { name: "ParticipateModal", src: participate },
+];
 
-  const handleClosePrivate = () => setShowPrivate(false);
-  const handleShowPrivate = () => setShowPrivate(true);
+//mui icon
+const drawerWidth = 240;
 
-  const handleCloseMM = () => setShowMM(false);
-  const handleShowMM = () => setShowMM(true);
+const icons = [
+  { name: "DashBoard", src: <GridViewIcon /> },
+  { name: "MyList", src: <MoveToInboxIcon /> },
+  { name: "Setting", src: <SettingsIcon /> },
+  { name: "Logout", src: <LogoutIcon /> },
+];
 
-  const handleCloseParticipate = () => setShowParticipate(false);
-  const handleShowParticipate = () => setShowParticipate(true);
+const openedMixin = (theme) => ({
+  width: drawerWidth,
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: "hidden",
+  backgroundColor: "rgba(46, 46, 72, 0.7)", // Add this line
+});
 
-  const handleNewPrivateClick = () => {
-    console.log("New Private clicked!");
-    handleShowPrivate();
+const closedMixin = (theme) => ({
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: "hidden",
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up("sm")]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+
+  backgroundColor: "rgba(65, 65, 112, 0.8)", // 열렸을경우
+});
+
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+}));
+
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(["width", "margin"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(["width", "margin"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: "nowrap",
+  boxSizing: "border-box",
+  ...(open && {
+    ...openedMixin(theme),
+    "& .MuiDrawer-paper": openedMixin(theme),
+  }),
+  ...(!open && {
+    ...closedMixin(theme),
+    "& .MuiDrawer-paper": closedMixin(theme),
+  }),
+}));
+
+export default function ClippedDrawer() {
+  const theme = useTheme();
+  const [open, setOpen] = React.useState(true);
+
+  const navigate = useNavigate();
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
   };
 
-  const handleNewMMClick = () => {
-    console.log("New MM clicked!");
-    handleShowMM();
+  const handleDrawerClose = () => {
+    setOpen(false);
   };
 
-  const handleParticipateClick = () => {
-    console.log("Participate clicked!");
-    handleShowParticipate();
+  const location = useLocation();
+
+  const isImPage = location.pathname === "/im";
+
+  // 모달 상태 선언
+  const [modalStatus, setModalStatus] = useState({
+    MmModal: false,
+    newPrivate: false,
+    participate: false,
+  });
+
+  const handleModalOpen = (modalName) => {
+    //modalName에 맞는 modal true로 변경
+    setModalStatus({
+      ...modalStatus,
+      [modalName]: true,
+    });
   };
+
+  const handleModalClose = (modalName) => {
+    //modalName에 맞는 modal false 변경
+    setModalStatus({
+      ...modalStatus,
+      [modalName]: false,
+    });
+  };
+
+  const isModalOpen = Object.values(modalStatus).some(
+    (status) => status === true
+  );
+
+  //옆 사이드바 아이콘을 클릭 했을 경우 url을 옮겨줄 hanndler
+  const handleDashboardClick = () => {
+    console.log("Dashboard was clicked");
+    // Dashboard 클릭 시 수행할 동작
+    navigate("/im");
+  };
+
+  const handleMyMeetingClick = () => {
+    console.log("My Meeting was clicked");
+    // My Meeting 클릭 시 수행할 동작
+    navigate("/im/mylist");
+  };
+
+  const handleSettingClick = () => {
+    console.log("Setting was clicked");
+    // Profile 클릭 시 수행할 동작
+    navigate("/im/setting");
+  };
+
+  const handleLogoutClick = () => {
+    console.log("Logout was clicked");
+    // Profile 클릭 시 수행할 동작
+    navigate("/im/logout");
+  };
+
+  const handlers = [
+    handleDashboardClick,
+    handleMyMeetingClick,
+    handleSettingClick,
+    handleLogoutClick,
+  ];
 
   return (
-    <div className={styles["container"]}>
-      <span className={styles["text"]}>
-        <span>WEFFY</span>
-      </span>
-      <div className={styles["sidebar"]}>
-        <SideBar />
-      </div>
-      <div className={styles["iconContainer"]}>
-        <div>
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        open={open}
+        style={{ backgroundColor: "rgba(46, 46, 72, 0.8)" }}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{
+              marginRight: 5,
+              ...(open && { display: "none" }),
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography
+            variant="h4"
+            noWrap
+            component="div"
+            style={{ fontFamily: "Mogra" }}
+          >
+            WEFFY
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer variant="permanent" open={open}>
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === "rtl" ? (
+              <ChevronRightIcon />
+            ) : (
+              <ChevronLeftIcon />
+            )}
+          </IconButton>
+        </DrawerHeader>
+        <div className={styles["profileContainer"]}>
           <img
-            src={newPrivate}
-            alt="newPrivate logo"
-            className={styles["icon"]}
-            onClick={handleNewPrivateClick}
+            src={defaultImg}
+            alt="Profile"
+            className={open ? styles.profileImg : styles.profileImgClosed}
           />
-          <p>이연지 미팅</p>
         </div>
-        <div>
-          <img
-            src={newMM}
-            alt="newMM logo"
-            className={styles["icon"]}
-            onClick={handleNewMMClick}
+        <Divider />
+
+        <List>
+          {icons.map((icon, index) => (
+            <ListItem key={icon.name} disablePadding sx={{ display: "block" }}>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "flex-start" : "center", // Change this line
+                  px: 2.5,
+                }}
+                onClick={handlers[index]} // Add this line
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                  style={{ color: "white" }}
+                >
+                  {icon.src}
+                </ListItemIcon>
+                <ListItemText
+                  primary={icon.name}
+                  sx={{ opacity: open ? 1 : 0 }}
+                  style={{ color: "white" }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+
+        <Divider />
+        {/* ... */}
+      </Drawer>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: open ? `calc(100vw - ${drawerWidth}px)` : "100vw", // Adjust the width dynamically
+        }}
+        className={styles["container"]}
+      >
+        {isImPage && !isModalOpen && (
+          <div
+            className={styles["buttonContainer"]}
+            style={{ left: `calc(50% + ${open ? drawerWidth / 2 : 0}px)` }}
+          >
+            {buttons.map((button, index) => (
+              <div key={index} onClick={() => handleModalOpen(button.name)}>
+                <img
+                  src={button.src}
+                  alt={button.name}
+                  className={styles["button"]}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+        {modalStatus.MmModal && (
+          <MmModal handleClose={() => handleModalClose("MmModal")} />
+        )}
+        {modalStatus.PrivateModal && (
+          <PrivateModal
+            show={modalStatus.PrivateModal}
+            handleClose={() => handleModalClose("PrivateModal")}
+            sidebarOpen={open} // Add this line
           />
-          <p>정예진 미팅</p>
-        </div>
-        <div>
-          <img
-            src={participate}
-            alt="participate logo"
-            className={styles["icon"]}
-            onClick={handleParticipateClick}
+        )}
+        {modalStatus.ParticipateModal && (
+          <ParticipateModal
+            show={modalStatus.ParticipateModal}
+            handleClose={() => handleModalClose("ParticipateModal")}
+            sidebarOpen={open} // Add this line
           />
-          <p>방진성 미팅</p>
-        </div>
-      </div>
-
-      <Modal show={showPrivate} onHide={handleClosePrivate}>
-        <Modal.Header closeButton>
-          <Modal.Title>Private Modal</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Private modal content...</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClosePrivate}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleClosePrivate}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={showMM} onHide={handleCloseMM}>
-        <Modal.Header closeButton>
-          <Modal.Title>MM Modal</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>MM modal content...</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseMM}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleCloseMM}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={showParticipate} onHide={handleCloseParticipate}>
-        <Modal.Header closeButton>
-          <Modal.Title>Participate Modal</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Participate modal content...</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseParticipate}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleCloseParticipate}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+        )}
+      </Box>
+    </Box>
   );
-};
-
-export default Im;
+}

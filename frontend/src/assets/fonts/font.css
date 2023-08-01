@@ -1,0 +1,84 @@
+@font-face {
+    /* 사용할 폰트의 이름 */
+    font-family: "Poppins";
+    font-display: fallback;
+  
+    /* 
+    src: 사용할 폰트의 위치 및 형식 
+       Safari, Android, iOS => ttf
+       Modern Browsers => woff
+       IE6-IE8 => eot
+    */
+    src: url("./Poppins/Poppins-Regular.ttf") format("truetype"), url("./Poppins/Poppins-Regular.woff")
+        format("woff"), url("./Poppins/Poppins-Regular.eot?iefix") format("embedded-opentype");
+  
+    /* 사용할 폰트의 기본 스타일 */
+    font-weight: 400;
+    font-style: normal;
+  }
+
+@font-face {
+  font-family: "Mogra";
+  font-display: fallback;
+
+  src: url("./Mogra/Mogra-Regular.ttf") format("truetype"), url("./Mogra/Mogra-Regular.woff")
+      format("woff"), url("./Mogra/Mogra-Regular.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Kalam";
+  font-display: fallback;
+
+  src: url("./Kalam/Kalam-Regular.ttf") format("truetype"), url("./Kalam/Kalam-Regular.woff")
+      format("woff"), url("./Kalam/Kalam-Regular.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HindGuntur";
+  font-display: fallback;
+
+  src: url("./HindGuntur/HindGuntur-Regular.ttf") format("truetype"), url("./HindGuntur/HindGuntur-Regular.woff")
+      format("woff"), url("./HindGuntur/HindGuntur-Regular.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "HindGunturBold";
+  font-display: fallback;
+
+  src: url("./HindGuntur/HindGuntur-Bold.ttf") format("truetype"), url("./HindGuntur/HindGuntur-Bold.woff")
+      format("woff"), url("./HindGuntur/HindGuntur-Bold.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "NanumSquareNeo";
+  font-display: fallback;
+
+  src: url("./NanumSquareNeo/NanumSquareNeo.ttf") format("truetype"), url("./NanumSquareNeo/NanumSquareNeo.woff")
+      format("woff"), url("./NanumSquareNeo/NanumSquareNeo.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Agro";
+  font-display: fallback;
+
+  src: url("./Agro/Agro.ttf") format("truetype"), url("./Agro/Agro.woff")
+      format("woff"), url("./Agro/Agro.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
