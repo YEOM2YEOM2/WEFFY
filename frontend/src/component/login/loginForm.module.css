@@ -1,0 +1,82 @@
+.logo {
+    display: flex;
+    text-align: left;
+    margin-top: 55px;
+    font-family: "Mogra";
+    font-size: 60px;
+    color: white;
+}
+
+.login_form_wrapper {
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login_form {
+    margin: 0;
+    padding: 1px 50px;
+    border-radius: 20px;
+    display: flex;
+    height: 75%;
+    width: 70%;
+    flex-direction: column;
+}
+
+.login_form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 550px;
+    background-color: white;
+    filter: blur(1px);
+    opacity: 0.4;
+    border-radius: inherit;
+
+    z-index: -1; 
+  }
+
+Form {
+    font-family: "Poppins";
+    text-align: left;
+}
+
+.forgot_password {
+    position: relative;
+    left: 7px;
+    bottom: 15px;
+    text-align: end;
+}
+
+.login_btn {
+    width: 100%;
+}
+
+.mattermost_btn {
+    margin-top: 20px;
+    padding: 10px;
+    width: 60%;
+}
+
+.mattermost_btn img {
+    width: 75%;
+}
+
+.line {
+    position: relative;
+    top: 10px;
+    border-top: 2px solid #2672B9;
+}
+
+.social {
+    margin-top: 45px;
+}
+
+.sign {
+    display: flex;
+    justify-content: center;
+}
