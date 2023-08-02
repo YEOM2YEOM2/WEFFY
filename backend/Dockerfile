@@ -1,18 +1,62 @@
-FROM gradle:8.2.1-jdk17 AS build
+# Use Ubuntu as base image
+FROM ubuntu:20.04
 
-WORKDIR /home/gradle/project
+# Install OpenJDK 17 and Gradle
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk gradle && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY --chown=gradle:gradle . /home/gradle/project
-
-RUN gradle build --no-daemon 
-
-FROM openjdk:17-jdk-alpine
-
+# Set the working directory
 WORKDIR /var/jenkins_home/workspace/weffy
 
-COPY --from=build /home/gradle/project/build/libs/*.jar ./
+# Copy the Gradle project
+COPY . .
 
+# Build the project
+RUN gradle build --no-daemon
+
+# Expose the port the app runs in
 EXPOSE 8081
 
-CMD ["java", "-jar", "./your-application-name.jar"]
+# Run the application
+CMD ["java", "-jar", "./build/libs/your-application-name.jar"]
+
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+-- INSERT --                                                                                                        1,1           All
 
