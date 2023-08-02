@@ -1,6 +1,9 @@
 pipeline {
     agent none
     options { skipDefaultCheckout(true) }
+    environment {
+        AWS_CREDENTIALS = credentials('my-aws-credentials-id')
+    }
     stages {
         stage('Prepare credentials') {
             agent any
@@ -16,7 +19,7 @@ pipeline {
         stage('Build and Test') {
             agent {
                 docker {
-                    image 'gradle:latest'
+                    image 'weffy_back' // Replace with the name of your custom image
                     args '-v /root/.gradle:/root/.gradle'
                 }
             }
