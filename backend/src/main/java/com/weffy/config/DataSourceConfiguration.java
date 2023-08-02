@@ -1,6 +1,7 @@
 package com.weffy.config;
 
 import com.weffy.kms.KmsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -10,11 +11,12 @@ import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfiguration {
-    private final KmsService kmsService;
+    @Autowired
+    private KmsService kmsService;
 
-    public DataSourceConfiguration(KmsService kmsService) {
-        this.kmsService = kmsService;
-    }
+//    public DataSourceConfiguration(KmsService kmsService) {
+//        this.kmsService = kmsService;
+//    }
 
     @Value("${spring.datasource.url}")
     private String url;
@@ -28,7 +30,6 @@ public class DataSourceConfiguration {
         String decryptedDatabaseUrl = kmsService.decryptData(url);
         String decryptedDatabaseUsername = kmsService.decryptData(username);
         String decryptedDatabasePassword = kmsService.decryptData(password);
-        System.out.println(decryptedDatabaseUrl);
 
         return DataSourceBuilder.create()
                 .url(decryptedDatabaseUrl)
