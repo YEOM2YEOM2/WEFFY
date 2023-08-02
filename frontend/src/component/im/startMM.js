@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./mmListModal.module.css";
+import styles from "./startMM.module.css";
 
 //mui 외부 라이브러리
 import Avatar from "@mui/material/Avatar";
@@ -22,6 +22,7 @@ const drawerWidth = 240;
 const StartMM = ({ handleClose, sidebarOpen }) => {
   const [micStatus, setMicStatus] = useState(false);
   const [cameraStatus, setCameraStatus] = useState(false);
+  const [nickname, setNickname] = useState("default nickname");
 
   return (
     <div
@@ -49,7 +50,7 @@ const StartMM = ({ handleClose, sidebarOpen }) => {
         <div className={styles["settingContainer"]}>
           <div style={{ display: "flex", justifyContent: "flex-start" }}>
             <IconButton onClick={() => setMicStatus(!micStatus)}>
-              <Box borderRadius={1} className={styles["btnBox"]}>
+              <Box borderRadius={3} className={styles["btnBox"]}>
                 {micStatus === true ? (
                   <MicIcon style={{ color: "white", fontSize: 40 }} />
                 ) : (
@@ -59,7 +60,7 @@ const StartMM = ({ handleClose, sidebarOpen }) => {
             </IconButton>
 
             <IconButton onClick={() => setCameraStatus(!cameraStatus)}>
-              <Box borderRadius={1} className={styles["btnBox"]}>
+              <Box borderRadius={3} className={styles["btnBox"]}>
                 {cameraStatus === true ? (
                   <VideocamIcon style={{ color: "white", fontSize: 40 }} />
                 ) : (
@@ -67,9 +68,13 @@ const StartMM = ({ handleClose, sidebarOpen }) => {
                 )}
               </Box>
             </IconButton>
-
           </div>
-          <input type="text" className={styles["textArea"]} />
+          <input
+            type="text"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            className={styles["textArea"]}
+          />
         </div>
         <Grid container justifyContent="flex-end">
           <Button variant="contained">Start MM Meeting</Button>
