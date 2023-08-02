@@ -2,16 +2,27 @@ pipeline {
     agent none
     options { skipDefaultCheckout(true) }
     stages {
+        stage('Prepare credentials') {
+            agent any
+            steps {
+                withCredentials([
+                    file(credentialsId: 'application-dev.properties', variable: 'PROP_FILE')
+                ]) {
+                    // The credentials can be used within this block
+                    sh 'cp $PROP_FILE application-dev.properties' // Copy the secret file to the current directory
+                }
+            }
+        }
         stage('Build and Test') {
             agent {
                 docker {
-                    image 'gradle:latest' // Gradle 이미지로 변경
-                    args '-v /root/.gradle:/root/.gradle' // Maven 경로를 Gradle 경로로 변경
+                    image 'gradle:latest'
+                    args '-v /root/.gradle:/root/.gradle'
                 }
             }
             options { skipDefaultCheckout(false) }
             steps {
-                sh 'gradle build' // Maven 명령어를 Gradle 명령어로 변경
+                sh 'gradle build'
             }
         }
         stage('Docker build') {
