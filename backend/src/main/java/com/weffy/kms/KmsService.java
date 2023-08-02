@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.nio.ByteBuffer;
 
 @Service
-@SpringBootApplication
 public class KmsService {
 
     @Value("${aws.kms.key-id}")
