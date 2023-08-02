@@ -46,3 +46,13 @@
     background-color: #2D3440;
     padding: 8px;
 }
+
+.selectField {
+    background-color: #A6BBF0;
+
+}
+
+.textFieldInput {
+    background-color: white;
+    color: black;
+}
