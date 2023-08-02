@@ -12,7 +12,7 @@ pipeline {
                     file(credentialsId: 'application-dev.properties', variable: 'PROP_FILE')
                 ]) {
                     // The credentials can be used within this block
-                    sh 'cp $PROP_FILE application-dev.properties' // Copy the secret file to the current directory
+                    sh 'cp $PROP_FILE backend/src/main/resources/application-dev.properties' // Copy the secret file to the current directory
                 }
             }
         }
