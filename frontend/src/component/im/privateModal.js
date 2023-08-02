@@ -25,13 +25,10 @@ const drawerWidth = 240;
 const PrivateModal = ({ handleClose, sidebarOpen }) => {
   const [micStatus, setMicStatus] = useState(false);
   const [cameraStatus, setCameraStatus] = useState(false);
+  const [nickname, setNickname] = useState("default nickname");
 
   return (
-    <div
-      className={styles["modal"]}
-      onClick={handleClose}
-      style={{ left: `calc(50% + ${sidebarOpen ? drawerWidth / 2 : 0}px)` }}
-    >
+    <div className={styles["modal"]} onClick={handleClose}>
       <div className={styles["modalBody"]} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h3 className={styles["modalHeader"]} style={{ fontFamily: "Mogra" }}>
@@ -52,7 +49,7 @@ const PrivateModal = ({ handleClose, sidebarOpen }) => {
         <div className={styles["settingContainer"]}>
           <div style={{ display: "flex", justifyContent: "flex-start" }}>
             <IconButton onClick={() => setMicStatus(!micStatus)}>
-              <Box borderRadius={1} className={styles["btnBox"]}>
+              <Box borderRadius={3} className={styles["btnBox"]}>
                 {micStatus === true ? (
                   <MicIcon style={{ color: "white", fontSize: 40 }} />
                 ) : (
@@ -62,7 +59,7 @@ const PrivateModal = ({ handleClose, sidebarOpen }) => {
             </IconButton>
 
             <IconButton onClick={() => setCameraStatus(!cameraStatus)}>
-              <Box borderRadius={1} className={styles["btnBox"]}>
+              <Box borderRadius={3} className={styles["btnBox"]}>
                 {cameraStatus === true ? (
                   <VideocamIcon style={{ color: "white", fontSize: 40 }} />
                 ) : (
@@ -70,12 +67,18 @@ const PrivateModal = ({ handleClose, sidebarOpen }) => {
                 )}
               </Box>
             </IconButton>
-
           </div>
-          <input type="text" className={styles["textArea"]} />
+          <input
+            type="text"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            className={styles["textArea"]}
+          />
         </div>
         <Grid container justifyContent="flex-end">
-          <Button variant="contained">Start Private Meeting</Button>
+          <Button variant="contained" className={styles["btn"]}>
+            Start Private Meeting
+          </Button>
         </Grid>
       </div>
     </div>
