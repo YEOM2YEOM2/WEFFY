@@ -6,6 +6,15 @@ RUN apt-get update && \
     apt-get install -y openjdk-17-jdk && \
     rm -rf /var/lib/apt/lists/*
 
+# Install Gradle 8.2
+RUN apt-get update && apt-get install -y wget unzip \
+ && wget https://services.gradle.org/distributions/gradle-8.2-bin.zip -P /tmp \
+ && unzip -d /opt/gradle /tmp/gradle-*.zip \
+ && rm -rf /tmp/*
+
+ENV GRADLE_HOME=/opt/gradle/gradle-8.2
+ENV PATH="$PATH:$GRADLE_HOME/bin"
+
 # Set the working directory
 WORKDIR /app
 
