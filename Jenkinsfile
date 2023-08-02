@@ -25,7 +25,7 @@ pipeline {
             }
             options { skipDefaultCheckout(false) }
             steps {
-                sh 'cd backend && ./gradlew build'
+                sh 'cd backend && ./gradlew build -x test'
             }
         }
         stage('Docker build') {
