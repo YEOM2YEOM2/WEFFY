@@ -43,7 +43,7 @@ pipeline {
                     | xargs -r docker container rm'
                 sh 'docker images -f "dangling=true" -q \
                     | xargs -r docker rmi'
-                sh 'docker run -d --name weffy_back -p 8080:8081 weffy_back:latest'
+                sh 'docker run -d --name weffy_back -p 8081:8081 weffy_back:latest'
             }
         }
     }
