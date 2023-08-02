@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 //img
-import defaultImg from "../assets/images/defualt_image.png";
 
 //style
 import styles from "../pages/setting.module.css";
@@ -15,7 +14,6 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-
 //내 파일
 import EditProfile from "../component/im/editProfile.js";
 import DeviceSetting from "../component/im/deviceSetting";
@@ -25,7 +23,6 @@ const Setting = (props) => {
   const handleListItemClick = (index) => {
     setStatus(index === 0 ? true : false);
   };
-
 
   return (
     <div className={styles["container"]}>
