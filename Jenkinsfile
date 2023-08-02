@@ -6,10 +6,12 @@ pipeline {
             agent any
             steps {
                 withCredentials([
-                    file(credentialsId: 'application-dev.properties', variable: 'PROP_FILE')
+                    file(credentialsId: 'application-dev.properties', variable: 'PROP_FILE'),
+                    string(credentialsId: 'gradle.properties', variable: 'GRADLE_PROP')
                 ]) {
                     // The credentials can be used within this block
                     sh 'cp $PROP_FILE application-dev.properties' // Copy the secret file to the current directory
+                    sh 'echo $GRADLE_PROP > gradle.properties' // Write the secret text to a file
                 }
             }
         }
