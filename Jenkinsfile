@@ -2,7 +2,7 @@ pipeline {
     agent none
     options { skipDefaultCheckout(true) }
     environment {
-        AWS_CREDENTIALS = credentials('my-aws-credentials-id')
+        AWS_CREDENTIALS = credentials('aws-id')
     }
     stages {
         stage('Prepare credentials') {
