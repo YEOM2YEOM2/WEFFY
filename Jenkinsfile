@@ -20,7 +20,7 @@ pipeline {
             agent {
                 docker {
                     image 'weffy_back' // Replace with the name of your custom image
-                    args '-v /root/.gradle:/root/.gradle'
+                    args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
                 }
             }
             options { skipDefaultCheckout(false) }
@@ -47,5 +47,11 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+            sh "docker volume rm gradle-${env.BUILD_TAG}"
+        }
+    }
+
 }
 
