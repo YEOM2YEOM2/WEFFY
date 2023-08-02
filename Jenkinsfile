@@ -9,7 +9,9 @@ pipeline {
             agent any
             steps {
                 withCredentials([
-                    file(credentialsId: 'application-dev.properties', variable: 'PROP_FILE')
+                    file(credentialsId: 'application-dev.properties', variable: 'PROP_FILE'),
+		    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
                     // The credentials can be used within this block
                     sh 'cp $PROP_FILE backend/src/main/resources/application-dev.properties' // Copy the secret file to the current directory
@@ -43,7 +45,8 @@ pipeline {
                     | xargs -r docker container rm'
                 sh 'docker images -f "dangling=true" -q \
                     | xargs -r docker rmi'
-                sh 'docker run -d --name weffy_back -p 8081:8081 weffy_back:latest'
+                sh 'docker run -d -p 8081:8081 --name weffy_back -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} weffy_back:latest'
+
             }
         }
     }
