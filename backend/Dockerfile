@@ -1,18 +1,18 @@
-# Start with a base image containing Java runtime
+FROM gradle:8.2.1-jdk17 AS build
+
+WORKDIR /home/gradle/project
+
+COPY --chown=gradle:gradle . /home/gradle/project
+
+RUN gradle build --no-daemon 
+
 FROM openjdk:17-jdk-alpine
 
-# Install Gradle
-RUN apk add --no-cache gradle
+WORKDIR /var/jenkins_home/workspace/weffy
 
-# VOLUME definition for cached data
-VOLUME /tmp
+COPY --from=build /home/gradle/project/build/libs/*.jar ./
 
-# Copy the application's jar file (created via the Gradle build)
-COPY ./target/weffy-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8081
 
-# Environment variable for Java options
-ENV JAVA_OPTS=""
-
-# The command to run the application
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
+CMD ["java", "-jar", "./your-application-name.jar"]
 
