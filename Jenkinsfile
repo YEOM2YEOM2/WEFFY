@@ -47,13 +47,6 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            node {
-                sh "docker volume rm gradle-${env.BUILD_TAG}"
-            }
-        }
-    }
 
 }
 
