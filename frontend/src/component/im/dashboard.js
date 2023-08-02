@@ -202,7 +202,7 @@ export default function ClippedDrawer() {
   const handleLogoutClick = () => {
     console.log("Logout was clicked");
     // Profile 클릭 시 수행할 동작
-    navigate("/");
+    navigate("/im/logout");
   };
 
   const handlers = [
@@ -296,8 +296,6 @@ export default function ClippedDrawer() {
         <Divider />
         {/* ... */}
       </Drawer>
-
-
       <Box
         component="main"
         sx={{
@@ -307,8 +305,6 @@ export default function ClippedDrawer() {
         }}
         className={styles["container"]}
       >
-        <Outlet />
-
         {isImPage && !isModalOpen && (
           <div
             className={styles["buttonContainer"]}
@@ -348,7 +344,6 @@ export default function ClippedDrawer() {
           />
         )}
       </Box>
-
     </Box>
   );
 }

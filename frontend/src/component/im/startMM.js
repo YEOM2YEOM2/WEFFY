@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./privateModal.module.css";
+import styles from "./mmListModal.module.css";
 
 //mui 외부 라이브러리
 import Avatar from "@mui/material/Avatar";
@@ -9,9 +9,6 @@ import Button from "@mui/material/Button";
 
 //이미지
 import defaultImg from "../../assets/images/defualt_image.png";
-import offMic from "../../assets/images/mic.png";
-import offCamera from "../../assets/images/camara.png";
-
 //icon
 import CloseIcon from "@mui/icons-material/Close";
 import MicOffIcon from "@mui/icons-material/MicOff";
@@ -22,7 +19,7 @@ import { IconButton } from "@mui/material";
 
 const drawerWidth = 240;
 
-const PrivateModal = ({ handleClose, sidebarOpen }) => {
+const StartMM = ({ handleClose, sidebarOpen }) => {
   const [micStatus, setMicStatus] = useState(false);
   const [cameraStatus, setCameraStatus] = useState(false);
 
@@ -35,7 +32,7 @@ const PrivateModal = ({ handleClose, sidebarOpen }) => {
       <div className={styles["modalBody"]} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h3 className={styles["modalHeader"]} style={{ fontFamily: "Mogra" }}>
-            start Meeting
+            start Meetidddng
           </h3>
           <IconButton>
             <CloseIcon onClick={handleClose} style={{ color: "white" }} />
@@ -75,11 +72,11 @@ const PrivateModal = ({ handleClose, sidebarOpen }) => {
           <input type="text" className={styles["textArea"]} />
         </div>
         <Grid container justifyContent="flex-end">
-          <Button variant="contained">Start Private Meeting</Button>
+          <Button variant="contained">Start MM Meeting</Button>
         </Grid>
       </div>
     </div>
   );
 };
 
-export default PrivateModal;
+export default StartMM;
