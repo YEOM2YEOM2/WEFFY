@@ -174,7 +174,6 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 application-dev.properties
-**/gradle.properties
 
 ssafy-web.log
 ssafy-web.log.2023-07-10.0.gz
