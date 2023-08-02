@@ -38,11 +38,53 @@
 }
 
 .textArea {
-    width: 100%;
+    width: 80%;
     margin-top: 20px;
+    height: 40px;
+    align-self: center;
 }
 
 .btnBox {
     background-color: #2D3440;
     padding: 8px;
+}
+
+/* privateModal.css */
+.private-modal-list {
+    width: 100%;
+    max-width: 80%;
+
+    align-self: center;
+
+    /* background.paper 색상으로 추정 */
+}
+
+.private-modal-list-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+}
+
+.private-modal-list-item-avatar {
+    /* 아바타 스타일링이 필요하다면 이곳에 추가 */
+}
+
+.private-modal-list-item-text {
+    /* 텍스트 스타일링이 필요하다면 이곳에 추가 */
+}
+
+.private-modal-divider {
+    width: 100%;
+}
+
+.private-modal-list-item {
+    display: flex;
+    align-items: center;
+
+}
+
+.list-item-button {
+    align-self: center;
 }
