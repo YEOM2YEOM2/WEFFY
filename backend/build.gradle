@@ -15,10 +15,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-    configurations {
-        all*.exclude group: 'commons-logging', module: 'commons-logging'
-    }
-
+    all*.exclude group: 'commons-logging', module: 'commons-logging'
 }
 
 repositories {
