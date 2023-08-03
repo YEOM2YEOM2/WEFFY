@@ -1,5 +1,6 @@
 package com.weffy.user.Entity;
 
+import com.weffy.user.util.DateTimeUtil;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import java.time.format.DateTimeFormatter;
 
 @Getter
 @Entity
@@ -35,21 +35,8 @@ public class WeffyUser {
     @LastModifiedDate
     private String updated_at;
 
-    public String getFormattedCreatedAt() {
-        return formatDateTime(created_at);
-    }
-
-    public String getFormattedUpdatedAt() {
-        return formatDateTime(updated_at);
-    }
-
-    private String formatDateTime(String localDateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return localDateTime.format(String.valueOf(formatter));
-    }
-
     @Builder
-    public WeffyUser(String identification, String email, String password, String name, String nickname, Role role, Boolean active, String profile_img) {
+    public WeffyUser(String identification, String email, String password, String name, String nickname, Role role, Boolean active, String profile_img,  String created_at,  String updated_at) {
         this.identification = identification;
         this.email = email;
         this.password = password;
@@ -58,5 +45,7 @@ public class WeffyUser {
         this.role = role;
         this.active = active;
         this.profile_img = profile_img;
+        this.created_at = DateTimeUtil.getFormattedTime(created_at);
+        this.updated_at = DateTimeUtil.getFormattedTime(updated_at);;
     }
 }
