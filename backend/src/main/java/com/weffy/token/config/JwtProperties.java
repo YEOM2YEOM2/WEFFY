@@ -1,4 +1,4 @@
-package com.weffy.token;
+package com.weffy.token.config;
 
 import lombok.Getter;
 import lombok.Setter;

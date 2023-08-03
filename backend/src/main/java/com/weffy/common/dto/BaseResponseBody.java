@@ -1,4 +1,4 @@
-package com.weffy.common;
+package com.weffy.common.dto;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.weffy.token.Dto.Request;
+package com.weffy.token.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

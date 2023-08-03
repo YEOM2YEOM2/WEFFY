@@ -1,9 +1,9 @@
-package com.weffy.token.Service;
+package com.weffy.token.service;
 
-import com.weffy.token.Dto.Response.CreateAccessTokenResDto;
-import com.weffy.token.TokenProvider;
-import com.weffy.user.Entity.WeffyUser;
-import com.weffy.user.Service.UserService;
+import com.weffy.token.dto.response.CreateAccessTokenResDto;
+import com.weffy.token.config.TokenProvider;
+import com.weffy.user.entity.WeffyUser;
+import com.weffy.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

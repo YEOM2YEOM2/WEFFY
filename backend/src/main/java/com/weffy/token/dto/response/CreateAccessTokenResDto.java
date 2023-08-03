@@ -1,4 +1,4 @@
-package com.weffy.token.Dto.Response;
+package com.weffy.token.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

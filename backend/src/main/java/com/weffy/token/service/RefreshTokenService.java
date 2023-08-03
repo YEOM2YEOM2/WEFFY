@@ -1,7 +1,7 @@
-package com.weffy.token.Service;
+package com.weffy.token.service;
 
-import com.weffy.token.Entity.RefreshToken;
-import com.weffy.token.Repository.RefreshTokenRepository;
+import com.weffy.token.entity.RefreshToken;
+import com.weffy.token.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

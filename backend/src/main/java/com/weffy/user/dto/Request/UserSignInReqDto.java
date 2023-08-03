@@ -1,4 +1,4 @@
-package com.weffy.user.Dto.Request;
+package com.weffy.user.dto.Request;
 
 import lombok.Getter;
 import lombok.Setter;

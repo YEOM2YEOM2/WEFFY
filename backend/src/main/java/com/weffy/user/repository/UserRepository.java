@@ -1,6 +1,6 @@
-package com.weffy.user.Repository;
+package com.weffy.user.repository;
 
-import com.weffy.user.Entity.WeffyUser;
+import com.weffy.user.entity.WeffyUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

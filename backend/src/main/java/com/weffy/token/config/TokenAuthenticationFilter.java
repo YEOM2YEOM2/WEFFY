@@ -1,4 +1,4 @@
-package com.weffy.token;
+package com.weffy.token.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

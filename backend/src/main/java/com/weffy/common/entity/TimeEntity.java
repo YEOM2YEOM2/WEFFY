@@ -1,4 +1,4 @@
-package com.weffy.common.util;
+package com.weffy.common.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
