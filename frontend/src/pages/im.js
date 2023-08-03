@@ -40,6 +40,7 @@ import StartMM from "../component/im/startMM.js";
 import MMListModal from "../component/im/mmListModal";
 import PrivateModal from "../component/im/privateModal.js";
 import JoinMeetingModal from "../component/im/joinMeetingList.js";
+import { within } from "@testing-library/react";
 
 const buttons = [
   { name: "PrivateModal", src: newPrivate },
@@ -194,6 +195,7 @@ export default function ClippedDrawer() {
   const handleMyMeetingClick = () => {
     console.log("My Meeting was clicked");
     // My Meeting 클릭 시 수행할 동작
+    // window.location.href = "https://localhost:8080";
     navigate("/im/mylist");
   };
 
