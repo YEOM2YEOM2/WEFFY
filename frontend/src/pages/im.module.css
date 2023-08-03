@@ -39,11 +39,9 @@
   position: absolute;
   bottom: 10vh; /* 페이지 바닥에 고정 */
   width: 55%;
-  left: 55%; /* Move the left edge of the element to the middle of the parent */
-  transform: translateX(
-    -50%
-  ); /* Move the element left by half of its own width */
-  overflow: auto; /* Add scrollbars if necessary */
+  left: 55%;
+  transform: translateX(-50%);
+  overflow: auto;
 }
 
 .button {

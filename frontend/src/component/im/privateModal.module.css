@@ -11,7 +11,9 @@
 }
 
 .modalBody {
+  max-width: 90%; /* Prevent from taking the full width on smaller screens */
   width: 35vw;
+  max-height: 90%; /* Prevent from taking the full height on smaller screens */
   height: 70vh;
   padding: 20px;
   text-align: center;
@@ -21,10 +23,18 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  /* align-items: center; */
-  overflow: auto;
+  overflow: auto; /* Allow scrolling inside the modal body */
 }
 
+@media (max-width: 768px) {
+  .modalBody {
+    width: 90%; /* Take up more width on smaller screens */
+    height: auto; /* Allow it to grow/shrink as needed */
+  }
+  .nickname {
+    font-size: 2vh; /* Smaller font size for smaller screens */
+  }
+}
 .modalHeader {
   color: white;
   align-self: flex-start;
@@ -53,4 +63,9 @@
   background-color: #2d3440;
   padding: 7%;
   border-radius: 40%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -25,15 +25,11 @@ const StartMM = ({ handleClose, sidebarOpen }) => {
   const [nickname, setNickname] = useState("default nickname");
 
   return (
-    <div
-      className={styles["modal"]}
-      onClick={handleClose}
-      style={{ left: `calc(50% + ${sidebarOpen ? drawerWidth / 2 : 0}px)` }}
-    >
+    <div className={styles["modal"]} onClick={handleClose}>
       <div className={styles["modalBody"]} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h3 className={styles["modalHeader"]} style={{ fontFamily: "Mogra" }}>
-            start Meetidddng
+            start MM Meeting
           </h3>
           <IconButton>
             <CloseIcon onClick={handleClose} style={{ color: "white" }} />
