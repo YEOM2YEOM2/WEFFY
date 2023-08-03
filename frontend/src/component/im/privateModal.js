@@ -30,8 +30,8 @@ const PrivateModal = ({ handleClose, sidebarOpen }) => {
           <h3 className={styles["modalHeader"]} style={{ fontFamily: "Mogra" }}>
             start Meeting
           </h3>
-          <IconButton>
-            <CloseIcon onClick={handleClose} style={{ color: "white" }} />
+          <IconButton onClick={handleClose}>
+            <CloseIcon style={{ color: "white" }} />
           </IconButton>
         </div>
 

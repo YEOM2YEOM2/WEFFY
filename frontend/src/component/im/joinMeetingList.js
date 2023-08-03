@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./joinMeetingList.module.css";
 
 //mui 외부 라이브러리
@@ -13,30 +13,28 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 //이미지
 import defaultImg from "../../assets/images/defualt_image.png";
-import offMic from "../../assets/images/mic.png";
-import offCamera from "../../assets/images/camara.png";
 
 //icon
 import CloseIcon from "@mui/icons-material/Close";
-import MicOffIcon from "@mui/icons-material/MicOff";
-import MicIcon from "@mui/icons-material/Mic";
-import VideocamIcon from "@mui/icons-material/Videocam";
-import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { IconButton } from "@mui/material";
-
-const drawerWidth = 240;
 
 const recentList = [
   { hostProfile: { defaultImg }, histname: "host", url: "url" },
   { hostProfile: { defaultImg }, histname: "host2", url: "url1" },
   { hostProfile: { defaultImg }, histname: "host3", url: "url2" },
   { hostProfile: { defaultImg }, histname: "host4", url: "url3" },
+  { hostProfile: { defaultImg }, histname: "host5", url: "ur5" },
+  { hostProfile: { defaultImg }, histname: "host6", url: "ur4" },
+  { hostProfile: { defaultImg }, histname: "host7", url: "ur2" },
 ];
 
 //text를 입력하고 enter을 누르면 해당 url로 이동하는 작업수행
 
 const JoinMeetingList = ({ handleClose, sidebarOpen }) => {
   const [text, setText] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const listRef = useRef(null);
+
   const handleEnter = (event) => {
     if (event.key === "Enter") {
       window.location.href = text;
@@ -47,6 +45,8 @@ const JoinMeetingList = ({ handleClose, sidebarOpen }) => {
   const handleButtonClick = (url) => {
     window.location.href = url;
   };
+
+  //pagination 을 하기 위한 것들
 
   return (
     <div
@@ -60,8 +60,8 @@ const JoinMeetingList = ({ handleClose, sidebarOpen }) => {
             Let's go!
           </h3>
 
-          <IconButton>
-            <CloseIcon onClick={handleClose} style={{ color: "white" }} />
+          <IconButton onClick={handleClose}>
+            <CloseIcon style={{ color: "white" }} />
           </IconButton>
         </div>
 
@@ -73,43 +73,45 @@ const JoinMeetingList = ({ handleClose, sidebarOpen }) => {
           onKeyDown={handleEnter} // 추가
         />
 
-        <List className={styles["private-modal-list"]}>
-          {recentList.map((item, index) => (
-            <React.Fragment key={index}>
-              <ListItem
-                className={styles["private-modal-list-item"]}
-                alignItems="flex-start"
-              >
-                <ListItemAvatar
-                  className={styles["private-modal-list-item-avatar"]}
+        <div className={styles["mettingList"]}>
+          <List>
+            {recentList.map((item, index) => (
+              <React.Fragment key={index}>
+                <ListItem
+                  className={styles["meetingItem"]}
+                  alignItems="flex-start"
                 >
-                  <Avatar
-                    alt={item.histname}
-                    src={item.hostProfile.defaultImg}
+                  <ListItemAvatar
+                    className={styles["private-modal-list-item-avatar"]}
+                  >
+                    <Avatar
+                      alt={item.histname}
+                      src={item.hostProfile.defaultImg}
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    className={styles["item-text"]}
+                    primary={item.histname}
+                    secondary={item.url}
                   />
-                </ListItemAvatar>
-                <ListItemText
-                  className={styles["private-modal-list-item-text"]}
-                  primary={item.histname}
-                  secondary={item.url}
-                />
-                <Button
-                  variant="contained"
-                  className={styles["list-item-button"]}
-                  onClick={handleButtonClick}
-                >
-                  Join in
-                </Button>
-              </ListItem>
+                  <Button
+                    variant="contained"
+                    className={styles["list-item-button"]}
+                    onClick={() => handleButtonClick(item.url)}
+                  >
+                    Join in
+                  </Button>
+                </ListItem>
 
-              <Divider
-                className={styles["private-modal-divider"]}
-                variant="inset"
-                component="li"
-              />
-            </React.Fragment>
-          ))}
-        </List>
+                <Divider
+                  className={styles["item-divider"]}
+                  variant="inset"
+                  component="li"
+                />
+              </React.Fragment>
+            ))}
+          </List>
+        </div>
 
         <Grid container justifyContent="flex-end">
           <Button variant="contained">Start Private Meeting</Button>
