@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weffy.mattermost.MattermostHandler;
 import com.weffy.mattermost.service.MattermostService;
 import com.weffy.token.config.TokenProvider;
+import com.weffy.token.entity.RefreshToken;
+import com.weffy.token.repository.RefreshTokenRepository;
+import com.weffy.token.service.TokenService;
 import com.weffy.user.dto.Request.UserSignInReqDto;
 import com.weffy.user.dto.Response.UserSignInResDto;
 import com.weffy.user.entity.Role;
@@ -29,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final MattermostService mattermostService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
     private MattermostHandler mattermostHandler;
@@ -72,6 +76,18 @@ public class UserServiceImpl implements UserService {
         String accessToken = tokenProvider.generateToken(weffyUser,  Duration.ofHours(1));
         //  refreshToken
         String refreshToken = tokenProvider.generateToken(weffyUser,  Duration.ofDays(14));
+        Optional<RefreshToken> beforeToken = refreshTokenRepository.findByWeffyUser(weffyUser);
+        if(beforeToken.isPresent()) {
+            beforeToken.get().updateToken(refreshToken);
+        } else {
+            refreshTokenRepository.save(
+                    RefreshToken
+                            .builder()
+                            .weffyUser(weffyUser)
+                            .refreshToken(refreshToken)
+                            .build()
+            );
+        }
         UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), profile_img, accessToken, refreshToken);
         return userSignInResDto;
     }
