@@ -7,10 +7,8 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
-//이미지
+//기본 프로필 이미지
 import defaultImg from "../../assets/images/defualt_image.png";
-import offMic from "../../assets/images/mic.png";
-import offCamera from "../../assets/images/camara.png";
 
 //icon
 import CloseIcon from "@mui/icons-material/Close";
@@ -19,8 +17,6 @@ import MicIcon from "@mui/icons-material/Mic";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { IconButton } from "@mui/material";
-
-const drawerWidth = 240;
 
 const PrivateModal = ({ handleClose, sidebarOpen }) => {
   const [micStatus, setMicStatus] = useState(false);
@@ -68,12 +64,10 @@ const PrivateModal = ({ handleClose, sidebarOpen }) => {
               </Box>
             </IconButton>
           </div>
-          <input
-            type="text"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            className={styles["textArea"]}
-          />
+          {/* 이름이 여기 들어가 있을 것임*/}
+          <div className={styles["nickname"]} style={{ fontFamily: "Suite" }}>
+            {nickname}
+          </div>
         </div>
         <Grid container justifyContent="flex-end">
           <Button variant="contained" className={styles["btn"]}>
