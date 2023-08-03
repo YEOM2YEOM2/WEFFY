@@ -1,5 +1,6 @@
 package com.weffy.token;
 
+import com.weffy.token.config.JwtProperties;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
