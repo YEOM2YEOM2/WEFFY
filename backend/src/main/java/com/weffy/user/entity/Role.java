@@ -1,4 +1,4 @@
-package com.weffy.user.Entity;
+package com.weffy.user.entity;
 
 import lombok.Getter;
 

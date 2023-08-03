@@ -1,7 +1,7 @@
-package com.weffy.token.Repository;
+package com.weffy.token.repository;
 
-import com.weffy.token.Entity.RefreshToken;
-import com.weffy.user.Entity.WeffyUser;
+import com.weffy.token.entity.RefreshToken;
+import com.weffy.user.entity.WeffyUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

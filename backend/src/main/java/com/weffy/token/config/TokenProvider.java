@@ -1,6 +1,6 @@
-package com.weffy.token;
+package com.weffy.token.config;
 
-import com.weffy.user.Entity.WeffyUser;
+import com.weffy.user.entity.WeffyUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;

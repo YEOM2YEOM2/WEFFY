@@ -1,4 +1,4 @@
-package com.weffy.user.Dto.Response;
+package com.weffy.user.dto.Response;
 
 import lombok.Getter;
 import lombok.Setter;

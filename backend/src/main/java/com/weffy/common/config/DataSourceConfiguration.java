@@ -1,6 +1,6 @@
-package com.weffy.config;
+package com.weffy.common.config;
 
-import com.weffy.kms.KmsService;
+import com.weffy.common.kms.KmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
