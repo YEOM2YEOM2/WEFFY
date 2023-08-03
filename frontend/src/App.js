@@ -11,7 +11,8 @@ import Signup from "./pages/signUp.js";
 import Im from "./pages/im.js";
 import MyList from "./pages/myList.js";
 import Setting from "./pages/setting.js";
-import Meeting from "./pages/meeting.js"
+import Meeting from "./pages/meeting.js";
+import Temp from "./pages/temp.js";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="setting" element={<Setting />} />
         </Route>
         <Route path="/meeting" element={<Meeting />} />
+        <Route path="/temp" element={<Temp />} />
       </Routes>
     </div>
   );

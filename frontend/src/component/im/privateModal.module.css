@@ -36,12 +36,17 @@
   margin-top: -5vh;
 }
 
-.textArea {
+.nickname {
   width: 100%;
   margin-top: 20px;
-  font-size: 4vh;
+  font-size: 3vh;
   border-radius: 10px;
   padding-left: 10px;
+  background-color: #2d3440;
+  color: white;
+  align-self: center;
+  padding: 7px;
+  line-height: 1.5; /* 적절한 비율로 조절 */
 }
 
 .btnBox {
