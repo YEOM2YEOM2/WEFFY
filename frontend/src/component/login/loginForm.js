@@ -1,9 +1,12 @@
+// react 라이브러리
 import * as React from 'react';
-
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// css
 import styles from './loginForm.module.css';
 
+// mui & bootstrap
 import Button from '@mui/material/Button';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
@@ -14,6 +17,17 @@ function LoginForm() {
 
   let navigate = useNavigate();
 
+  let [email, setEmail] = useState("");
+  let [pw, setPw] = useState("");
+
+  const handleEmail = (e) => {
+    setEmail(e.target.value);
+  }
+
+  const handlePw = (e) => {
+    setPw(e.target.value);
+  }
+
   return (
     <div className={styles.login_form_wrapper}>
       <div className={styles.login_form} style={{ position: 'relative', zIndex: 0 }}>
@@ -21,7 +35,8 @@ function LoginForm() {
         <Form className={styles.custom_form}  style={{ position: 'relative', zIndex: 1 }}>
           <Form.Group className="mb-3" controlId="exampleForm.ControlInput">
             <Form.Label style={{marginLeft: '4px'}}>Email</Form.Label>
-            <Form.Control type="email" placeholder="Mattermost Email" />
+            <Form.Control type="email" placeholder="Mattermost Email"
+            OnChange={handleEmail} />
           </Form.Group>
           <Form.Group className="mb-3" controlId="exampleForm.ControlPassword">
             <Form.Label style={{marginLeft: '4px'}}>Password</Form.Label>
