@@ -1,14 +1,16 @@
-package com.weffy.token.Entity;
+package com.weffy.token.entity;
 
-import com.weffy.user.Entity.WeffyUser;
+import com.weffy.user.entity.WeffyUser;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class RefreshToken {
 
     @Id

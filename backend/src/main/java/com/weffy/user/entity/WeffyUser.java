@@ -1,21 +1,20 @@
-package com.weffy.user.Entity;
+package com.weffy.user.entity;
 
-import com.weffy.user.util.DateTimeUtil;
+import com.weffy.common.entity.TimeEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @Entity
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class WeffyUser {
+public class WeffyUser extends TimeEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String identification;
@@ -29,14 +28,8 @@ public class WeffyUser {
     private Boolean active;
     private String profile_img;
 
-    @CreatedDate
-    private String created_at;
-
-    @LastModifiedDate
-    private String updated_at;
-
     @Builder
-    public WeffyUser(String identification, String email, String password, String name, String nickname, Role role, Boolean active, String profile_img,  String created_at,  String updated_at) {
+    public WeffyUser(String identification, String email, String password, String name, String nickname, Role role, Boolean active, String profile_img) {
         this.identification = identification;
         this.email = email;
         this.password = password;
@@ -45,7 +38,5 @@ public class WeffyUser {
         this.role = role;
         this.active = active;
         this.profile_img = profile_img;
-        this.created_at = DateTimeUtil.getFormattedTime(created_at);
-        this.updated_at = DateTimeUtil.getFormattedTime(updated_at);;
     }
 }
