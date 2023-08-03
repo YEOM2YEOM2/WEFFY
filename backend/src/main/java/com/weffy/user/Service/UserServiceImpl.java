@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 
-@Slf4j
 @Transactional
 @Service("userService")
 @RequiredArgsConstructor
