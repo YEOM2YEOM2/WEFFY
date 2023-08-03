@@ -1,9 +1,8 @@
-package com.weffy.user.Service;
+package com.weffy.user.service;
 
-import com.weffy.user.Dto.Request.UserSignInReqDto;
-import com.weffy.user.Dto.Response.UserSignInResDto;
-import com.weffy.user.Entity.Role;
-import com.weffy.user.Entity.WeffyUser;
+import com.weffy.user.dto.Request.UserSignInReqDto;
+import com.weffy.user.dto.Response.UserSignInResDto;
+import com.weffy.user.entity.WeffyUser;
 
 public interface UserService {
 
