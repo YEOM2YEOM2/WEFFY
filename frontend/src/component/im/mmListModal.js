@@ -8,7 +8,6 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
-import { useTheme } from "@mui/material/styles";
 
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
@@ -55,13 +54,26 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
         </div>
         <Grid container justifyContent="space-between" spacing={2}>
           <Grid item xs={6}>
-            <Typography variant="subtitle1" className={styles["selectField"]}>
-              {selectedGroup || "Select please"}
+            <Typography
+              variant="subtitle1"
+              className={styles["selectField"]}
+              style={{ fontFamily: "GmarketSans" }}
+            >
+              {selectedGroup || "MatterMost Group"}
             </Typography>
-            <List className={styles["textFieldInput"]}>
+            <List
+              className={styles["textFieldInput"]}
+              // style={{ fontFamily: "GmarketSans" }}
+            >
               {Group.map(({ group }) => (
-                <ListItem button onClick={() => handleGroupChange(group)}>
-                  <ListItemText primary={group} />
+                <ListItem
+                  button
+                  onClick={() => handleGroupChange(group)}
+                  // style={{ fontFamily: "GmarketSans" }}
+                >
+                  <ListItemText primary={group} 
+                  style={{ fontFamily: "GmarketSans" }}
+                  />
                   <NavigateNextIcon
                     style={{ color: "red", margin: "0 10px" }}
                   />
@@ -70,15 +82,27 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
             </List>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="subtitle1" className={styles["selectField"]}>
+            <Typography
+              variant="subtitle1"
+              className={styles["selectField"]}
+              style={{ fontFamily: "GmarketSans" }}
+            >
               {selectedNames.length > 0
                 ? selectedNames.join(", ")
-                : "Select please"}
+                : "MatterMost Channel"}
             </Typography>
-            <List className={styles["textFieldInput"]}>
+            <List
+              className={styles["textFieldInput"]}
+            >
               {currentNames.map((name) => (
-                <ListItem button onClick={() => handleNamesChange(name)}>
-                  <ListItemText primary={name} />
+                <ListItem
+                  button
+                  onClick={() => handleNamesChange(name)}
+                >
+                  <ListItemText
+                    primary={name}
+                    // style={{ fontFamily: "GmarketSans" }}
+                  />
                 </ListItem>
               ))}
             </List>
