@@ -32,47 +32,54 @@ const itemData = [
 ];
 
 const MyList = (props) => {
-  const [text, setText] = useState(''); // text state added
-  const [sidebarOpen, setSidebarOpen] = useState(false); // sidebarOpen state added
-  const drawerWidth = 240; // Assuming drawerWidth value
-
-
   const handleButtonClick = () => {
     // do something
   };
 
   return (
-    <div
-      className={styles["container"]}
-
-    >
-
+    <div className={styles["container"]}>
       <div className={styles["HeaderContainer"]}>
-        <h2 className={styles["Header"]} style={{ fontFamily: "Mogra" }}>Your Meeting List</h2>
+        <h2 className={styles["Header"]} style={{ fontFamily: "Mogra" }}>
+          Your Meeting List
+        </h2>
         <List className={styles["private-modal-list"]}>
           {itemData.map((item, index) => (
             <React.Fragment key={index}>
-              <ListItem className={styles["private-modal-list-item"]} alignItems="flex-start">
-
-                <ListItemAvatar className={styles["private-modal-list-item-avatar"]}>
+              <ListItem
+                className={styles["private-modal-list-item"]}
+                alignItems="flex-start"
+              >
+                <ListItemAvatar
+                  className={styles["private-modal-list-item-avatar"]}
+                >
                   <Avatar alt={item.text} src={item.img} />
                 </ListItemAvatar>
-                <ListItemText className={styles["private-modal-list-item-text"]}
+                <ListItemText
+                  className={styles["private-modal-list-item-text"]}
                   primary={item.text}
                   secondary={item.url}
                 />
-                <Button variant="contained" color="error" className={styles["list-item-button"]} onClick={handleButtonClick}>비활성화</Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  className={styles["list-item-button"]}
+                  onClick={handleButtonClick}
+                >
+                  비활성화
+                </Button>
               </ListItem>
 
-              <Divider className={styles["private-modal-divider"]} variant="inset" component="li" />
+              <Divider
+                className={styles["private-modal-divider"]}
+                variant="inset"
+                component="li"
+              />
             </React.Fragment>
           ))}
         </List>
       </div>
-
     </div>
   );
 };
-
 
 export default MyList;
