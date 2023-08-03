@@ -1,8 +1,10 @@
 package com.weffy.token;
 
 import com.weffy.TestConfig;
-import com.weffy.user.Entity.WeffyUser;
-import com.weffy.user.Repository.UserRepository;
+import com.weffy.token.config.JwtProperties;
+import com.weffy.token.config.TokenProvider;
+import com.weffy.user.entity.WeffyUser;
+import com.weffy.user.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
