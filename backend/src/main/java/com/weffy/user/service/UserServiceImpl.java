@@ -1,16 +1,16 @@
-package com.weffy.user.Service;
+package com.weffy.user.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weffy.mattermost.MattermostHandler;
-import com.weffy.token.TokenProvider;
-import com.weffy.user.Dto.Request.UserSignInReqDto;
-import com.weffy.user.Dto.Response.UserSignInResDto;
-import com.weffy.user.Entity.Role;
-import com.weffy.user.Entity.WeffyUser;
-import com.weffy.user.Repository.UserRepository;
+import com.weffy.mattermost.service.MattermostService;
+import com.weffy.token.config.TokenProvider;
+import com.weffy.user.dto.Request.UserSignInReqDto;
+import com.weffy.user.dto.Response.UserSignInResDto;
+import com.weffy.user.entity.Role;
+import com.weffy.user.entity.WeffyUser;
+import com.weffy.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.bis5.mattermost.client4.ApiResponse;
 import net.bis5.mattermost.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final MattermostService mattermostService;
 
     @Autowired
     private MattermostHandler mattermostHandler;
@@ -66,6 +67,7 @@ public class UserServiceImpl implements UserService {
 
         // Mattermost 세션 토큰
         String token = Objects.requireNonNull(userInfo.getRawResponse().getHeaders().get("Token").get(0).toString());
+        mattermostService.saveSession(weffyUser, token);
         // accessToken
         String accessToken = tokenProvider.generateToken(weffyUser,  Duration.ofHours(1));
         //  refreshToken
