@@ -71,8 +71,9 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
                   onClick={() => handleGroupChange(group)}
                   // style={{ fontFamily: "GmarketSans" }}
                 >
-                  <ListItemText primary={group} 
-                  style={{ fontFamily: "GmarketSans" }}
+                  <ListItemText
+                    primary={group}
+                    style={{ fontFamily: "GmarketSans" }}
                   />
                   <NavigateNextIcon
                     style={{ color: "red", margin: "0 10px" }}
@@ -91,15 +92,10 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
                 ? selectedNames.join(", ")
                 : "MatterMost Channel"}
             </Typography>
-            <List
-              className={styles["textFieldInput"]}
-            >
+            <List className={styles["textFieldInput"]}>
               {currentNames.map((name) => (
-                <ListItem
-                  button
-                  onClick={() => handleNamesChange(name)}
-                >
-                  <ListItemText
+                <ListItem button onClick={() => handleNamesChange(name)}>
+                  <ListItem
                     primary={name}
                     // style={{ fontFamily: "GmarketSans" }}
                   />
