@@ -39,7 +39,7 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
 
-    @Operation(summary = "로그인 및 회원가입", description = "weffy에 해당 User의 정보가 없으면 회원가입 후 로그인, 있으면 바로 로그인 \n\n" )
+    @Operation(summary = "회원가입", description = "weffy에 해당 User의 정보가 없으면 회원가입 후 로그인 \n\n" )
     @Parameter(name = "role", description = "추가하지 않을 시 default로 USER, \n\n admin을 등록할 시 ADMIN", required = false , in = ParameterIn.QUERY)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description =  "OK"),
@@ -49,10 +49,24 @@ public class UserController {
             @ApiResponse(responseCode = "404", description =  "잘못된 요청으로 찾을 수 없음"),
             @ApiResponse(responseCode = "500", description =  "서버 오류")
     })
-    @PostMapping("/signin")
-    public ResponseEntity<? extends BaseResponseBody> signin(@RequestBody UserSignInReqDto signinInfo, @RequestParam(name = "role", required = false) String role ) {
-        UserSignInResDto weffyUser = userService.signIn(signinInfo, role);
+    @PostMapping("/signup")
+    public ResponseEntity<? extends BaseResponseBody> signup(@RequestBody UserSignInReqDto signinInfo, @RequestParam(name = "role", required = false) String role ) {
+        UserSignInResDto weffyUser = userService.signUp(signinInfo, role);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, weffyUser));
+    }
+
+    @Operation(summary = "로그인", description = "weffy에 해당 User의 정보를 찾아 로그인 \n\n" )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description =  "OK"),
+            @ApiResponse(responseCode = "401", description =  "요청된 리소스에 대한 유효한 인증 자격 증명"),
+            @ApiResponse(responseCode = "403", description =  "서버에서 설정해 둔 권한과 맞지 않는 접속 요청"),
+            @ApiResponse(responseCode = "404", description =  "잘못된 요청으로 찾을 수 없음"),
+            @ApiResponse(responseCode = "500", description =  "서버 오류")
+    })
+    @PostMapping("/signin")
+    public ResponseEntity<? extends BaseResponseBody> signin(@RequestBody UserSignInReqDto signinInfo ) {
+        UserSignInResDto weffyUser = userService.signIn(signinInfo);
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, weffyUser));
     }
 
     @Operation(summary = "User 회원 조회 in main", description = "main에서 필요한 회원 정보 조회 \n\n" )
