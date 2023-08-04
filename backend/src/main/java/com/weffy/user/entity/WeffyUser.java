@@ -26,10 +26,12 @@ public class WeffyUser extends TimeEntity {
     @Enumerated(value = EnumType.STRING)
     private Role role;
     private Boolean active;
-    private String profile_img;
+
+    @Column(name = "profile_img")
+    private String profileImg;
 
     @Builder
-    public WeffyUser(String identification, String email, String password, String name, String nickname, Role role, Boolean active, String profile_img) {
+    public WeffyUser(String identification, String email, String password, String name, String nickname, Role role, Boolean active, String profileImg) {
         this.identification = identification;
         this.email = email;
         this.password = password;
@@ -37,6 +39,6 @@ public class WeffyUser extends TimeEntity {
         this.nickname = nickname;
         this.role = role;
         this.active = active;
-        this.profile_img = profile_img;
+        this.profileImg = profileImg;
     }
 }

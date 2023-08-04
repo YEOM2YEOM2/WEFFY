@@ -6,13 +6,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserSignInResDto {
-    String userId;
+    String identification;
     String accessToken;
     String refreshToken;
 
-    public UserSignInResDto of(String userId, String accessToken, String refreshToken) {
+    public UserSignInResDto of(String identification, String accessToken, String refreshToken) {
         UserSignInResDto res = new UserSignInResDto();
-        res.userId = userId;
+        res.identification = identification;
         res.accessToken = accessToken;
         res.refreshToken = refreshToken;
         return res;
