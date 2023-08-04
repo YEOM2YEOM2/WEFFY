@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
                             .build()
             );
         }
-        UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), profile_img, accessToken, refreshToken);
+        UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), accessToken, refreshToken);
         return userSignInResDto;
     }
 
