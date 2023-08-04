@@ -1,5 +1,8 @@
 package com.weffy.common.config;
 
+import com.weffy.token.config.TokenAuthenticationFilter;
+import com.weffy.token.config.TokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -21,10 +25,12 @@ import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Autowired
     DataSource dataSource;
+    private final TokenProvider tokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -35,11 +41,12 @@ public class SecurityConfig {
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        // mysql 데이터베이스 콘솔, 정적 리소스, swagger 경로 인증 권한 설정
-                        .requestMatchers("/api/v1/users/signin", "/signup", "/mysql-console/**", "/static/**", "/swagger-ui/**", "/api-docs/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                                // mysql 데이터베이스 콘솔, 정적 리소스, swagger 경로 인증 권한 설정
+                                .requestMatchers("/api/v1/users/signin", "/signup", "/mysql-console/**", "/static/**", "/swagger-ui/**", "/api-docs/**").permitAll()
+                                .requestMatchers("/requestMatchersadmin/**").hasRole("ADMIN")
+                                .anyRequest().authenticated()
                 )
+                .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(formLogin -> formLogin
                         .disable())
 //                        .loginPage("/signin")
@@ -51,12 +58,12 @@ public class SecurityConfig {
 //                        .permitAll())
                 .logout(logout -> logout
                         .logoutSuccessUrl("/signin")
-                        .permitAll())
-                .rememberMe(rememberMe -> rememberMe
-                        .key("rememberMe")
-                        .rememberMeParameter("remember")
-                        .tokenValiditySeconds(3600)
-                        .alwaysRemember(true)
+                        .permitAll()
+//                .rememberMe(rememberMe -> rememberMe
+//                                .key("rememberMe")
+//                                .rememberMeParameter("remember")
+//                                .tokenValiditySeconds(3600)
+//                                .alwaysRemember(true)
 //                        .tokenRepository(persistentTokenRepository())
 //                        .rememberMeServices(rememberMeServices(persistentTokenRepository()))
 //                        .userDetailsService(new UserDetailsServiceImpl(memberRepository)))
@@ -97,8 +104,10 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedOrigins(Arrays.asList("<http://localhost:3000>", "<http://3.39.223.169:3000>", "<http://i9d107.p.ssafy.io:3000>"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "content-type", "x-auth-token"));
+        configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
