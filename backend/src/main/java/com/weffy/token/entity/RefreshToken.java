@@ -3,6 +3,7 @@ package com.weffy.token.entity;
 import com.weffy.user.entity.WeffyUser;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -21,8 +22,10 @@ public class RefreshToken {
     @JoinColumn(name = "weffyuser_id")
     private WeffyUser weffyUser;
 
+    @Column(name = "refresh_token", length = 512)
     private String refreshToken;
 
+    @Builder
     public RefreshToken(WeffyUser weffyUser, String refreshToken) {
         this.weffyUser = weffyUser;
         this.refreshToken = refreshToken;
