@@ -9,6 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import defaultImg from "../assets/images/defualt_image.png";
+import Typography from "@mui/material/Typography";
 
 const itemData = [
   {
@@ -29,6 +30,42 @@ const itemData = [
     text: "nickname3",
     url: "url3",
   },
+  {
+    id: 3,
+    img: defaultImg,
+    text: "nickname3",
+    url: "url3",
+  },
+  {
+    id: 3,
+    img: defaultImg,
+    text: "nickname3",
+    url: "url3",
+  },
+  {
+    id: 3,
+    img: defaultImg,
+    text: "nickname3",
+    url: "url3",
+  },
+  {
+    id: 3,
+    img: defaultImg,
+    text: "nickname3",
+    url: "url3",
+  },
+  {
+    id: 3,
+    img: defaultImg,
+    text: "nickname3",
+    url: "url3",
+  },
+  {
+    id: 3,
+    img: defaultImg,
+    text: "nickname3",
+    url: "url3",
+  },
 ];
 
 const MyList = (props) => {
@@ -42,41 +79,45 @@ const MyList = (props) => {
         <h2 className={styles["Header"]} style={{ fontFamily: "Mogra" }}>
           Your Meeting List
         </h2>
-        <List className={styles["private-modal-list"]}>
-          {itemData.map((item, index) => (
-            <React.Fragment key={index}>
-              <ListItem
-                className={styles["private-modal-list-item"]}
-                alignItems="flex-start"
-              >
-                <ListItemAvatar
-                  className={styles["private-modal-list-item-avatar"]}
+        <div className={styles["meeting-list"]}>
+          <List>
+            {itemData.map((item, index) => (
+              <React.Fragment key={index}>
+                <ListItem
+                  className={styles["listItem"]}
+                  alignItems="flex-start"
                 >
-                  <Avatar alt={item.text} src={item.img} />
-                </ListItemAvatar>
-                <ListItemText
-                  className={styles["private-modal-list-item-text"]}
-                  primary={item.text}
-                  secondary={item.url}
-                />
-                <Button
-                  variant="contained"
-                  color="error"
-                  className={styles["list-item-button"]}
-                  onClick={handleButtonClick}
-                >
-                  비활성화
-                </Button>
-              </ListItem>
+                  <ListItemAvatar
+                    className={styles["private-modal-list-item-avatar"]}
+                  >
+                    <Avatar alt={item.text} src={item.img} />
+                  </ListItemAvatar>
+                  <Typography className={styles["listItemText"]}>
+                    {" "}
+                    {/* Updated class */}
+                    {item.text}
+                    <br />
+                    {item.url}
+                  </Typography>
+                  <div className={styles["buttonContainer"]}>
+                    {" "}
+                    {/* New div */}
+                    <Button
+                      variant="contained"
+                      color="error"
+                      className={styles["list-item-button"]}
+                      onClick={handleButtonClick}
+                    >
+                      비활성화
+                    </Button>
+                  </div>
+                </ListItem>
 
-              <Divider
-                className={styles["private-modal-divider"]}
-                variant="inset"
-                component="li"
-              />
-            </React.Fragment>
-          ))}
-        </List>
+                <Divider variant="inset" component="li" />
+              </React.Fragment>
+            ))}
+          </List>
+        </div>
       </div>
     </div>
   );

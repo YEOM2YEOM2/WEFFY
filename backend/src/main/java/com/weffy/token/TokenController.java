@@ -1,9 +1,9 @@
 package com.weffy.token;
 
-import com.weffy.BaseResponseBody;
-import com.weffy.token.Dto.Request.CreateAccessTokenReqDto;
-import com.weffy.token.Dto.Response.CreateAccessTokenResDto;
-import com.weffy.token.Service.TokenService;
+import com.weffy.common.dto.BaseResponseBody;
+import com.weffy.token.dto.request.CreateAccessTokenReqDto;
+import com.weffy.token.dto.response.CreateAccessTokenResDto;
+import com.weffy.token.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

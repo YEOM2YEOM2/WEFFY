@@ -48,8 +48,8 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
           <h3 className={styles["modalHeader"]} style={{ fontFamily: "Mogra" }}>
             start Meeting with MM
           </h3>
-          <IconButton>
-            <CloseIcon onClick={handleClose} style={{ color: "white" }} />
+          <IconButton onClick={handleClose}>
+            <CloseIcon style={{ color: "white" }} />
           </IconButton>
         </div>
         <Grid container justifyContent="space-between" spacing={2}>
@@ -67,13 +67,16 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
             >
               {Group.map(({ group }) => (
                 <ListItem
+                  key={group}
                   button
                   onClick={() => handleGroupChange(group)}
-                  // style={{ fontFamily: "GmarketSans" }}
                 >
                   <ListItemText
-                    primary={group}
-                    style={{ fontFamily: "GmarketSans" }}
+                    primary={
+                      <Typography sx={{ fontFamily: "GmarketSans" }}>
+                        {group}
+                      </Typography>
+                    }
                   />
                   <NavigateNextIcon
                     style={{ color: "red", margin: "0 10px" }}
@@ -94,10 +97,17 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
             </Typography>
             <List className={styles["textFieldInput"]}>
               {currentNames.map((name) => (
-                <ListItem button onClick={() => handleNamesChange(name)}>
-                  <ListItem
-                    primary={name}
-                    // style={{ fontFamily: "GmarketSans" }}
+                <ListItem
+                  key={name}
+                  button
+                  onClick={() => handleNamesChange(name)}
+                >
+                  <ListItemText
+                    primary={
+                      <Typography sx={{ fontFamily: "GmarketSans" }}>
+                        {name}
+                      </Typography>
+                    }
                   />
                 </ListItem>
               ))}
