@@ -1,5 +1,6 @@
 package com.weffy.mattermost;
 
+import com.weffy.user.dto.Request.UserSignInReqDto;
 import net.bis5.mattermost.client4.ApiResponse;
 import net.bis5.mattermost.client4.MattermostClient;
 import net.bis5.mattermost.model.User;
@@ -18,7 +19,11 @@ public class MattermostHandler {
                 .build();
     }
 
-    public ApiResponse<User> login(String email, String password) {
+    public ApiResponse<User> login(UserSignInReqDto userSignInReqDto) {
+        // mattermost 로그인
+        String email = userSignInReqDto.getEmail();
+        String password = userSignInReqDto.getPassword();
+
         return client().login(email, password);
     }
 
