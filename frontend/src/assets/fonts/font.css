@@ -101,3 +101,15 @@
   font-weight: 400;
   font-style: normal;
 }
+
+@font-face {
+  font-family: "Suite";
+  font-display: fallback;
+
+  src: url("./Suite/Suite.ttf") format("truetype"),
+    url("./Suite/Suite.woff") format("woff"),
+    url("./Suite/Suite.eot?iefix") format("embedded-opentype");
+
+  font-weight: 400;
+  font-style: normal;
+}
