@@ -8,7 +8,8 @@ import com.weffy.user.entity.WeffyUser;
 
 public interface UserService {
 
-    UserSignInResDto signIn(UserSignInReqDto signinInfo, String role);
+    UserSignInResDto signUp(UserSignInReqDto signinInfo, String role);
+    UserSignInResDto signIn(UserSignInReqDto signinInfo);
     WeffyUser findById(Long userId);
 
     UserMainResDto mainUser(String userId);
