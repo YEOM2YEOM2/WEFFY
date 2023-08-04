@@ -1,5 +1,7 @@
 package com.weffy.token.config;
 
+import com.weffy.token.entity.RefreshToken;
+import com.weffy.token.repository.RefreshTokenRepository;
 import com.weffy.user.entity.WeffyUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ import java.util.Set;
 public class TokenProvider {
 
     private final JwtProperties jwtProperties;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public String generateToken(WeffyUser weffyUser, Duration expiredAt) {
         Date now = new Date();
