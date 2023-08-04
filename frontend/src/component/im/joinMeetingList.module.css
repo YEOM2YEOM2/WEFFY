@@ -54,6 +54,7 @@
 
 /* privateModal.css */
 .mettingList {
+  margin-top: 20px;
   width: 80%;
   max-width: 80%;
   height: 380px;
@@ -91,4 +92,11 @@
 
 .list-item-button {
   align-self: center;
+}
+
+@media (max-width: 768px) {
+  .modalBody {
+    width: 80%;
+    height: auto;
+  }
 }
