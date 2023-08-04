@@ -12,5 +12,5 @@ public interface UserService {
     WeffyUser findById(Long userId);
 
     UserMainResDto mainUser(String userId);
-
+    UserInfoResDto getUser(WeffyUser weffyUser);
 }

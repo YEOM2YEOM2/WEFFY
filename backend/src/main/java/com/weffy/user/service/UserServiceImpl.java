@@ -107,5 +107,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
     }
 
-
+    @Override
+    public UserInfoResDto getUser(WeffyUser weffyUser) {
+        return new UserInfoResDto(weffyUser);
+    }
 }
