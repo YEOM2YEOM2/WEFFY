@@ -1,9 +1,9 @@
 package com.weffy;
 
-import com.weffy.kms.KmsService;
-import com.weffy.user.Dto.Request.UserSignInReqDto;
-import com.weffy.user.Repository.UserRepository;
-import com.weffy.user.Service.UserService;
+import com.weffy.common.kms.KmsService;
+import com.weffy.user.dto.Request.UserSignInReqDto;
+import com.weffy.user.repository.UserRepository;
+import com.weffy.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
