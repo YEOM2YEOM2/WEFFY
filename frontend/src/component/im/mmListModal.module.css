@@ -47,7 +47,7 @@
 }
 
 .selectField {
-  background-color: yellowgreen;
+  background-color: #c5abd5;
   height: 7vh;
   align-items: center;
   display: flex;
@@ -58,4 +58,17 @@
 .textFieldInput {
   background-color: white;
   color: black;
+}
+
+@media (max-width: 768px) {
+  .modalBody {
+    width: 80%;
+    height: auto;
+  }
+}
+
+@media (max-height: 530px) {
+  .modalBody {
+    height: 400px;
+  }
 }
