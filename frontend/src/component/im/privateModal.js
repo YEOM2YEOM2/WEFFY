@@ -6,6 +6,8 @@ import Avatar from "@mui/material/Avatar";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import { styled } from "@mui/material/styles";
 
 //기본 프로필 이미지
 import defaultImg from "../../assets/images/defualt_image.png";
@@ -16,12 +18,22 @@ import MicOffIcon from "@mui/icons-material/MicOff";
 import MicIcon from "@mui/icons-material/Mic";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
-import { IconButton } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 
-const PrivateModal = ({ handleClose, sidebarOpen }) => {
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: "center",
+  color: theme.palette.text.secondary,
+}));
+
+const PrivateModal = ({ handleClose }) => {
   const [micStatus, setMicStatus] = useState(false);
   const [cameraStatus, setCameraStatus] = useState(false);
   const [nickname, setNickname] = useState("default nickname");
+
+  //openVidu
 
   return (
     <div className={styles["modal"]} onClick={handleClose}>
@@ -35,7 +47,7 @@ const PrivateModal = ({ handleClose, sidebarOpen }) => {
           </IconButton>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        {/* <div style={{ display: "flex", justifyContent: "center" }}>
           <Avatar
             alt="profileImg"
             src={defaultImg}
@@ -64,13 +76,36 @@ const PrivateModal = ({ handleClose, sidebarOpen }) => {
               </Box>
             </IconButton>
           </div>
-          {/* 이름이 여기 들어가 있을 것임*/}
-          <div className={styles["nickname"]} style={{ fontFamily: "Suite" }}>
-            {nickname}
-          </div>
-        </div>
+          <Typography className={styles["nickname"]}>{nickname}</Typography>
+        </div> */}
+        <Box sx={{ flexGrow: 1 }}>
+          <Grid container spacing={2} columns={14}>
+            <Grid item xs={6} className={styles["leftBox"]}>
+              <Box className={styles["profileImgBox"]}>
+                <Avatar
+                  alt="profileImg"
+                  src={defaultImg}
+                  sx={{ width: 200, height: 200 }}
+                />
+              </Box>
+              <Box sx={{ flexGrow: 1 }}>
+                <input
+                  type="text"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  className={styles["nickname"]}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={8}>
+              <Item>xs=8</Item>
+              <Item>xs=8</Item>
+            </Grid>
+          </Grid>
+        </Box>
+
         <Grid container justifyContent="flex-end">
-          <Button variant="contained" className={styles["btn"]}>
+          <Button variant="contained" className={styles["joinBtn"]}>
             Start Private Meeting
           </Button>
         </Grid>

@@ -17,8 +17,6 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { IconButton } from "@mui/material";
 
-const drawerWidth = 240;
-
 const StartMM = ({ handleClose, sidebarOpen }) => {
   const [micStatus, setMicStatus] = useState(false);
   const [cameraStatus, setCameraStatus] = useState(false);
