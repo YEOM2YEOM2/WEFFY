@@ -16,7 +16,6 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -35,20 +34,22 @@ import newMM from "../assets/images/newMM.png";
 import newPrivate from "../assets/images/newPrivate.png";
 import participate from "../assets/images/participate.png";
 
-//Model js
-import MmModal from "../component/im/mmModal.js";
+//Modal js
+import StartMM from "../component/im/startMM.js";
+import MMListModal from "../component/im/mmListModal";
 import PrivateModal from "../component/im/privateModal.js";
-import ParticipateModal from "../component/im/participateModal.js";
+import JoinMeetingModal from "../component/im/joinMeetingList.js";
 
 const buttons = [
   { name: "PrivateModal", src: newPrivate },
-  { name: "MmModal", src: newMM },
-  { name: "ParticipateModal", src: participate },
+  { name: "MMListModal", src: newMM },
+  { name: "JoinMeetingModal", src: participate },
 ];
 
 //mui icon
 const drawerWidth = 240;
 
+//옆 사이드 바의 메뉴
 const icons = [
   { name: "DashBoard", src: <GridViewIcon /> },
   { name: "MyList", src: <MoveToInboxIcon /> },
@@ -56,6 +57,7 @@ const icons = [
   { name: "Logout", src: <LogoutIcon /> },
 ];
 
+//사이드 바가 열렸을 경우
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -63,9 +65,10 @@ const openedMixin = (theme) => ({
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflowX: "hidden",
-  backgroundColor: "rgba(46, 46, 72, 0.7)", // Add this line
+  backgroundColor: "rgba(46, 46, 72, 0.7)",
 });
 
+//사이드 바가 닫혔을 경우
 const closedMixin = (theme) => ({
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
@@ -80,6 +83,7 @@ const closedMixin = (theme) => ({
   backgroundColor: "rgba(65, 65, 112, 0.8)", // 열렸을경우
 });
 
+//맨 위 header가 움직이도록 구성
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -126,7 +130,7 @@ const Drawer = styled(MuiDrawer, {
 
 export default function ClippedDrawer() {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
 
   const navigate = useNavigate();
 
@@ -144,10 +148,20 @@ export default function ClippedDrawer() {
 
   // 모달 상태 선언
   const [modalStatus, setModalStatus] = useState({
-    MmModal: false,
+    startMM: false,
     newPrivate: false,
-    participate: false,
+    JoinMeetingModal: false,
+    MMListModal: false,
   });
+
+  //mm연동 미팅 시작 핸들링
+  const handleStartMeeting = () => {
+    setModalStatus({
+      ...modalStatus,
+      startMM: true, // MmModal을 보여주고
+      MMListModal: false, // MMListModal은 숨깁니다.
+    });
+  };
 
   const handleModalOpen = (modalName) => {
     //modalName에 맞는 modal true로 변경
@@ -179,6 +193,7 @@ export default function ClippedDrawer() {
   const handleMyMeetingClick = () => {
     console.log("My Meeting was clicked");
     // My Meeting 클릭 시 수행할 동작
+    // window.location.href = "https://localhost:8080";
     navigate("/im/mylist");
   };
 
@@ -191,7 +206,7 @@ export default function ClippedDrawer() {
   const handleLogoutClick = () => {
     console.log("Logout was clicked");
     // Profile 클릭 시 수행할 동작
-    navigate("/im/logout");
+    navigate("/");
   };
 
   const handlers = [
@@ -208,6 +223,7 @@ export default function ClippedDrawer() {
         position="fixed"
         open={open}
         style={{ backgroundColor: "rgba(46, 46, 72, 0.8)" }}
+        minHeight="300px"
       >
         <Toolbar>
           <IconButton
@@ -235,10 +251,8 @@ export default function ClippedDrawer() {
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
+            {theme.direction === "rtl" ? null : (
+              <ChevronLeftIcon style={{ color: "white" }} />
             )}
           </IconButton>
         </DrawerHeader>
@@ -246,12 +260,12 @@ export default function ClippedDrawer() {
           <img
             src={defaultImg}
             alt="Profile"
-            className={open ? styles.profileImg : styles.profileImgClosed}
+            className={open ? styles["profileImg"] : styles["profileImgClosed"]}
           />
         </div>
         <Divider />
 
-        <List>
+        <List className={styles["sidebar"]}>
           {icons.map((icon, index) => (
             <ListItem key={icon.name} disablePadding sx={{ display: "block" }}>
               <ListItemButton
@@ -285,20 +299,19 @@ export default function ClippedDrawer() {
         <Divider />
         {/* ... */}
       </Drawer>
+
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           p: 3,
-          width: open ? `calc(100vw - ${drawerWidth}px)` : "100vw", // Adjust the width dynamically
         }}
         className={styles["container"]}
       >
+        <Outlet />
+
         {isImPage && !isModalOpen && (
-          <div
-            className={styles["buttonContainer"]}
-            style={{ left: `calc(50% + ${open ? drawerWidth / 2 : 0}px)` }}
-          >
+          <div className={styles["buttonContainer"]}>
             {buttons.map((button, index) => (
               <div key={index} onClick={() => handleModalOpen(button.name)}>
                 <img
@@ -310,8 +323,16 @@ export default function ClippedDrawer() {
             ))}
           </div>
         )}
-        {modalStatus.MmModal && (
-          <MmModal handleClose={() => handleModalClose("MmModal")} />
+
+        {modalStatus.MMListModal && (
+          <MMListModal
+            handleClose={() => handleModalClose("MMListModal")}
+            handleStartMeeting={handleStartMeeting}
+          />
+        )}
+
+        {modalStatus.startMM && (
+          <StartMM handleClose={() => handleModalClose("startMM")} />
         )}
         {modalStatus.PrivateModal && (
           <PrivateModal
@@ -320,10 +341,10 @@ export default function ClippedDrawer() {
             sidebarOpen={open} // Add this line
           />
         )}
-        {modalStatus.ParticipateModal && (
-          <ParticipateModal
+        {modalStatus.JoinMeetingModal && (
+          <JoinMeetingModal
             show={modalStatus.ParticipateModal}
-            handleClose={() => handleModalClose("ParticipateModal")}
+            handleClose={() => handleModalClose("JoinMeetingModal")}
             sidebarOpen={open} // Add this line
           />
         )}
