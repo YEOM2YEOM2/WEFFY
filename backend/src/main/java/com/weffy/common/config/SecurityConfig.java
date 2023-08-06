@@ -104,7 +104,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("<http://localhost>", "<http://3.39.223.169>", "<http://i9d107.p.ssafy.io>", "<https://3.39.223.169>", "<https://i9d107.p.ssafy.io>"));
+        configuration.setAllowedOrigins(Arrays.asList("<http://localhost:3000>", "<http://3.39.223.169:3000>", "<http://i9d107.p.ssafy.io:3000>", "<https://3.39.223.169>", "<https://i9d107.p.ssafy.io>"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "content-type", "x-auth-token"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
