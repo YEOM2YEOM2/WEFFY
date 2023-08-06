@@ -10,12 +10,14 @@ import com.weffy.user.dto.Response.UserSignInResDto;
 import com.weffy.user.entity.Role;
 import com.weffy.user.entity.WeffyUser;
 import com.weffy.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.bis5.mattermost.client4.ApiResponse;
 import net.bis5.mattermost.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -34,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserSignInResDto signUp(UserSignInReqDto signInInfo, String role) {
+    public UserSignInResDto signUp(HttpServletRequest request,UserSignInReqDto signInInfo, String role) {
         // mattermost login
         ApiResponse<User> userInfo = mattermostHandler.login(signInInfo);
 
@@ -60,13 +62,13 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("회원정보가 존재합니다.");
         }
 
-        CreateTokenResDto createTokenResDto = tokenService.createUserToken(userInfo, weffyUser);
+        CreateTokenResDto createTokenResDto = tokenService.createUserToken(request, userInfo, weffyUser);
         UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), createTokenResDto);
         return userSignInResDto;
     }
     @Override
     @Transactional
-    public UserSignInResDto signIn(UserSignInReqDto signInInfo) {
+    public UserSignInResDto signIn(HttpServletRequest request, UserSignInReqDto signInInfo) {
         ApiResponse<User> userInfo = mattermostHandler.login(signInInfo);
         User mmClient = userInfo.readEntity();
 
@@ -78,7 +80,7 @@ public class UserServiceImpl implements UserService {
             weffyUser = existingUser.get();
         }
 
-        CreateTokenResDto createTokenResDto = tokenService.createUserToken(userInfo, weffyUser);
+        CreateTokenResDto createTokenResDto = tokenService.createUserToken(request, userInfo, weffyUser);
         UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), createTokenResDto);
         return userSignInResDto;
     }
