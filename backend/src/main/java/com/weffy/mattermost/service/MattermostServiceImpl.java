@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service("MattermostService")
 @RequiredArgsConstructor
 public class MattermostServiceImpl implements MattermostService {
@@ -17,11 +19,15 @@ public class MattermostServiceImpl implements MattermostService {
     @Override
     @Transactional
     public void saveSession(WeffyUser weffyUser, String token) {
-        Session session = Session.builder()
-                .token(token)
-                .weffyUser(weffyUser)
-                .build();
+        Optional<Session> sessionToken = jpaSessionRepository.findByWeffyUser(weffyUser);
+        if (sessionToken.isPresent()) sessionToken.get().setToken(token);
+        else {
+            Session session = Session.builder()
+                    .token(token)
+                    .weffyUser(weffyUser)
+                    .build();
 
-        jpaSessionRepository.save(session);
+            jpaSessionRepository.save(session);
+        }
     }
 }
