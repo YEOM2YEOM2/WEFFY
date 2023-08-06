@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import static java.rmi.server.LogStream.log;
@@ -48,7 +49,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description =  "서버 오류")
     })
     @PostMapping("/signup")
-    public ResponseEntity<? extends BaseResponseBody> signup(HttpServletRequest request, @RequestBody UserSignInReqDto signinInfo, @RequestParam(name = "role", required = false) String role ) {
+    public ResponseEntity<? extends BaseResponseBody> signup(HttpServletRequest request, @RequestBody UserSignInReqDto signinInfo, @RequestParam(name = "role", required = false) String role ) throws IOException {
         UserSignInResDto weffyUser = userService.signUp(request, signinInfo, role);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, weffyUser));
     }
