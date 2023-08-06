@@ -6,10 +6,12 @@ import com.weffy.token.dto.response.CreateTokenResDto;
 import com.weffy.token.entity.RefreshToken;
 import com.weffy.token.repository.RefreshTokenRepository;
 import com.weffy.user.entity.WeffyUser;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.bis5.mattermost.client4.ApiResponse;
 import net.bis5.mattermost.model.User;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -37,7 +39,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
 
     @Override
-    public CreateTokenResDto createUserToken(ApiResponse<User> userInfo, WeffyUser weffyUser) {
+    public CreateTokenResDto createUserToken(HttpServletRequest request, ApiResponse<User> userInfo, WeffyUser weffyUser) {
+        CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+
         // Mattermost 세션 토큰
         String token = Objects.requireNonNull(userInfo.getRawResponse().getHeaders().get("Token").get(0).toString());
         mattermostService.saveSession(weffyUser, token);
@@ -51,7 +55,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         } else {
             saveToken(weffyUser, refreshToken);
         }
-        return new CreateTokenResDto().of(accessToken, refreshToken);
+        return new CreateTokenResDto().of(accessToken, refreshToken, csrfToken.getToken());
     }
 
     public RefreshToken findByRefreshToken(String refreshToken) {
