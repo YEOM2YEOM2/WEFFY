@@ -4,6 +4,7 @@ import com.weffy.TestConfig;
 import com.weffy.user.dto.Response.UserSignInResDto;
 import com.weffy.user.entity.WeffyUser;
 import com.weffy.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -38,9 +39,9 @@ public class UserTest extends TestConfig {
     @Transactional
     @DisplayName("로그인이 성공하여야한다.")
     void signInUser_O() {
-        UserSignInResDto res = userService.signIn(user, null);
+        UserSignInResDto res = userService.signIn((HttpServletRequest) user, null);
         Optional<WeffyUser> testUser = userRepository.findByEmail(email);
         //then
-        Assertions.assertThat(testUser.get().getIdentification()).isEqualTo(res.getUserId());
+        Assertions.assertThat(testUser.get().getIdentification()).isEqualTo(res.getIdentification());
     }
 }
