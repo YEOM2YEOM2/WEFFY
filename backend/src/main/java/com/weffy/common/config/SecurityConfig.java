@@ -40,6 +40,8 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/api/v1/users/signin", "/api/v1/users/signup")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
+                .cors(cors -> cors
+                        .configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                                 // mysql 데이터베이스 콘솔, 정적 리소스, swagger 경로 인증 권한 설정
                                 .requestMatchers("/api/v1/users/signin", "/api/v1/users/signup", "/mysql-console/**", "/static/**", "/swagger-ui/**", "/api-docs/**").permitAll()
