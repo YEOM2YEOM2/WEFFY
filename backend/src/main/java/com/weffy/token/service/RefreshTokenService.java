@@ -1,17 +1,13 @@
 package com.weffy.token.service;
 
-import com.weffy.token.entity.RefreshToken;
-import com.weffy.token.repository.RefreshTokenRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.weffy.token.dto.response.CreateTokenResDto;
+import com.weffy.user.entity.WeffyUser;
+import jakarta.servlet.http.HttpServletRequest;
+import net.bis5.mattermost.client4.ApiResponse;
+import net.bis5.mattermost.model.User;
 
-@Service
-@RequiredArgsConstructor
-public class RefreshTokenService {
-    private final RefreshTokenRepository refreshTokenRepository;
+public interface RefreshTokenService {
 
-    public RefreshToken findByRefreshToken(String refreshToken) {
-        return refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new IllegalArgumentException("Unexpected token"));
-    }
+    void saveToken(WeffyUser weffyUser, String refreshToken);
+    CreateTokenResDto createUserToken(HttpServletRequest request,  ApiResponse<User> userInfo, WeffyUser weffyUser);
 }
