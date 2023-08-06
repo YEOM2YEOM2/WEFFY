@@ -13,8 +13,8 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.4.0",
     "bootstrap": "^5.3.0",
+    "jquery": "3.5.0",
     "openvidu-browser": "^2.28.0",
-    "openvidu-react": "^2.27.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.8.0",
     "react-dom": "^18.2.0",
@@ -30,8 +30,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build:openvidu-react": "npm install --prefix ../library/ && node library-copy.js && cd ../library && npm run create-library",
+    "eject": "react-scripts eject",
+    "test": "react-scripts test --env=jsdom"
   },
   "eslintConfig": {
     "extends": [
