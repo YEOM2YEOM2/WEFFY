@@ -1,9 +1,37 @@
 .container {
-  margin-left: 10vw;
-  width: 50vw;
-  height: 90vh;
+  margin: 0 auto; /* 좌우 중앙 정렬 */
+  width: 60%; /* 너비 비율 변경 */
+  height: 80vh;
   flex-shrink: 0;
   border-radius: 10px;
+  display: flex; /* Grid 내부 요소를 수평으로 배열 */
+}
+
+.bar {
+  width: 25%; /* 왼쪽 바 너비 조정 */
+  height: 100%;
+  background: #2e2e48;
+}
+
+.content {
+  position: relative;
+  height: 100%;
+  background: rgba(46, 46, 72, 0.8);
+  width: 75%; /* 내용 영역 너비 조정 */
+  align-self: center;
+}
+
+.content-inner {
+  height: 100%;
+  width: 100%;
+}
+
+.menuIcon {
+  color: white;
+}
+
+.menu {
+  color: white;
 }
 
 .bar {
@@ -16,6 +44,7 @@
   height: 100%;
   background: rgba(46, 46, 72, 0.8);
   width: 100%;
+  align-self: center;
 }
 
 .content-inner {

@@ -1,4 +1,7 @@
 import React from 'react';
+import { useState } from 'react';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 import styles from './signupNarrow.module.css';
 
 // mui
@@ -19,6 +22,7 @@ import Row from 'react-bootstrap/Row';
 
 // hook
 import { useNavigate } from 'react-router';
+import { LineAxisOutlined } from '@mui/icons-material';
 
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
@@ -26,6 +30,85 @@ const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 function SignupNarrow() {
 
     let navigate = useNavigate();
+
+    let [email, setEmail] = useState("");
+    let [pw, setPw] = useState("");
+    let [rePw, setRePw] = useState("");
+    let [agree, setAgree] = useState(false);
+
+    const handleEmail = (e) => {
+        setEmail(e.target.value);
+    }
+
+    const handlePw = (e) => {
+        setPw(e.target.value);
+    }
+
+    const handleRePw = (e) => {
+        setRePw(e.target.value);
+    }
+
+    const handleCheck = (e) => {
+        setAgree(!agree)
+    }
+
+    const handleSignup = () => {
+        if (!email.trim() ) {
+          Swal.fire({
+            icon: 'question',
+            html: '<div style="font-family:GmarketSans">Email을 입력해주세요.</div>',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#2672B9',
+          })
+          return
+        }
+        
+        if (!pw.trim() || !rePw.trim()) {
+          Swal.fire({
+            icon: 'question',
+            html: '<div style="font-family:GmarketSans">비밀번호를 입력해주세요.<br>(공백은 입력되지 않습니다.)</div>',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#2672B9',
+          })
+          return
+        } 
+
+        if (pw !== rePw ) {
+            Swal.fire({
+                icon: 'error',
+                html: '<div style="font-family:GmarketSans">비밀번호가 일치하지 않습니다.</div>',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#AE2424',
+            })
+            return
+        }
+
+        if (!agree) {
+            Swal.fire({
+                icon: 'error',
+                html: '<div style="font-family:GmarketSans">개인정보제공에 동의해주세요.</div>',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#2672B9',
+            })
+            return
+        }
+
+        axios({
+            method: 'post',
+            url: 'http://i9d107.p.ssafy.io:8081/api/v1/users/signin',
+            // header : {
+      
+            // },
+            data: {
+              email: email,
+              password: pw
+            }
+          }).then((res)=> {
+            console.log(res)
+          }).catch((err)=>{
+            console.log(err)
+          })
+    }
 
     const [showPassword, setShowPassword] = React.useState(false);
     const [showPasswordRe, setShowPasswordRe] = React.useState(false);
@@ -48,18 +131,19 @@ function SignupNarrow() {
                 <Container>
                     <Row className={styles.margin}>
                         <FormControl style={{ width: '100%' }} sx={{ m: 1, width: '25ch' }} variant="outlined">
-                            <InputLabel htmlFor="outlined-adornment-email">Email</InputLabel>
+                            <InputLabel htmlFor="outlined-adornment-email" style={{ fontFamily: 'Poppins' }}>Email</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-email"
                                 type={showPassword ? 'text' : 'email'}
-                                label="email"
+                                label="email" style={{ fontFamily: 'Poppins' }}
+                                onChange={handleEmail}
                             />
                         <FormHelperText id="outlined-weight-helper-text" style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600' }}>Mattermost Email을 입력해주세요.</FormHelperText>
                         </FormControl>
                     </Row>
                     <Row className={styles.margin}>
                         <FormControl style={{ width: '100%' }} sx={{ m: 1, width: '25ch' }} variant="outlined">
-                            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                            <InputLabel htmlFor="outlined-adornment-password" style={{ fontFamily: 'Poppins' }}>Password</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-password"
                                 type={showPassword ? 'text' : 'password'}
@@ -75,14 +159,16 @@ function SignupNarrow() {
                                     </IconButton>
                                 </InputAdornment>
                                 }
+                                onChange={handlePw}
                                 label="Password"
+                                style={{ fontFamily: 'Poppins' }}
                             />
                         <FormHelperText id="outlined-weight-helper-text" style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600' }}>Mattermost Password을 입력해주세요.</FormHelperText>
                         </FormControl>
                     </Row>
                     <Row className={styles.margin}>
                         <FormControl style={{ width: '100%' }} sx={{ m: 1, width: '25ch' }} variant="outlined">
-                            <InputLabel htmlFor="outlined-adornment-password">Password Confirmation</InputLabel>
+                            <InputLabel htmlFor="outlined-adornment-password" style={{ fontFamily: 'Poppins' }}>Password Confirmation</InputLabel>
                             <OutlinedInput
                                 id="outlined-adornment-password"
                                 type={showPasswordRe ? 'text' : 'password'}
@@ -98,7 +184,9 @@ function SignupNarrow() {
                                     </IconButton>
                                 </InputAdornment>
                                 }
+                                onChange={handleRePw}
                                 label="Password Confirmation"
+                                style={{ fontFamily: 'Poppins' }}
                             />
                         <FormHelperText id="outlined-weight-helper-text" style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600' }}>비밀번호를 재입력해주세요.</FormHelperText>
                         </FormControl>
@@ -106,14 +194,14 @@ function SignupNarrow() {
                     <Row>
                         <span style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600', fontSize: '13px' }}>
                             개인정보 수집 및 이용 동의(이메일, 이름, 별명, 프로필이미지 등)
-                            <Checkbox {...label}/>
+                            <Checkbox {...label} onClick={handleCheck}/>
                         </span>
                     </Row>
                     <Row className="justify-content-center">
                         <Button variant="contained" size="large" 
                         className={styles.createBtn} style={{ fontFamily: 'HindGunturBold', backgroundColor: '#2672B9', paddingTop: '10px',
                         marginTop:'20px' }}
-                        onClick={()=> {navigate('/')}}>
+                        onClick={handleSignup}>
                             Create Account
                         </Button>
                     </Row>
