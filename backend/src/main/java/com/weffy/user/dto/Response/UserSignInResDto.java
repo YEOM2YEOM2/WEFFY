@@ -1,22 +1,23 @@
 package com.weffy.user.dto.Response;
 
+import com.weffy.token.dto.response.CreateTokenResDto;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class UserSignInResDto {
-    String userId;
-    String profile_img;
+    String identification;
     String accessToken;
     String refreshToken;
+    String csrfToken;
 
-    public UserSignInResDto of(String userId, String profile_img, String accessToken, String refreshToken) {
+    public UserSignInResDto of(String identification, CreateTokenResDto createTokenResDto) {
         UserSignInResDto res = new UserSignInResDto();
-        res.userId = userId;
-        res.profile_img = profile_img;
-        res.accessToken = accessToken;
-        res.refreshToken = refreshToken;
+        res.identification = identification;
+        res.accessToken = createTokenResDto.getAccessToken();
+        res.refreshToken = createTokenResDto.getRefreshToken();
+        res.csrfToken = createTokenResDto.getCsrfToken();
         return res;
     }
 }
