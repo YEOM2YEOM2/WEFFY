@@ -43,10 +43,10 @@ public class SecurityConfig {
                 .cors(cors -> cors
                         .configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                                // mysql 데이터베이스 콘솔, 정적 리소스, swagger 경로 인증 권한 설정
-                                .requestMatchers("/api/v1/users/signin", "/api/v1/users/signup", "/mysql-console/**", "/static/**", "/swagger-ui/**", "/api-docs/**").permitAll()
-                                .requestMatchers("/requestMatchersadmin/**").hasRole("ADMIN")
-                                .anyRequest().authenticated()
+                        // mysql 데이터베이스 콘솔, 정적 리소스, swagger 경로 인증 권한 설정
+                        .requestMatchers("/api/v1/users/signin", "/api/v1/users/signup", "/mysql-console/**", "/static/**", "/swagger-ui/**", "/api-docs/**").permitAll()
+                        .requestMatchers("/requestMatchersadmin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(formLogin -> formLogin
@@ -59,8 +59,8 @@ public class SecurityConfig {
 //                        .loginProcessingUrl("/signin")
 //                        .permitAll())
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/signin")
-                        .permitAll()
+                                .logoutSuccessUrl("/signin")
+                                .permitAll()
 //                .rememberMe(rememberMe -> rememberMe
 //                                .key("rememberMe")
 //                                .rememberMeParameter("remember")
