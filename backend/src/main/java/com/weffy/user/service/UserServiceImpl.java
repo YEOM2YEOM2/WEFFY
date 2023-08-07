@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserSignInResDto signUp(HttpServletRequest request,UserSignInReqDto signInInfo, String role) throws IOException{
+    public void signUp(UserSignInReqDto signInInfo, String role) throws IOException{
         // mattermost login
         ApiResponse<User> userInfo = mattermostHandler.login(signInInfo);
 
@@ -56,10 +56,9 @@ public class UserServiceImpl implements UserService {
         BufferedImage bImageFromConvert = ImageIO.read(profileImg);
         String profileUrl = fileService.uploadInputStream(bImageFromConvert, mmClient.getId() + ".png");
 
-        WeffyUser weffyUser;
         Optional<WeffyUser> existUser = userRepository.findByIdentification(mmClient.getId());
         if (existUser.isEmpty()) {
-            weffyUser = userRepository.save(
+            userRepository.save(
                     WeffyUser.builder()
                             .identification(mmClient.getId())
                             .password(passwordEncoder.encode(signInInfo.getPassword()))
@@ -76,11 +75,8 @@ public class UserServiceImpl implements UserService {
         }else {
             throw new CustomException(ExceptionEnum.USEREXIST);
         }
-
-        CreateTokenResDto createTokenResDto = tokenService.createUserToken(request, userInfo, weffyUser);
-        UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), createTokenResDto);
-        return userSignInResDto;
     }
+
     @Override
     @Transactional
     public UserSignInResDto signIn(HttpServletRequest request, UserSignInReqDto signInInfo) {
