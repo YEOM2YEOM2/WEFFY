@@ -126,5 +126,24 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, "올바르지 않은 사용자의 접근입니다."));
     }
 
+    @Operation(summary = "User 회원 탈퇴", description = "회원 탈퇴 \n\n" )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description =  "OK"),
+            @ApiResponse(responseCode = "401", description =  "요청된 리소스에 대한 유효한 인증 자격 증명"),
+            @ApiResponse(responseCode = "403", description =  "서버에서 설정해 둔 권한과 맞지 않는 접속 요청"),
+            @ApiResponse(responseCode = "404", description =  "잘못된 요청으로 찾을 수 없음"),
+            @ApiResponse(responseCode = "500", description =  "서버 오류")
+    })
+    @PatchMapping("/withdraw")
+    public ResponseEntity<? extends BaseResponseBody> deleteUser() {
+        String authorizedMember = SecurityUtil.getAuthorizedMember();
+        Optional<WeffyUser> weffyUser = userRepository.findByEmail(authorizedMember);
+        if (weffyUser.isPresent() ) {
+            userService.deleteUser(weffyUser.get());
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "success"));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, "올바르지 않은 사용자의 접근입니다."));
+    }
+
 
 }

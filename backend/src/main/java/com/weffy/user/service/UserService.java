@@ -23,4 +23,6 @@ public interface UserService {
     void setUser(WeffyUser weffyUser, MultipartFile profileImg, String nickName);
 
     void setPassword(WeffyUser weffyUser, String password);
+
+    void deleteUser(WeffyUser weffyUser);
 }
