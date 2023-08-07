@@ -3,12 +3,12 @@ import { createSlice } from "@reduxjs/toolkit";
 let user = createSlice({
     name : 'user',
     initialState : {
-        identification : "",
-        accessToken: "",
-        refreshToken: "",
-        csrfToken: "",
-        nickname: "",
-        profileImg: ""
+        identification : null,
+        accessToken: null,
+        refreshToken: null,
+        csrfToken: null,
+        nickname: null,
+        profileImg: null
     },
     reducers: {
         setIdentification(state, action) {

@@ -7,12 +7,15 @@ import reportWebVitals from "./reportWebVitals";
 import registerServiceWorker from "./registerServiceWorker";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { Provider } from "react-redux";
 
+// Redux
+import { Provider } from "react-redux";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import store from "./store/index.js"
 
+// Redux 개발자 도구
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 const queryClient = new QueryClient();
 
