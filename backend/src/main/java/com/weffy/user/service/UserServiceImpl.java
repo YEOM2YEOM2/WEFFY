@@ -1,5 +1,7 @@
 package com.weffy.user.service;
 
+import com.weffy.exception.CustomException;
+import com.weffy.exception.ExceptionEnum;
 import com.weffy.file.service.FileService;
 import com.weffy.mattermost.MattermostHandler;
 import com.weffy.token.dto.response.CreateTokenResDto;
@@ -44,20 +46,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserSignInResDto signUp(HttpServletRequest request,UserSignInReqDto signInInfo, String role) throws IOException{
+    public void signUp(UserSignInReqDto signInInfo, String role) throws IOException{
         // mattermost login
         ApiResponse<User> userInfo = mattermostHandler.login(signInInfo);
 
-        // mattermost user info
+        // mattermost user 정보 및 프로필 이미지 저장
         User mmClient = userInfo.readEntity();
         InputStream profileImg = mattermostHandler.image(mmClient.getId());
-
         BufferedImage bImageFromConvert = ImageIO.read(profileImg);
-
         String profileUrl = fileService.uploadInputStream(bImageFromConvert, mmClient.getId() + ".png");
-        WeffyUser weffyUser;
-        if (userRepository.findByIdentification(mmClient.getId()).isEmpty()) {
-            weffyUser = userRepository.save(
+
+        Optional<WeffyUser> existUser = userRepository.findByIdentification(mmClient.getId());
+        if (existUser.isEmpty()) {
+            userRepository.save(
                     WeffyUser.builder()
                             .identification(mmClient.getId())
                             .password(passwordEncoder.encode(signInInfo.getPassword()))
@@ -69,14 +70,13 @@ public class UserServiceImpl implements UserService {
                             .profileImg(profileUrl)
                             .build()
             );
-        } else {
-            throw new IllegalArgumentException("회원정보가 존재합니다.");
+        } else if (!existUser.get().getActive()){
+            throw new CustomException(ExceptionEnum.USERWITHDRAW);
+        }else {
+            throw new CustomException(ExceptionEnum.USEREXIST);
         }
-
-        CreateTokenResDto createTokenResDto = tokenService.createUserToken(request, userInfo, weffyUser);
-        UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), createTokenResDto);
-        return userSignInResDto;
     }
+
     @Override
     @Transactional
     public UserSignInResDto signIn(HttpServletRequest request, UserSignInReqDto signInInfo) {
@@ -85,31 +85,62 @@ public class UserServiceImpl implements UserService {
 
         WeffyUser weffyUser;
         Optional<WeffyUser> existingUser = userRepository.findByIdentification(mmClient.getId());
-        if (userRepository.findByIdentification(mmClient.getId()).isEmpty()) {
-            throw new IllegalArgumentException("회원정보가 없습니다.");
-        } else {
+        if (existingUser.isEmpty()) {
+            throw new CustomException(ExceptionEnum.USERNOTEXIST);
+        } else if (existingUser.get().getActive()){
             weffyUser = existingUser.get();
+            // mattermost 로그인이 성공되었지만 mattermost의 비밀번호가 저장된 비밀번호가 다를 때 weffy 내의 비밀번호 수정
+            if (!weffyUser.getPassword().equals(signInInfo.getPassword())) {
+                setPassword(weffyUser, signInInfo.getPassword());
+            }
+        } else {
+            throw new CustomException(ExceptionEnum.USERWITHDRAW);
         }
 
         CreateTokenResDto createTokenResDto = tokenService.createUserToken(request, userInfo, weffyUser);
-        UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), createTokenResDto);
+        UserSignInResDto userSignInResDto = new UserSignInResDto().of(weffyUser, createTokenResDto);
         return userSignInResDto;
     }
 
     @Override
     public UserMainResDto mainUser(String identification) {
-        Optional<WeffyUser> user = Optional.ofNullable(userRepository.findByIdentification(identification).orElseThrow(() -> new NoSuchElementException("No user found with id " + identification)));
+        Optional<WeffyUser> user = Optional.ofNullable(userRepository.findByIdentification(identification)
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST)));
         UserMainResDto userMainResDto = new UserMainResDto().of(user.get());
         return userMainResDto;
     }
     @Override
     public WeffyUser findById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST));
     }
 
     @Override
     public UserInfoResDto getUser(WeffyUser weffyUser) {
         return new UserInfoResDto(weffyUser);
+    }
+
+    @Override
+    @Transactional
+    public void setUser(WeffyUser weffyUser, MultipartFile profileImg, String nickName) {
+        if(!profileImg.isEmpty()) {
+            String img = fileService.uploadFile(profileImg);
+            weffyUser.setProfileImg(img);
+        }
+        if(!nickName.isEmpty()) weffyUser.setNickname(nickName);
+        userRepository.save(weffyUser);
+    }
+
+    @Override
+    @Transactional
+    public void setPassword(WeffyUser weffyUser, String password) {
+        weffyUser.setPassword(passwordEncoder.encode(password));
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(WeffyUser weffyUser) {
+        weffyUser.setActive(false);
+        userRepository.save(weffyUser);
     }
 }

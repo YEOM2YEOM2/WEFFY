@@ -1,7 +1,9 @@
 // react 라이브러리
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -12,15 +14,19 @@ import styles from './loginForm.module.css';
 import Button from '@mui/material/Button';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-// import Row from 'react-bootstrap/Row';
-// import Col from 'react-bootstrap/Col';
+
+// store user 함수
+import { setIdentification, setAccessToken, setRefreshToken, setCsrfToken, setProfileImg, setNickname } from '../../store/reducers/user';
+import { identifier } from '@babel/types';
 
 function LoginForm() {
 
   let navigate = useNavigate();
+  let dispatch = useDispatch();
 
   let [email, setEmail] = useState("");
   let [pw, setPw] = useState("");
+  let [cnt, setCnt] = useState(0);
 
   let [emailModal, setEmailModal] = useState(false);
   let [pwModal, setPasswordModal] = useState(false);
@@ -34,6 +40,24 @@ function LoginForm() {
     setPw(e.target.value);
   }
   
+  useEffect(() => {
+      if (cnt !== 0 && cnt < 10) {
+          Swal.fire({
+              icon: 'error',
+              html: `<div style="font-family:GmarketSans">이메일/비밀번호가 올바르지 않습니다.<br>(${cnt}회 오입력하셨습니다.)</div>`,
+              confirmButtonText: 'OK',
+              confirmButtonColor: '#2672B9',
+          })   
+      } else if (cnt >= 10) {
+          Swal.fire({
+              icon: 'error',
+              html: `<div style="font-family:GmarketSans">10회 이상 이메일/비밀번호를 오입력하셨습니다.<br>비밀번호를 재설정해주세요.</div>`,
+              confirmButtonText: 'OK',
+              confirmButtonColor: '#2672B9',
+          })  
+      }
+  }, [cnt])
+
   const handleLogin = () => {
     if (!email.trim() ) {
       Swal.fire({
@@ -56,17 +80,24 @@ function LoginForm() {
     axios({
       method: 'post',
       url: 'http://i9d107.p.ssafy.io:8081/api/v1/users/signin',
-      // header : {
-
-      // },
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
       data: {
         email: email,
         password: pw
       }
     }).then((res)=> {
-      console.log(res)
+      dispatch(setIdentification(res.data.data.identification))
+      dispatch(setAccessToken(res.data.data.accessToken))
+      dispatch(setRefreshToken(res.data.data.refreshToken))
+      dispatch(setCsrfToken(res.data.data.csrfToken))
+      // dispatch(setProfileImg(res.data.data.csrfToken))
+      // dispatch(setNickname(res.data.data.csrfToken))
+      navigate("/im")
     }).catch((err)=>{
-      console.log(err)
+      setCnt(cnt+1)
     })
     
   }
