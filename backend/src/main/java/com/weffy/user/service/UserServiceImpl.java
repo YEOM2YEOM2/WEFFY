@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
         }
 
         CreateTokenResDto createTokenResDto = tokenService.createUserToken(request, userInfo, weffyUser);
-        UserSignInResDto userSignInResDto = new UserSignInResDto().of(mmClient.getId(), createTokenResDto);
+        UserSignInResDto userSignInResDto = new UserSignInResDto().of(weffyUser, createTokenResDto);
         return userSignInResDto;
     }
 
