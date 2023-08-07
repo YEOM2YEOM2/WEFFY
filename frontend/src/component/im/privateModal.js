@@ -35,6 +35,7 @@ const PrivateModal = ({ handleClose }) => {
   const [micList, setMicList] = useState([]);
   const [camList, setCamList] = useState([]);
   const OV = useRef(new OpenVidu()).current;
+
   const micStatus = useSelector((state) => state.micStatus);
   const cameraStatus = useSelector((state) => state.cameraStatus);
 
@@ -43,10 +44,12 @@ const PrivateModal = ({ handleClose }) => {
 
   const handleMicStatusToggle = () => {
     dispatch(toggleMicStatus());
+    console.log("Mic Status: ", micStatus);
   };
 
   const handleCameraStatusToggle = () => {
     dispatch(toggleCameraStatus());
+    console.log("Camera Status: ", cameraStatus);
   };
 
   useEffect(() => {
@@ -87,13 +90,14 @@ const PrivateModal = ({ handleClose }) => {
   };
 
   const handleSelectMicrophone = (event) => {
-    const newMicId = event.target.value;
+    const newMicId = parseInt(event.target.value, 10);
+
     dispatch(setSelectedMic(newMicId)); // 인덱스만 전달
     console.log(`mic Id = ${newMicId}`);
   };
 
   const handleSelectCamera = (event) => {
-    const newCamId = event.target.value;
+    const newCamId = parseInt(event.target.value, 10);
     dispatch(setSelectedCam(newCamId)); // 인덱스만 전달
     console.log(`cam Id = ${newCamId}`);
   };

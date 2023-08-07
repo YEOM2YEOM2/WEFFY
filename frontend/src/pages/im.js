@@ -136,8 +136,8 @@ export default function Im() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
-  const user = useSelector((state) => state.user);
-  console.log(user.accessToken);
+  // const user = useSelector((state) => state.user);
+  // console.log(user.accessToken);
 
   const navigate = useNavigate();
 
