@@ -4,6 +4,9 @@ import styles from "../pages/im.module.css";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+//리덕스
+import user from "../store/reducers/user.js";
+
 //mui 라이브라리
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -40,9 +43,6 @@ import StartMM from "../component/im/startMM.js";
 import MMListModal from "../component/im/mmListModal";
 import PrivateModal from "../component/im/privateModal.js";
 import JoinMeetingModal from "../component/im/joinMeetingList.js";
-
-//redux 값 가져오기
-import { user } from "../store/reducers/user";
 
 const buttons = [
   { name: "PrivateModal", src: newPrivate },
@@ -140,6 +140,17 @@ export default function Im() {
   // console.log(user.accessToken);
 
   const navigate = useNavigate();
+  const accessToken = useSelector((state) => state.user.accessToken);
+
+  // accesToken null일 경우 다시 /로 빽~!
+  useEffect(() => {
+    console.log(accessToken);
+    console.log(user);
+
+    if (!accessToken) {
+      navigate("/");
+    }
+  }, [accessToken, navigate]);
 
   const handleDrawerOpen = () => {
     setOpen(true);

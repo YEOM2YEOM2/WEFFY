@@ -36,11 +36,11 @@ const PrivateModal = ({ handleClose }) => {
   const [camList, setCamList] = useState([]);
   const OV = useRef(new OpenVidu()).current;
 
-  const micStatus = useSelector((state) => state.micStatus);
-  const cameraStatus = useSelector((state) => state.cameraStatus);
+  const micStatus = useSelector((state) => state.setting.micStatus);
+  const cameraStatus = useSelector((state) => state.setting.cameraStatus);
 
-  const selectedMic = useSelector((state) => state.selectedMic);
-  const selectedCam = useSelector((state) => state.selectedCam);
+  const selectedMic = useSelector((state) => state.setting.selectedMic);
+  const selectedCam = useSelector((state) => state.setting.selectedCam);
 
   const handleMicStatusToggle = () => {
     dispatch(toggleMicStatus());
@@ -88,6 +88,14 @@ const PrivateModal = ({ handleClose }) => {
     setUserNickname(newNickname);
     dispatch(setNickname(newNickname));
   };
+
+  useEffect(() => {
+    console.log("Mic Status: ", micStatus);
+  }, [micStatus]);
+
+  useEffect(() => {
+    console.log("Camera Status: ", cameraStatus);
+  }, [cameraStatus]);
 
   const handleSelectMicrophone = (event) => {
     const newMicId = parseInt(event.target.value, 10);
