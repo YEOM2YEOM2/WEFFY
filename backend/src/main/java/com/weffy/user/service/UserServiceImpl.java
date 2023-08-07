@@ -1,5 +1,6 @@
 package com.weffy.user.service;
 
+import com.weffy.file.service.FileService;
 import com.weffy.mattermost.MattermostHandler;
 import com.weffy.token.dto.response.CreateTokenResDto;
 import com.weffy.token.service.RefreshTokenService;
@@ -19,7 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -30,20 +37,24 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenService tokenService;
+    private final FileService fileService;
 
     @Autowired
     private MattermostHandler mattermostHandler;
 
     @Override
     @Transactional
-    public UserSignInResDto signUp(HttpServletRequest request,UserSignInReqDto signInInfo, String role) {
+    public UserSignInResDto signUp(HttpServletRequest request,UserSignInReqDto signInInfo, String role) throws IOException{
         // mattermost login
         ApiResponse<User> userInfo = mattermostHandler.login(signInInfo);
 
         // mattermost user info
         User mmClient = userInfo.readEntity();
-        String profileImg = mattermostHandler.image(mmClient.getId());
+        InputStream profileImg = mattermostHandler.image(mmClient.getId());
 
+        BufferedImage bImageFromConvert = ImageIO.read(profileImg);
+
+        String profileUrl = fileService.uploadInputStream(bImageFromConvert, mmClient.getId() + ".png");
         WeffyUser weffyUser;
         if (userRepository.findByIdentification(mmClient.getId()).isEmpty()) {
             weffyUser = userRepository.save(
@@ -55,7 +66,7 @@ public class UserServiceImpl implements UserService {
                             .nickname(mmClient.getNickname())
                             .role((role != null && role.equals("ADMIN"))? Role.ADMIN: Role.USER)
                             .active(true)
-                            .profileImg(profileImg)
+                            .profileImg(profileUrl)
                             .build()
             );
         } else {
