@@ -34,31 +34,19 @@ const nickname = createSlice({
   },
 });
 
-// 현재 모든 디바이스들
-const devices = createSlice({
-  name: "devices",
-  initialState: { microphones: [], cameras: [] },
+const selectedMic = createSlice({
+  name: "selectedMic",
+  initialState: 0,
   reducers: {
-    setMicrophones: (state, action) => {
-      state.microphones = action.payload;
-    },
-    setCameras: (state, action) => {
-      state.cameras = action.payload;
-    },
+    setSelectedMic: (state, action) => action.payload,
   },
 });
 
-// 미팅 시작전 선택한 디바이스들
-const selectedDevicesSlice = createSlice({
-  name: "selectedDevices",
-  initialState: { microphone: null, camera: null },
+const selectedCam = createSlice({
+  name: "selectedCam",
+  initialState: 0,
   reducers: {
-    selectMicrophone: (state, action) => {
-      state.microphone = action.payload;
-    },
-    selectCamera: (state, action) => {
-      state.camera = action.payload;
-    },
+    setSelectedCam: (state, action) => action.payload,
   },
 });
 
@@ -66,16 +54,16 @@ export default configureStore({
   reducer: {
     session: session.reducer,
     nickname: nickname.reducer,
-    devices: devices.reducer,
-    selectedDevices: selectedDevicesSlice.reducer,
     micStatus: micStatus.reducer,
     cameraStatus: cameraStatus.reducer,
+    selectedCam: selectedCam.reducer,
+    selectedMic: selectedMic.reducer,
   },
 });
 
 export const { setSession } = session.actions;
 export const { setNickname } = nickname.actions;
-export const { setMicrophones, setCameras } = devices.actions;
-export const { selectMicrophone, selectCamera } = selectedDevicesSlice.actions;
 export const { toggle: toggleMicStatus } = micStatus.actions;
 export const { toggle: toggleCameraStatus } = cameraStatus.actions;
+export const { setSelectedCam } = selectedCam.actions;
+export const { setSelectedMic } = selectedMic.actions;
