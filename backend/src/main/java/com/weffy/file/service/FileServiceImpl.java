@@ -16,6 +16,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 
 @Service("FileService")
@@ -24,6 +26,28 @@ public class FileServiceImpl implements FileService {
 
     private final S3Client s3Client;
     private final String bucketName = "weffy";
+
+    @Override
+    public String uploadFile(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+
+        String encodedFileName;
+        try {
+            // 한글 인코딩
+            encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
+            s3Client.putObject(
+                    PutObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(encodedFileName)
+                            .build(),
+                    RequestBody.fromInputStream(file.getInputStream(), file.getSize())
+            );
+        } catch (IOException e) {
+            throw new IllegalStateException("파일 업로드 실패", e);
+        }
+
+        return String.format("https://weffy.s3.ap-northeast-2.amazonaws.com/%s", encodedFileName.toLowerCase());
+    }
 
 
     @Override
