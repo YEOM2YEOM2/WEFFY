@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import styles from './signupNarrow.module.css';
@@ -22,6 +21,10 @@ import Row from 'react-bootstrap/Row';
 
 // hook
 import { useNavigate } from 'react-router';
+import { useDispatch } from 'react-redux';
+
+// store user 함수
+import { setIdentification, setAccessToken, setRefreshToken, setCsrfToken } from '../../store/reducers/user';
 
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
@@ -29,6 +32,7 @@ const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 function SignupNarrow() {
 
     let navigate = useNavigate();
+    let dispatch = useDispatch();
 
     let [email, setEmail] = useState("");
     let [pw, setPw] = useState("");
@@ -48,13 +52,20 @@ function SignupNarrow() {
     }
 
     useEffect(() => {
-        if (cnt !== 0) {
+        if (cnt !== 0 && cnt < 10) {
             Swal.fire({
                 icon: 'error',
                 html: `<div style="font-family:GmarketSans">이메일/비밀번호가 올바르지 않습니다.<br>(${cnt}회 오입력하셨습니다.)</div>`,
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#2672B9',
             })   
+        } else if (cnt >= 10) {
+            Swal.fire({
+                icon: 'error',
+                html: `<div style="font-family:GmarketSans">10회 이상 이메일/비밀번호를 오입력하셨습니다.<br>비밀번호를 재설정해주세요.</div>`,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#2672B9',
+            })  
         }
     }, [cnt])
 
@@ -101,11 +112,23 @@ function SignupNarrow() {
               password: pw
             }
           }).then((res)=> {
-            console.log(res)
+            dispatch(setIdentification(res.data.identification))
+            dispatch(setAccessToken(res.data.accessToken))
+            dispatch(setRefreshToken(res.data.refreshToken))
+            dispatch(setCsrfToken(res.data.csrfToken))
+            navigate("/")
           }).catch((err)=>{
-            // console.log(err)
-            setCnt(cnt+1)
-          })
+            if (err.response.status === 401) {
+                setCnt(cnt+1)
+            } else if (err.response.status === 403) {
+                Swal.fire({
+                    icon: 'warning',
+                    html: '<div style="font-family:GmarketSans">회원가입이 이미 완료된 회원입니다.</div>',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#2672B9',
+                })
+            }
+        })
     }
 
     const [showPassword, setShowPassword] = React.useState(false);
@@ -163,6 +186,11 @@ function SignupNarrow() {
                             />
                         <FormHelperText id="outlined-weight-helper-text" style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600' }}>Mattermost Password을 입력해주세요.</FormHelperText>
                         </FormControl>
+                    </Row>
+                    <Row className={styles.forgot_password}>
+                        <div className={styles.forgot_password}>
+                            <Button variant="text" href="https://meeting.ssafy.com/reset_password" style={{ textDecorationLine: 'none', color: 'black', fontFamily: 'Poppins' }}>Forgot Password?</Button>
+                        </div>
                     </Row>
                     <Row>
                         <span style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600', fontSize: '13px' }}>
