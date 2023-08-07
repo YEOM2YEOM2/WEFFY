@@ -4,6 +4,7 @@ import com.weffy.common.kms.KmsService;
 import com.weffy.user.dto.Request.UserSignInReqDto;
 import com.weffy.user.repository.UserRepository;
 import com.weffy.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,6 @@ public class TestConfig {
         user = new UserSignInReqDto();
         user.setEmail(email);
         user.setPassword(kmsService.decryptData(password));
-        userService.signIn(user, null);
+        userService.signIn((HttpServletRequest) user, null);
     }
 }
