@@ -7,9 +7,11 @@ import com.weffy.user.dto.Response.UserSignInResDto;
 import com.weffy.user.entity.WeffyUser;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.io.IOException;
+
 public interface UserService {
 
-    UserSignInResDto signUp(HttpServletRequest request, UserSignInReqDto signinInfo, String role);
+    UserSignInResDto signUp(HttpServletRequest request, UserSignInReqDto signinInfo, String role) throws IOException;
     UserSignInResDto signIn(HttpServletRequest request, UserSignInReqDto signinInfo);
     WeffyUser findById(Long userId);
 
