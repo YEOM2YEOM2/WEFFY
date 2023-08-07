@@ -1,61 +1,67 @@
+.HeaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
 .container {
-  margin: 0 auto; /* 좌우 중앙 정렬 */
-  width: 60%; /* 너비 비율 변경 */
+  margin-left: 17vw;
+  width: 55vw;
   height: 80vh;
   flex-shrink: 0;
   border-radius: 10px;
-  display: flex; /* Grid 내부 요소를 수평으로 배열 */
+  background-color: rgba(46, 46, 72, 0.7);
 }
 
-.bar {
-  width: 25%; /* 왼쪽 바 너비 조정 */
-  height: 100%;
-  background: #2e2e48;
+@media (max-width: 760px) {
+  .image {
+    width: 200px;
+  }
 }
 
-.content {
-  position: relative;
-  height: 100%;
-  background: rgba(46, 46, 72, 0.8);
-  width: 75%; /* 내용 영역 너비 조정 */
+.Header {
+  margin-top: 10px;
+  margin-left: 10px;
+  color: white;
   align-self: center;
 }
 
-.content-inner {
-  height: 100%;
-  width: 100%;
-}
-
-.menuIcon {
-  color: white;
-}
-
-.menu {
-  color: white;
-}
-
-.bar {
-  height: 100%;
-  background: #2e2e48;
-}
-
-.content {
-  position: relative;
-  height: 100%;
-  background: rgba(46, 46, 72, 0.8);
-  width: 100%;
+.imgContainer {
   align-self: center;
 }
 
-.content-inner {
-  height: 100%;
-  width: 100%;
+.image {
+  width: 300px;
+  height: 300px;
+  border-radius: 100%;
+  object-fit: cover;
 }
 
-.menuIcon {
+.nickNameInput {
   color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  width: 270px;
 }
 
-.menu {
+.imgContainer {
+  position: relative;
+  align-self: center;
+}
+
+.imageBtn {
+  position: absolute;
+  top: 20px;
+  right: 10px;
   color: white;
+  background: transparent;
+  border: none;
+}
+
+.imageIcon {
+  color: rgb(89, 149, 195);
+  font-size: 40px;
 }

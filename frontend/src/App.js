@@ -3,7 +3,7 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 // 라이브러리
-import { Route, Routes, Outlet } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 // 파일
 import Login from "./pages/login.js";
@@ -11,8 +11,7 @@ import Signup from "./pages/signUp.js";
 import Im from "./pages/im.js";
 import MyList from "./pages/myList.js";
 import Setting from "./pages/setting.js";
-import Meeting from "./pages/meeting.js";
-import Temp from "./pages/temp.js";
+import VideoRoomComponent from "./pages/VideoRoomComponent.js";
 
 function App() {
   return (
@@ -24,8 +23,7 @@ function App() {
           <Route path="mylist" element={<MyList />} />
           <Route path="setting" element={<Setting />} />
         </Route>
-        <Route path="/meeting" element={<Meeting />} />
-        <Route path="/temp" element={<Temp />} />
+        <Route path="/conference" element={<VideoRoomComponent />} />
       </Routes>
     </div>
   );
