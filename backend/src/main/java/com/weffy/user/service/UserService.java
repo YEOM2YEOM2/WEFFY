@@ -21,4 +21,6 @@ public interface UserService {
     UserInfoResDto getUser(WeffyUser weffyUser);
 
     void setUser(WeffyUser weffyUser, MultipartFile profileImg, String nickName);
+
+    void setPassword(WeffyUser weffyUser, String password);
 }
