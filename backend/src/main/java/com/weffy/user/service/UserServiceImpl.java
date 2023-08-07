@@ -1,5 +1,7 @@
 package com.weffy.user.service;
 
+import com.weffy.exception.CustomException;
+import com.weffy.exception.ExceptionEnum;
 import com.weffy.file.service.FileService;
 import com.weffy.mattermost.MattermostHandler;
 import com.weffy.token.dto.response.CreateTokenResDto;
@@ -48,15 +50,15 @@ public class UserServiceImpl implements UserService {
         // mattermost login
         ApiResponse<User> userInfo = mattermostHandler.login(signInInfo);
 
-        // mattermost user info
+        // mattermost user 정보 및 프로필 이미지 저장
         User mmClient = userInfo.readEntity();
         InputStream profileImg = mattermostHandler.image(mmClient.getId());
-
         BufferedImage bImageFromConvert = ImageIO.read(profileImg);
-
         String profileUrl = fileService.uploadInputStream(bImageFromConvert, mmClient.getId() + ".png");
+
         WeffyUser weffyUser;
-        if (userRepository.findByIdentification(mmClient.getId()).isEmpty()) {
+        Optional<WeffyUser> existUser = userRepository.findByIdentification(mmClient.getId());
+        if (existUser.isEmpty()) {
             weffyUser = userRepository.save(
                     WeffyUser.builder()
                             .identification(mmClient.getId())
@@ -69,8 +71,10 @@ public class UserServiceImpl implements UserService {
                             .profileImg(profileUrl)
                             .build()
             );
-        } else {
-            throw new IllegalArgumentException("회원정보가 존재합니다.");
+        } else if (!existUser.get().getActive()){
+            throw new CustomException(ExceptionEnum.USERWITHDRAW);
+        }else {
+            throw new CustomException(ExceptionEnum.USEREXIST);
         }
 
         CreateTokenResDto createTokenResDto = tokenService.createUserToken(request, userInfo, weffyUser);
@@ -85,8 +89,8 @@ public class UserServiceImpl implements UserService {
 
         WeffyUser weffyUser;
         Optional<WeffyUser> existingUser = userRepository.findByIdentification(mmClient.getId());
-        if (userRepository.findByIdentification(mmClient.getId()).isEmpty()) {
-            throw new IllegalArgumentException("회원정보가 없습니다.");
+        if (existingUser.isEmpty()) {
+            throw new CustomException(ExceptionEnum.USERNOTEXIST);
         } else if (existingUser.get().getActive()){
             weffyUser = existingUser.get();
             // mattermost 로그인이 성공되었지만 mattermost의 비밀번호가 저장된 비밀번호가 다를 때 weffy 내의 비밀번호 수정
@@ -94,7 +98,7 @@ public class UserServiceImpl implements UserService {
                 setPassword(weffyUser, signInInfo.getPassword());
             }
         } else {
-            throw new IllegalArgumentException("탈퇴한 회원입니다.");
+            throw new CustomException(ExceptionEnum.USERWITHDRAW);
         }
 
         CreateTokenResDto createTokenResDto = tokenService.createUserToken(request, userInfo, weffyUser);
@@ -104,14 +108,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserMainResDto mainUser(String identification) {
-        Optional<WeffyUser> user = Optional.ofNullable(userRepository.findByIdentification(identification).orElseThrow(() -> new NoSuchElementException("No user found with id " + identification)));
+        Optional<WeffyUser> user = Optional.ofNullable(userRepository.findByIdentification(identification)
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST)));
         UserMainResDto userMainResDto = new UserMainResDto().of(user.get());
         return userMainResDto;
     }
     @Override
     public WeffyUser findById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User with id " + userId + " not found"));
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST));
     }
 
     @Override
