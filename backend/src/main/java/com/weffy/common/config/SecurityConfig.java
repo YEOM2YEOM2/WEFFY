@@ -40,11 +40,13 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/api/v1/users/signin", "/api/v1/users/signup")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
+                .cors(cors -> cors
+                        .configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                                // mysql 데이터베이스 콘솔, 정적 리소스, swagger 경로 인증 권한 설정
-                                .requestMatchers("/api/v1/users/signin", "/api/v1/users/signup", "/mysql-console/**", "/static/**", "/swagger-ui/**", "/api-docs/**").permitAll()
-                                .requestMatchers("/requestMatchersadmin/**").hasRole("ADMIN")
-                                .anyRequest().authenticated()
+                        // mysql 데이터베이스 콘솔, 정적 리소스, swagger 경로 인증 권한 설정
+                        .requestMatchers("/api/v1/users/signin", "/api/v1/users/signup", "/mysql-console/**", "/static/**", "/swagger-ui/**", "/api-docs/**").permitAll()
+                        .requestMatchers("/requestMatchersadmin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(formLogin -> formLogin
@@ -57,8 +59,8 @@ public class SecurityConfig {
 //                        .loginProcessingUrl("/signin")
 //                        .permitAll())
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/signin")
-                        .permitAll()
+                                .logoutSuccessUrl("/signin")
+                                .permitAll()
 //                .rememberMe(rememberMe -> rememberMe
 //                                .key("rememberMe")
 //                                .rememberMeParameter("remember")
@@ -104,10 +106,11 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("<http://localhost>", "<http://3.39.223.169>", "<http://i9d107.p.ssafy.io>", "<https://3.39.223.169>", "<https://i9d107.p.ssafy.io>"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://3.39.223.169:3000", "http://i9d107.p.ssafy.io:3000", "https://3.39.223.169", "https://i9d107.p.ssafy.io"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "content-type", "x-auth-token"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
+        configuration.setAllowCredentials(true); // 허용된 도메인에 쿠키를 전송하도록 허용
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
