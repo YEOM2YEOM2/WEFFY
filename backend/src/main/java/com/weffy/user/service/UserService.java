@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface UserService {
 
-    UserSignInResDto signUp(HttpServletRequest request, UserSignInReqDto signinInfo, String role) throws IOException;
+    void signUp(UserSignInReqDto signinInfo, String role) throws IOException;
     UserSignInResDto signIn(HttpServletRequest request, UserSignInReqDto signinInfo);
     WeffyUser findById(Long userId);
 

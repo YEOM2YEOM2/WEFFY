@@ -52,8 +52,6 @@ public class MattermostHandler {
                 .addHeader("Authorization", "Bearer " + sessionToken)
                 .build();
 
-        if (request.body() == null) throw new CustomException(ExceptionEnum.IMAGENOTFOUND);
-
         Response response = client.newCall(request).execute();
         InputStream in = response.body().byteStream();
         return in;
