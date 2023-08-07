@@ -4,10 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setSession,
   setNickname,
-  setMicrophones,
-  setCameras,
-  selectMicrophone,
-  selectCamera,
+  setSelectedCam,
+  setSelectedMic,
   toggleMicStatus,
   toggleCameraStatus,
 } from "../../store/setting.js";
@@ -34,11 +32,14 @@ import defaultImg from "../../assets/images/defualt_image.png";
 const PrivateModal = ({ handleClose }) => {
   const dispatch = useDispatch();
   const [nickname, setUserNickname] = useState("default nickname");
-  const [mics, setMics] = useState([]);
-  const [cams, setCams] = useState([]);
+  const [micList, setMicList] = useState([]);
+  const [camList, setCamList] = useState([]);
   const OV = useRef(new OpenVidu()).current;
   const micStatus = useSelector((state) => state.micStatus);
   const cameraStatus = useSelector((state) => state.cameraStatus);
+
+  const selectedMic = useSelector((state) => state.selectedMic);
+  const selectedCam = useSelector((state) => state.selectedCam);
 
   const handleMicStatusToggle = () => {
     dispatch(toggleMicStatus());
@@ -54,17 +55,22 @@ const PrivateModal = ({ handleClose }) => {
     OV.getDevices()
       .then((devices) => {
         console.log(devices);
-        const mics = devices.filter((device) => device.kind === "audioinput");
-        const cams = devices.filter((device) => device.kind === "videoinput");
-        dispatch(setMicrophones(mics));
-        dispatch(setCameras(cams));
-        if (mics.length > 0) {
-          setMics(mics);
-          dispatch(selectMicrophone(mics[0]));
+        const filteredMicList = devices.filter(
+          (device) => device.kind === "audioinput"
+        );
+        const filteredCamList = devices.filter(
+          (device) => device.kind === "videoinput"
+        );
+
+        //가져온 값으로 list변경
+        setMicList(filteredMicList);
+        setCamList(filteredCamList);
+
+        if (filteredMicList.length > 0) {
+          dispatch(setSelectedMic(0));
         }
-        if (cams.length > 0) {
-          setCameras(cams);
-          dispatch(selectCamera(cams[0]));
+        if (filteredCamList.length > 0) {
+          dispatch(setSelectedCam(0));
         }
       })
       .catch((error) => console.error(error));
@@ -73,7 +79,7 @@ const PrivateModal = ({ handleClose }) => {
   const handleNicknameChange = (e) => {
     const newNickname = e.target.value;
     if (!newNickname) {
-      console.error("닉네임을 비워둘 수는 없습니다.");
+      alert("Nickname can't be empty!");
       return;
     }
     setUserNickname(newNickname);
@@ -81,15 +87,15 @@ const PrivateModal = ({ handleClose }) => {
   };
 
   const handleSelectMicrophone = (event) => {
-    const selectedMic = mics.find((mic) => mic.deviceId === event.target.value);
-    dispatch(selectMicrophone(selectedMic));
+    const newMicId = event.target.value;
+    dispatch(setSelectedMic(newMicId)); // 인덱스만 전달
+    console.log(`mic Id = ${newMicId}`);
   };
 
   const handleSelectCamera = (event) => {
-    const selectedCamera = cams.find(
-      (cam) => cam.deviceId === event.target.value
-    );
-    dispatch(selectCamera(selectedCamera));
+    const newCamId = event.target.value;
+    dispatch(setSelectedCam(newCamId)); // 인덱스만 전달
+    console.log(`cam Id = ${newCamId}`);
   };
 
   return (
@@ -112,6 +118,7 @@ const PrivateModal = ({ handleClose }) => {
                   alt="profileImg"
                   src={defaultImg}
                   sx={{ width: 200, height: 200 }}
+                  className={styles["profileImg"]}
                 />
               </Box>
               <Box sx={{ flexGrow: 1 }}>
@@ -129,19 +136,22 @@ const PrivateModal = ({ handleClose }) => {
                 <Grid>
                   <FormControl className={styles["selectBox"]}>
                     <Select
-                      value={mics.length > 0 ? mics[0].deviceId : ""}
+                      value={selectedMic !== null ? selectedMic : ""}
                       onChange={handleSelectMicrophone}
                       displayEmpty
                       inputProps={{ "aria-label": "Without label" }}
                     >
-                      {mics.map((mic, index) => (
-                        <MenuItem key={index} value={mic.deviceId}>
+                      {micList.map((mic, index) => (
+                        <MenuItem key={index} value={index}>
                           {mic.label || `Microphone ${index + 1}`}
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
-                  <IconButton onClick={handleMicStatusToggle}>
+                  <IconButton
+                    onClick={handleMicStatusToggle}
+                    className={styles["btnBox"]}
+                  >
                     {micStatus ? (
                       <MicIcon />
                     ) : (
@@ -152,19 +162,22 @@ const PrivateModal = ({ handleClose }) => {
                 <Grid>
                   <FormControl className={styles["selectBox"]}>
                     <Select
-                      value={cams.length > 0 ? cams[0].deviceId : ""}
+                      value={selectedCam !== null ? selectedCam : ""}
                       onChange={handleSelectCamera}
                       displayEmpty
                       inputProps={{ "aria-label": "Without label" }}
                     >
-                      {cams.map((cam, index) => (
-                        <MenuItem key={index} value={cam.deviceId}>
+                      {camList.map((cam, index) => (
+                        <MenuItem key={index} value={index}>
                           {cam.label}
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
-                  <IconButton onClick={handleCameraStatusToggle}>
+                  <IconButton
+                    onClick={handleCameraStatusToggle}
+                    className={styles["btnBox"]}
+                  >
                     {cameraStatus ? (
                       <VideocamIcon />
                     ) : (
