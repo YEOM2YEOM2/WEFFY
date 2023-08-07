@@ -71,10 +71,10 @@ export default class StreamComponent extends Component {
                                 required
                             />
                             {!this.state.isFormValid && this.state.nickname.length <= 3 && (
-                                <FormHelperText id="name-error-text">Nickname is too short!</FormHelperText>
+                                <FormHelperText id="name-error-text">4 ~ 20자로 작성해주세요.</FormHelperText>
                             )}
-                            {!this.state.isFormValid && this.state.nickname.length >= 20 && (
-                                <FormHelperText id="name-error-text">Nickname is too long!</FormHelperText>
+                            {!this.state.isFormValid && this.state.nickname.length >= 21 && (
+                                <FormHelperText id="name-error-text">4 ~ 20자로 작성해주세요.</FormHelperText>
                             )}
                         </FormControl>
                     ) : (
@@ -91,13 +91,13 @@ export default class StreamComponent extends Component {
                         <div id="statusIcons">
                             {!this.props.user.isVideoActive() ? (
                                 <div id="camIcon">
-                                    <VideocamOffIcon id="statusCam" />
+                                    <VideocamOffIcon id="statusCam"/>
                                 </div>
                             ) : null}
 
                             {!this.props.user.isAudioActive() ? (
                                 <div id="micIcon">
-                                    <MicOffIcon id="statusMic" />
+                                    <MicOffIcon id="statusMic"/>
                                 </div>
                             ) : null}
                         </div>
