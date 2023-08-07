@@ -87,8 +87,14 @@ public class UserServiceImpl implements UserService {
         Optional<WeffyUser> existingUser = userRepository.findByIdentification(mmClient.getId());
         if (userRepository.findByIdentification(mmClient.getId()).isEmpty()) {
             throw new IllegalArgumentException("회원정보가 없습니다.");
-        } else {
+        } else if (existingUser.get().getActive()){
             weffyUser = existingUser.get();
+            // mattermost 로그인이 성공되었지만 mattermost의 비밀번호가 저장된 비밀번호가 다를 때 weffy 내의 비밀번호 수정
+            if (!weffyUser.getPassword().equals(signInInfo.getPassword())) {
+                setPassword(weffyUser, signInInfo.getPassword());
+            }
+        } else {
+            throw new IllegalArgumentException("탈퇴한 회원입니다.");
         }
 
         CreateTokenResDto createTokenResDto = tokenService.createUserToken(request, userInfo, weffyUser);
@@ -111,5 +117,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserInfoResDto getUser(WeffyUser weffyUser) {
         return new UserInfoResDto(weffyUser);
+    }
+
+    @Override
+    @Transactional
+    public void setUser(WeffyUser weffyUser, MultipartFile profileImg, String nickName) {
+        if(!profileImg.isEmpty()) {
+            String img = fileService.uploadFile(profileImg);
+            weffyUser.setProfileImg(img);
+        }
+        if(!nickName.isEmpty()) weffyUser.setNickname(nickName);
+        userRepository.save(weffyUser);
+    }
+
+    @Override
+    @Transactional
+    public void setPassword(WeffyUser weffyUser, String password) {
+        weffyUser.setPassword(passwordEncoder.encode(password));
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(WeffyUser weffyUser) {
+        weffyUser.setActive(false);
+        userRepository.save(weffyUser);
     }
 }
