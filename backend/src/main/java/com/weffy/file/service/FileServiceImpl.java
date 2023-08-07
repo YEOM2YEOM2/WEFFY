@@ -1,5 +1,7 @@
 package com.weffy.file.service;
 
+import com.weffy.exception.CustomException;
+import com.weffy.exception.ExceptionEnum;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +77,7 @@ public class FileServiceImpl implements FileService {
 
             System.out.println("Image uploaded successfully");
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new CustomException(ExceptionEnum.IMAGENOTFOUND);
         }
 
         return String.format("https://weffy.s3.ap-northeast-2.amazonaws.com/%s", fileName.toLowerCase());

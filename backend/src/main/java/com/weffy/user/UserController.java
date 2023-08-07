@@ -49,9 +49,9 @@ public class UserController {
             @ApiResponse(responseCode = "500", description =  "서버 오류")
     })
     @PostMapping("/signup")
-    public ResponseEntity<? extends BaseResponseBody> signup(HttpServletRequest request, @RequestBody UserSignInReqDto signinInfo, @RequestParam(name = "role", required = false) String role ) throws IOException {
-        UserSignInResDto weffyUser = userService.signUp(request, signinInfo, role);
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, weffyUser));
+    public ResponseEntity<? extends BaseResponseBody> signup(@RequestBody UserSignInReqDto signinInfo, @RequestParam(name = "role", required = false) String role ) throws IOException {
+        userService.signUp(signinInfo, role);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, "CREATED"));
     }
 
     @Operation(summary = "로그인", description = "weffy에 해당 User의 정보를 찾아 로그인 \n\n" )
