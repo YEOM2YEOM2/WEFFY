@@ -1,7 +1,8 @@
 package com.weffy.user;
 
 import com.weffy.common.dto.BaseResponseBody;
-import com.weffy.token.config.TokenProvider;
+import com.weffy.exception.CustomException;
+import com.weffy.exception.ExceptionEnum;
 import com.weffy.token.util.SecurityUtil;
 import com.weffy.user.dto.Request.UserSignInReqDto;
 import com.weffy.user.dto.Response.UserMainResDto;
@@ -25,8 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Optional;
-
-import static java.rmi.server.LogStream.log;
 
 
 @Slf4j
@@ -86,7 +85,7 @@ public class UserController {
             UserMainResDto userinfo = userService.mainUser(identification);
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, userinfo));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, "올바르지 않은 사용자의 접근입니다."));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALIDUSER)));
     }
 
     @Operation(summary = "User 회원 조회", description = "회원 정보 조회 \n\n" )
@@ -104,7 +103,7 @@ public class UserController {
         if (weffyUser.isPresent() ) {
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, userService.getUser(weffyUser.get())));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, "올바르지 않은 사용자의 접근입니다."));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALIDUSER)));
     }
 
     @Operation(summary = "User 회원 정보 수정", description = "profile image와 nickname 수정 \n\n" )
@@ -123,7 +122,7 @@ public class UserController {
             userService.setUser(weffyUser.get(), profileImg, nickName);
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "success"));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, "올바르지 않은 사용자의 접근입니다."));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALIDUSER)));
     }
 
     @Operation(summary = "User 회원 탈퇴", description = "회원 탈퇴 \n\n" )
@@ -142,7 +141,7 @@ public class UserController {
             userService.deleteUser(weffyUser.get());
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "success"));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, "올바르지 않은 사용자의 접근입니다."));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALIDUSER)));
     }
 
 
