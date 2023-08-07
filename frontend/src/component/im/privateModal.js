@@ -10,7 +10,7 @@ import {
   selectCamera,
   toggleMicStatus,
   toggleCameraStatus,
-} from "../../store/setting.js";
+} from "../../store/reducers/setting.js";
 
 import { OpenVidu } from "openvidu-browser";
 
