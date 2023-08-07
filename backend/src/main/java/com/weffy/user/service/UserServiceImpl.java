@@ -112,4 +112,15 @@ public class UserServiceImpl implements UserService {
     public UserInfoResDto getUser(WeffyUser weffyUser) {
         return new UserInfoResDto(weffyUser);
     }
+
+    @Override
+    @Transactional
+    public void setUser(WeffyUser weffyUser, MultipartFile profileImg, String nickName) {
+        if(!profileImg.isEmpty()) {
+            String img = fileService.uploadFile(profileImg);
+            weffyUser.setProfileImg(img);
+        }
+        if(!nickName.isEmpty()) weffyUser.setNickname(nickName);
+        userRepository.save(weffyUser);
+    }
 }

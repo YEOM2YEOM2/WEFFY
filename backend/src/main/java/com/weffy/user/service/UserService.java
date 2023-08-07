@@ -6,8 +6,10 @@ import com.weffy.user.dto.Response.UserMainResDto;
 import com.weffy.user.dto.Response.UserSignInResDto;
 import com.weffy.user.entity.WeffyUser;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -17,4 +19,6 @@ public interface UserService {
 
     UserMainResDto mainUser(String userId);
     UserInfoResDto getUser(WeffyUser weffyUser);
+
+    void setUser(WeffyUser weffyUser, MultipartFile profileImg, String nickName);
 }
