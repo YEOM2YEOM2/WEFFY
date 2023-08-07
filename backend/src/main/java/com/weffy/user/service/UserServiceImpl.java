@@ -89,6 +89,10 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("회원정보가 없습니다.");
         } else {
             weffyUser = existingUser.get();
+            // mattermost 로그인이 성공되었지만 mattermost의 비밀번호가 저장된 비밀번호가 다를 때 weffy 내의 비밀번호 수정
+            if (!weffyUser.getPassword().equals(signInInfo.getPassword())) {
+                setPassword(weffyUser, signInInfo.getPassword());
+            }
         }
 
         CreateTokenResDto createTokenResDto = tokenService.createUserToken(request, userInfo, weffyUser);
@@ -122,5 +126,11 @@ public class UserServiceImpl implements UserService {
         }
         if(!nickName.isEmpty()) weffyUser.setNickname(nickName);
         userRepository.save(weffyUser);
+    }
+
+    @Override
+    @Transactional
+    public void setPassword(WeffyUser weffyUser, String password) {
+        weffyUser.setPassword(passwordEncoder.encode(password));
     }
 }
