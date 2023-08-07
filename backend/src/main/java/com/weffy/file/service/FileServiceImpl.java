@@ -33,11 +33,12 @@ public class FileServiceImpl implements FileService {
 
         String encodedFileName;
         try {
-
+            // 한글 인코딩
+            encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
             s3Client.putObject(
                     PutObjectRequest.builder()
                             .bucket(bucketName)
-                            .key(fileName)
+                            .key(encodedFileName)
                             .build(),
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
@@ -45,7 +46,7 @@ public class FileServiceImpl implements FileService {
             throw new IllegalStateException("파일 업로드 실패", e);
         }
 
-        return String.format("https://weffy.s3.ap-northeast-2.amazonaws.com/%s", fileName.toLowerCase());
+        return String.format("https://weffy.s3.ap-northeast-2.amazonaws.com/%s", encodedFileName.toLowerCase());
     }
 
 
