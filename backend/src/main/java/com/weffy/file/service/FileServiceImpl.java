@@ -30,15 +30,19 @@ public class FileServiceImpl implements FileService {
     @Override
     public String uploadFile(MultipartFile file) {
         String fileName = file.getOriginalFilename();
+        String type = file.getContentType();
 
         String encodedFileName;
         try {
             // 한글 인코딩
-            encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
+            encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString())
+                    .replaceAll("\\+", "%2B");
             s3Client.putObject(
                     PutObjectRequest.builder()
                             .bucket(bucketName)
                             .key(encodedFileName)
+                            .contentDisposition("inline")
+                            .contentType(type)
                             .build(),
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
