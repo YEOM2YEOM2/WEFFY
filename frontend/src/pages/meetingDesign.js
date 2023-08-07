@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './defaultMode.module.css';
+import styles from './meetingDesign.module.css';
 
 // hook
 import { useState } from 'react';

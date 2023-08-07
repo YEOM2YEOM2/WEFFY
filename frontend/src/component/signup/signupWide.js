@@ -16,10 +16,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Checkbox from '@mui/material/Checkbox';
 
 // bootstrap
-import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 
 // hook
 import { useNavigate } from 'react-router-dom';
@@ -36,7 +34,6 @@ function SignupWide() {
 
     let [email, setEmail] = useState("");
     let [pw, setPw] = useState("");
-    let [rePw, setRePw] = useState("");
     let [agree, setAgree] = useState(false);
 
     const handleEmail = (e) => {
@@ -47,9 +44,6 @@ function SignupWide() {
         setPw(e.target.value);
     }
 
-    const handleRePw = (e) => {
-        setRePw(e.target.value);
-    }
 
     const handleCheck = (e) => {
         setAgree(!agree)
@@ -66,7 +60,7 @@ function SignupWide() {
           return
         }
         
-        if (!pw.trim() || !rePw.trim()) {
+        if (!pw.trim()) {
           Swal.fire({
             icon: 'question',
             html: '<div style="font-family:GmarketSans">비밀번호를 입력해주세요.<br>(공백은 입력되지 않습니다.)</div>',
@@ -75,16 +69,6 @@ function SignupWide() {
           })
           return
         } 
-
-        if (pw !== rePw ) {
-            Swal.fire({
-                icon: 'error',
-                html: '<div style="font-family:GmarketSans">비밀번호가 일치하지 않습니다.</div>',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#AE2424',
-            })
-            return
-        }
 
         if (!agree) {
             Swal.fire({
@@ -98,9 +82,9 @@ function SignupWide() {
 
         axios({
             method: 'post',
-            url: 'http://i9d107.p.ssafy.io:8081/api/v1/users/signin',
+            url: 'http://i9d107.p.ssafy.io:8081/api/v1/users/signiup',
             // header : {
-      
+                
             // },
             data: {
               email: email,
@@ -161,31 +145,6 @@ function SignupWide() {
                         onChange={handlePw}
                     />
                 <FormHelperText id="outlined-weight-helper-text" style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600' }}>Mattermost Password을 입력해주세요.</FormHelperText>
-                </FormControl>
-            </Row>
-            <Row className={styles.margin}>
-                <FormControl style={{ width: '100%' }} sx={{ m: 1, width: '25ch' }} variant="outlined">
-                    <InputLabel htmlFor="outlined-adornment-password" style={{ fontFamily: 'Poppins' }}>Password Confirmation</InputLabel>
-                    <OutlinedInput
-                        id="outlined-adornment-password"
-                        type={showPasswordRe ? 'text' : 'password'}
-                        endAdornment={
-                        <InputAdornment position="end">
-                            <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPasswordRe}
-                            onMouseDown={handleMouseDownPasswordRe}
-                            edge="end"
-                            >
-                            {showPasswordRe ? <Visibility /> : <VisibilityOff />}
-                            </IconButton>
-                        </InputAdornment>
-                        }
-                        onChange={handleRePw}
-                        label="Password Confirmation"
-                        style={{ fontFamily: 'Poppins' }}
-                    />
-                <FormHelperText id="outlined-weight-helper-text" style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600' }}>비밀번호를 재입력해주세요.</FormHelperText>
                 </FormControl>
             </Row>
             <Row>
