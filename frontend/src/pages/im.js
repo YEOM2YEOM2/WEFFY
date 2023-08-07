@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Route, Routes, Outlet, useLocation } from "react-router-dom";
 import styles from "../pages/im.module.css";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 //mui 라이브라리
 import { styled, useTheme } from "@mui/material/styles";
@@ -39,6 +40,9 @@ import StartMM from "../component/im/startMM.js";
 import MMListModal from "../component/im/mmListModal";
 import PrivateModal from "../component/im/privateModal.js";
 import JoinMeetingModal from "../component/im/joinMeetingList.js";
+
+//redux 값 가져오기
+import { user } from "../store/reducers/user";
 
 const buttons = [
   { name: "PrivateModal", src: newPrivate },
@@ -128,9 +132,12 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function ClippedDrawer() {
+export default function Im() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+
+  const user = useSelector((state) => state.user);
+  console.log(user.accessToken);
 
   const navigate = useNavigate();
 

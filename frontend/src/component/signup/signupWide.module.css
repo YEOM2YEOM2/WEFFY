@@ -24,3 +24,10 @@
 .margin {
     margin: 10px 100px 10px 100px;
 }
+
+.forgot_password {
+    position: relative;
+    right: 5%;
+    bottom: 6px;
+    text-align: end;
+}

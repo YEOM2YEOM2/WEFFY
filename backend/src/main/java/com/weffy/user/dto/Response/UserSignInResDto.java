@@ -1,6 +1,7 @@
 package com.weffy.user.dto.Response;
 
 import com.weffy.token.dto.response.CreateTokenResDto;
+import com.weffy.user.entity.WeffyUser;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,16 +9,16 @@ import lombok.Setter;
 @Setter
 public class UserSignInResDto {
     String identification;
-    String accessToken;
-    String refreshToken;
-    String csrfToken;
+    String nickName;
+    String profileImg;
+    CreateTokenResDto token;
 
-    public UserSignInResDto of(String identification, CreateTokenResDto createTokenResDto) {
+    public UserSignInResDto of(WeffyUser weffyUser, CreateTokenResDto createTokenResDto) {
         UserSignInResDto res = new UserSignInResDto();
-        res.identification = identification;
-        res.accessToken = createTokenResDto.getAccessToken();
-        res.refreshToken = createTokenResDto.getRefreshToken();
-        res.csrfToken = createTokenResDto.getCsrfToken();
+        res.identification = weffyUser.getIdentification();
+        res.nickName = weffyUser.getNickname();
+        res.profileImg = weffyUser.getProfileImg();
+        res.token = createTokenResDto;
         return res;
     }
 }
