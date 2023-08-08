@@ -138,8 +138,9 @@ export default function Im() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
-  // const user = useSelector((state) => state.user);
-  // console.log(user.accessToken);
+  //redux에서 사진, 닉네임 가져오기
+  const profileImg = useSelector((state) => state.user.profileImg);
+  const nickname = useSelector((state) => state.user.nickname);
 
   const navigate = useNavigate();
   const identification = useSelector((state) => state.user.identification);
@@ -278,10 +279,11 @@ export default function Im() {
         </DrawerHeader>
         <div className={styles["profileContainer"]}>
           <img
-            src={defaultImg}
+            src={profileImg}
             alt="Profile"
             className={open ? styles["profileImg"] : styles["profileImgClosed"]}
           />
+          {open && <h7 className={styles["nickname"]}>{nickname}</h7>}
         </div>
         <Divider />
 
