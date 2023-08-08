@@ -21,9 +21,9 @@ public class OpenviduDB {
 
     private static Map<String, Map<String, UserRole>> mapSessionNamesTokens;
 
-    private static Map<String, Boolean> sessionRecordings;
+   // private static Map<String, Boolean> sessionRecordings;
 
-    private static Map<String, String> mapIdentificationTokens;
+    //private static Map<String, String> mapIdentificationTokens;
 
     public static OpenVidu getOpenvidu(){
         if(openvidu == null){
@@ -39,19 +39,19 @@ public class OpenviduDB {
         return mapSessionNamesTokens;
     }
 
-    public static Map<String, Boolean> getSessionRecordings(){
-        if(sessionRecordings == null){
-            sessionRecordings = new ConcurrentHashMap<>();
-        }
-        return sessionRecordings;
-    }
+//    public static Map<String, Boolean> getSessionRecordings(){
+//        if(sessionRecordings == null){
+//            sessionRecordings = new ConcurrentHashMap<>();
+//        }
+//        return sessionRecordings;
+//    }
 
-    public static Map<String, String> getMapIdentificationTokens(){
-        if(mapIdentificationTokens == null){
-            mapIdentificationTokens = new ConcurrentHashMap<>();
-        }
-        return mapIdentificationTokens;
-    }
+//    public static Map<String, String> getMapIdentificationTokens(){
+//        if(mapIdentificationTokens == null){
+//            mapIdentificationTokens = new ConcurrentHashMap<>();
+//        }
+//        return mapIdentificationTokens;
+//    }
 
 
 
