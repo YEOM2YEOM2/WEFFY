@@ -9,13 +9,11 @@ import lombok.Setter;
 public class CreateTokenResDto {
     String accessToken;
     String refreshToken;
-    String csrfToken;
 
-    public CreateTokenResDto of(String accessToken, String refreshToken, String csrfToken) {
+    public CreateTokenResDto of(String accessToken, String refreshToken) {
         CreateTokenResDto res = new CreateTokenResDto();
         res.accessToken = accessToken;
         res.refreshToken = refreshToken;
-        res.csrfToken = csrfToken;
         return res;
     }
 }

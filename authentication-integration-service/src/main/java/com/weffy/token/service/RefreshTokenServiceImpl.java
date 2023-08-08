@@ -39,9 +39,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
 
     @Override
-    public CreateTokenResDto createUserToken(HttpServletRequest request, ApiResponse<User> userInfo, WeffyUser weffyUser) {
-        CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-
+    public CreateTokenResDto createUserToken(ApiResponse<User> userInfo, WeffyUser weffyUser) {
         // Mattermost 세션 토큰
         String token = Objects.requireNonNull(userInfo.getRawResponse().getHeaders().get("Token").get(0).toString());
         mattermostService.saveSession(weffyUser, token);
@@ -55,7 +53,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         } else {
             saveToken(weffyUser, refreshToken);
         }
-        return new CreateTokenResDto().of(accessToken, refreshToken, csrfToken.getToken());
+        return new CreateTokenResDto().of(accessToken, refreshToken);
     }
 
     public RefreshToken findByRefreshToken(String refreshToken) {

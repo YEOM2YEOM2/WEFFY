@@ -20,16 +20,13 @@ import net.bis5.mattermost.client4.ApiResponse;
 import net.bis5.mattermost.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Transactional
@@ -79,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserSignInResDto signIn(HttpServletRequest request, UserSignInReqDto signInInfo) {
+    public UserSignInResDto signIn(UserSignInReqDto signInInfo) {
         ApiResponse<User> userInfo = mattermostHandler.login(signInInfo);
         User mmClient = userInfo.readEntity();
 
@@ -97,7 +94,7 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(ExceptionEnum.USERWITHDRAW);
         }
 
-        CreateTokenResDto createTokenResDto = tokenService.createUserToken(request, userInfo, weffyUser);
+        CreateTokenResDto createTokenResDto = tokenService.createUserToken(userInfo, weffyUser);
         UserSignInResDto userSignInResDto = new UserSignInResDto().of(weffyUser, createTokenResDto);
         return userSignInResDto;
     }
