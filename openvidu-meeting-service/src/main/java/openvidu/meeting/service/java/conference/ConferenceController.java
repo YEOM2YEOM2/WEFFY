@@ -39,8 +39,8 @@ public class ConferenceController {
         sessionRecordings = OpenviduDB.getSessionRecordings();
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<? extends BaseResponseBody>conferenceCreate(@RequestBody(required = false) Map<String,Object> info)
+    @PostMapping
+    public ResponseEntity<? extends BaseResponseBody>createConference(@RequestBody(required = false) Map<String,Object> info)
             throws OpenViduJavaClientException, OpenViduHttpException{
 
         // 이미 만들어진 방(세션)인 경우
@@ -54,18 +54,23 @@ public class ConferenceController {
 
         // DB에 방(세션)을 저장함
         ConferenceDto dto = ConferenceDto.builder()
-                        .identification((String)info.get("identification")).conference_url((String)info.get("conference_url"))
+                        .identification((String)info.get("identification"))
                         .classId((String)info.get("class_id")).title((String)info.get("title"))
                         .description((String)info.get("description"))
                 .active((boolean)info.get("active")).build();
 
+
+
         conferenceService.createSession(dto);
+
+        // 새롭게 생성한 방을 DB에 저장한다.
+
 
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, session));
     }
 
     // 유저가 host인 방 리스트 가져오기
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public ResponseEntity<? extends BaseResponseBody>conferenceList(@RequestParam(name = "identification") String identification)
             throws OpenViduJavaClientException, OpenViduHttpException{
         List<Conference> roomList = conferenceRepository.findAllByIdentification(identification);
@@ -73,8 +78,8 @@ public class ConferenceController {
     }
 
     // 사람이 방(세션)에 들어갈 때(방이 존재하는지 확인하고, 토큰을 발급해준다)
-    @RequestMapping(value="/{class_id}", method = RequestMethod.POST)
-    public ResponseEntity<? extends BaseResponseBody>conferenceConnection(@PathVariable("class_id") String classId,
+    @PostMapping("/{class_id}")
+    public ResponseEntity<? extends BaseResponseBody>connectionConference(@PathVariable("class_id") String classId,
                                                                           @RequestBody(required = false) Map<String, Object> info)
             throws OpenViduJavaClientException, OpenViduHttpException{
         Session session = openvidu.getActiveSession(classId);
@@ -103,7 +108,7 @@ public class ConferenceController {
 
     // 회의 수정 (제목, 내용, updated_at)
     @PatchMapping("/{class_id}")
-    public ResponseEntity<? extends BaseResponseBody>conferenceModify(@PathVariable(name="class_id")String classId,
+    public ResponseEntity<? extends BaseResponseBody>modifyConference(@PathVariable(name="class_id")String classId,
                                                                       @RequestBody(required = false) Map<String, Object> info)
             throws OpenViduJavaClientException, OpenViduHttpException {
         String title = (String)info.get("title");
@@ -122,7 +127,7 @@ public class ConferenceController {
 
     // 회의비활성화
     @PatchMapping("/{class_id}/status")
-    public ResponseEntity<? extends BaseResponseBody>conferenceEnable(@PathVariable(name = "class_id") String classId,
+    public ResponseEntity<? extends BaseResponseBody>enableConference(@PathVariable(name = "class_id") String classId,
                                    @RequestParam(name = "active") boolean active)  throws OpenViduJavaClientException, OpenViduHttpException{
             Conference conference = conferenceRepository.findByClassId(classId);
 
@@ -136,6 +141,8 @@ public class ConferenceController {
 
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, conference));
     }
+
+
 
 
 
