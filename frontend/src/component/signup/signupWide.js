@@ -119,7 +119,7 @@ function SignupWide() {
             dispatch(setCsrfToken(res.data.csrfToken))
             navigate("/")
           }).catch((err)=>{
-            if (err.response.status === 401) {
+            if (err.response.status === 400) {
                 setCnt(cnt+1)
             } else if (err.response.status === 403) {
                 Swal.fire({

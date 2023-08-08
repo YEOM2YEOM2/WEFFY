@@ -89,12 +89,13 @@ function LoginForm() {
         password: pw
       }
     }).then((res)=> {
+      console.log(res)
       dispatch(setIdentification(res.data.data.identification))
-      dispatch(setAccessToken(res.data.data.accessToken))
-      dispatch(setRefreshToken(res.data.data.refreshToken))
-      dispatch(setCsrfToken(res.data.data.csrfToken))
-      // dispatch(setProfileImg(res.data.data.csrfToken))
-      // dispatch(setNickname(res.data.data.csrfToken))
+      dispatch(setAccessToken(res.data.data.token.accessToken))
+      dispatch(setRefreshToken(res.data.data.token.refreshToken))
+      dispatch(setCsrfToken(res.data.data.token.csrfToken))
+      dispatch(setProfileImg(res.data.data.profileImg))
+      dispatch(setNickname(res.data.data.nickName))
       navigate("/im")
     }).catch((err)=>{
       setCnt(cnt+1)
