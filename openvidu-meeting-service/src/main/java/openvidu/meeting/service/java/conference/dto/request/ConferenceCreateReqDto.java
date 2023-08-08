@@ -4,9 +4,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
+
 @Getter
 @Setter
-public class ConferenceDto {
+public class ConferenceCreateReqDto {
     private String identification;
     private String classId;
     private String title;
@@ -14,7 +16,7 @@ public class ConferenceDto {
     private boolean active;
 
     @Builder
-    public ConferenceDto(String identification, String classId, String title, String description, boolean active) {
+    public ConferenceCreateReqDto(String identification, String classId, String title, String description, boolean active) {
         this.identification = identification;
         this.classId = classId;
         this.title = title;

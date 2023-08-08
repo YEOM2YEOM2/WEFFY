@@ -2,20 +2,29 @@ package openvidu.meeting.service.java.conference;
 
 import openvidu.meeting.service.java.OpenviduDB;
 import openvidu.meeting.service.java.common.dto.BaseResponseBody;
-import openvidu.meeting.service.java.conference.dto.request.ConferenceDto;
+import openvidu.meeting.service.java.conference.dto.request.ConferenceCreateReqDto;
+import openvidu.meeting.service.java.conference.dto.request.ConferenceconnectionReqDto;
+import openvidu.meeting.service.java.conference.dto.response.ConferenceCreateResDto;
+import openvidu.meeting.service.java.conference.dto.response.ConferenceDetailResDto;
+import openvidu.meeting.service.java.conference.dto.response.ConferenceHostListResDto;
 import openvidu.meeting.service.java.conference.entity.Conference;
+import openvidu.meeting.service.java.conference.entity.UserRole;
 import openvidu.meeting.service.java.conference.repository.ConferenceRepository;
 import openvidu.meeting.service.java.conference.service.ConferenceService;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -24,7 +33,9 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class ConferenceController {
     private OpenVidu openvidu;
-    private Map<String, Map<String, OpenViduRole>> mapSessionNamesTokens; // <sessionId, <token, role>>
+
+    private Map<String, String> mapIdentificationTokens;
+    private Map<String, Map<String, UserRole>> mapSessionNamesTokens; // <sessionId, <token, role>>
     private Map<String, Boolean> sessionRecordings;
 
     private final ConferenceRepository conferenceRepository;
@@ -32,81 +43,112 @@ public class ConferenceController {
     private final ConferenceService conferenceService;
 
     @PostConstruct
-    public void init() {
+    public void init() throws OpenViduJavaClientException, OpenViduHttpException {
         openvidu = OpenviduDB.getOpenvidu();
 
+        mapIdentificationTokens = OpenviduDB.getMapIdentificationTokens();
         mapSessionNamesTokens = OpenviduDB.getMapSessionNameTokens();
         sessionRecordings = OpenviduDB.getSessionRecordings();
+
+
+        conferenceSetting();
     }
 
+    // DB에 있는 방(세션)을 모두 오픈비두에 넣어준다.
+    public void conferenceSetting() throws OpenViduJavaClientException, OpenViduHttpException {
+        List<Conference> roomList = conferenceRepository.findAll();
+
+        SessionProperties properties;
+        Session session;
+        for(Conference conference : roomList){
+            properties = new SessionProperties.Builder().customSessionId(conference.getClassId()).build();
+            session = openvidu.createSession(properties);
+        }
+    }
+
+
     @PostMapping
-    public ResponseEntity<? extends BaseResponseBody>createConference(@RequestBody(required = false) Map<String,Object> info)
+    public ResponseEntity<? extends BaseResponseBody>createConference(@RequestBody(required = false) ConferenceCreateReqDto reqDto)
             throws OpenViduJavaClientException, OpenViduHttpException{
 
         // 이미 만들어진 방(세션)인 경우
-        if(conferenceRepository.findByClassId((String)info.get("class_id")) != null){
+        if(conferenceRepository.findByClassId((String)reqDto.getClassId()) != null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(200, null));
         }
 
         // openvidu에서 방(세션)을 생성함
-        SessionProperties properties = new SessionProperties.Builder().customSessionId((String)info.get("class_id")).build();
+        SessionProperties properties = new SessionProperties.Builder().customSessionId(reqDto.getClassId()).build();
         Session session = openvidu.createSession(properties);
 
         // DB에 방(세션)을 저장함
-        ConferenceDto dto = ConferenceDto.builder()
-                        .identification((String)info.get("identification"))
-                        .classId((String)info.get("class_id")).title((String)info.get("title"))
-                        .description((String)info.get("description"))
-                .active((boolean)info.get("active")).build();
-
-
-
-        conferenceService.createSession(dto);
+        ConferenceCreateResDto resDto = ConferenceCreateResDto.builder()
+                        .identification(reqDto.getIdentification())
+                        .classId(reqDto.getClassId()).title(reqDto.getTitle())
+                        .description(reqDto.getDescription())
+                .conferenceUrl("http://localhost:8080/"+reqDto.getClassId())
+                .active(reqDto.isActive()).build();
 
         // 새롭게 생성한 방을 DB에 저장한다.
+        conferenceService.createSession(resDto);
 
+        mapSessionNamesTokens.put(reqDto.getClassId(), new HashMap<String, UserRole>());
 
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, session));
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto.getConferenceUrl()));
     }
 
-    // 유저가 host인 방 리스트 가져오기
+    // 유저가 host인 방 리스트 가져오기(방 이름, 설명, url을 반환함)
     @GetMapping
     public ResponseEntity<? extends BaseResponseBody>conferenceList(@RequestParam(name = "identification") String identification)
             throws OpenViduJavaClientException, OpenViduHttpException{
+
         List<Conference> roomList = conferenceRepository.findAllByIdentification(identification);
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(202, roomList));
+
+        List<ConferenceHostListResDto> dtoList = roomList.stream()
+                .map(conference -> new ConferenceHostListResDto(conference.getTitle(), conference.getDescription(), conference.getConferenceUrl()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(202, dtoList));
     }
 
     // 사람이 방(세션)에 들어갈 때(방이 존재하는지 확인하고, 토큰을 발급해준다)
     @PostMapping("/{class_id}")
     public ResponseEntity<? extends BaseResponseBody>connectionConference(@PathVariable("class_id") String classId,
+                                                                          @RequestParam("identification") String identification, @RequestParam("role") String role,
                                                                           @RequestBody(required = false) Map<String, Object> info)
             throws OpenViduJavaClientException, OpenViduHttpException{
+
         Session session = openvidu.getActiveSession(classId);
 
-        // 활성화가 되어있는 방이 없음
         if(session == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, "존재하지 않는 방입니다."));
         }
 
         ConnectionProperties properties = ConnectionProperties.fromJson(info).build();
 
         Connection connection = session.createConnection(properties);
 
-        // 토큰 관리 저장소에 데이터를 넣음(SessionId, Token, Role)
-      //  mapSessionNamesTokens.get(classId).put(connection.getToken(), OpenViduRole.valueOf("STUDENT"));
+        // 어디 방에 들어간 사람인지 구분하기 위함
+        mapIdentificationTokens.put(identification, connection.getToken());
+        mapSessionNamesTokens.get(classId).put(connection.getToken(), UserRole.valueOf(role));
 
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, connection.getToken()));
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "방에 들어갔습니다"));
     }
 
+
     // 회의 상세 보기(1개)
+    // title, description, updatedAt을 반환한다.
     @GetMapping("/{class_id}")
     public ResponseEntity<? extends BaseResponseBody>conferenceDetail(@PathVariable(name="class_id")String classId)
             throws OpenViduJavaClientException, OpenViduHttpException {
-            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, conferenceRepository.findByClassId(classId)));
+            Conference conference = conferenceRepository.findByClassId(classId);
+            ConferenceDetailResDto resDto = ConferenceDetailResDto.builder()
+                    .title(conference.getTitle())
+                    .description(conference.getDescription())
+                    .updatedAt(conference.getUpdatedAt()).build();
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto));
     }
 
-    // 회의 수정 (제목, 내용, updated_at)
+    // 회의 수정 (제목, 내용)
     @PatchMapping("/{class_id}")
     public ResponseEntity<? extends BaseResponseBody>modifyConference(@PathVariable(name="class_id")String classId,
                                                                       @RequestBody(required = false) Map<String, Object> info)
@@ -120,12 +162,15 @@ public class ConferenceController {
 
         conferenceRepository.save(conference);
 
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, conference));
+        ConferenceDetailResDto resDto = ConferenceDetailResDto.builder()
+                .title(conference.getTitle())
+                .description(conference.getDescription())
+                .updatedAt(conference.getUpdatedAt()).build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto));
     }
 
-    // /conferences/{conference_id}/status
-
-    // 회의비활성화
+    // 회의 비활성화
     @PatchMapping("/{class_id}/status")
     public ResponseEntity<? extends BaseResponseBody>enableConference(@PathVariable(name = "class_id") String classId,
                                    @RequestParam(name = "active") boolean active)  throws OpenViduJavaClientException, OpenViduHttpException{
@@ -133,15 +178,27 @@ public class ConferenceController {
 
             // 방이 존재하지 않음
             if(conference == null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(400, null));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(400, "존재하지 않는 방입니다."));
             }
 
             conference.setActive(active);
             conferenceRepository.save(conference);
 
-            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, conference));
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "비활성화 되었습니다."));
     }
 
+    //user가 방문한 회의 리스트 조회 (최근 10개)
+    @GetMapping("/visited")
+    public ResponseEntity<? extends  BaseResponseBody>recentConference(@RequestParam(name="identification") String identification)
+        throws OpenViduJavaClientException, OpenViduHttpException{
+        Page<Conference> page = conferenceService.recentConference(identification);
+        List<ConferenceHostListResDto> resultList = page.getContent()
+                .stream()
+                .map(conference -> new ConferenceHostListResDto(conference.getConferenceUrl(), conference.getTitle(), conference.getDescription()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resultList));
+    }
 
 
 
