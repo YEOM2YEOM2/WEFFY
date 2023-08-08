@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/openvidu-basic-java.main.iml" filepath="$PROJECT_DIR$/.idea/modules/openvidu-basic-java.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/openvidu-basic-java.test.iml" filepath="$PROJECT_DIR$/.idea/modules/openvidu-basic-java.test.iml" />
     </modules>
   </component>
 </project>
