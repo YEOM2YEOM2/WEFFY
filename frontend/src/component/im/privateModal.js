@@ -27,26 +27,36 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { IconButton } from "@mui/material";
 
-import defaultImg from "../../assets/images/defualt_image.png";
-
 const PrivateModal = ({ handleClose }) => {
+  const micStatus = useSelector((state) => state.setting.micStatus);
+  const cameraStatus = useSelector((state) => state.setting.cameraStatus);
+
+  const selectedMic = useSelector((state) => state.setting.selectedMic);
+  const selectedCam = useSelector((state) => state.setting.selectedCam);
+
+  //redux에서 값 가져오기
+  const profileImg = useSelector((state) => state.user.profileImg);
+  const nickname = useSelector((state) => state.user.nickname) || "";
+
+  const [localNickname, setLocalNickname] = useState(nickname);
+
+  useEffect(() => {
+    setLocalNickname(nickname);
+  }, [nickname]);
+
   const dispatch = useDispatch();
-  const [nickname, setUserNickname] = useState("default nickname");
   const [micList, setMicList] = useState([]);
   const [camList, setCamList] = useState([]);
   const OV = useRef(new OpenVidu()).current;
-  const micStatus = useSelector((state) => state.micStatus);
-  const cameraStatus = useSelector((state) => state.cameraStatus);
-
-  const selectedMic = useSelector((state) => state.selectedMic);
-  const selectedCam = useSelector((state) => state.selectedCam);
 
   const handleMicStatusToggle = () => {
     dispatch(toggleMicStatus());
+    console.log("Mic Status: ", micStatus);
   };
 
   const handleCameraStatusToggle = () => {
     dispatch(toggleCameraStatus());
+    console.log("Camera Status: ", cameraStatus);
   };
 
   useEffect(() => {
@@ -76,24 +86,37 @@ const PrivateModal = ({ handleClose }) => {
       .catch((error) => console.error(error));
   }, []);
 
-  const handleNicknameChange = (e) => {
-    const newNickname = e.target.value;
-    if (!newNickname) {
-      alert("Nickname can't be empty!");
-      return;
-    }
-    setUserNickname(newNickname);
-    dispatch(setNickname(newNickname));
-  };
+  useEffect(() => {
+    console.log("Mic Status: ", micStatus);
+  }, [micStatus]);
+
+  useEffect(() => {
+    console.log("Camera Status: ", cameraStatus);
+  }, [cameraStatus]);
 
   const handleSelectMicrophone = (event) => {
-    const newMicId = event.target.value;
+    const newMicId = parseInt(event.target.value, 10);
+
     dispatch(setSelectedMic(newMicId)); // 인덱스만 전달
     console.log(`mic Id = ${newMicId}`);
   };
 
+  const handleNicknameChange = (e) => {
+    const newNickname = e.target.value;
+    if (!newNickname) {
+      alert("닉네임을 입력해 주세요!");
+      return;
+    }
+    setLocalNickname(newNickname);
+  };
+
+  const startPrivateMeeting = () => {
+    dispatch(setNickname(localNickname));
+    // Other logic related to starting the meeting can be placed here
+  };
+
   const handleSelectCamera = (event) => {
-    const newCamId = event.target.value;
+    const newCamId = parseInt(event.target.value, 10);
     dispatch(setSelectedCam(newCamId)); // 인덱스만 전달
     console.log(`cam Id = ${newCamId}`);
   };
@@ -116,7 +139,7 @@ const PrivateModal = ({ handleClose }) => {
               <Box className={styles["profileImgBox"]}>
                 <Avatar
                   alt="profileImg"
-                  src={defaultImg}
+                  src={profileImg}
                   sx={{ width: 200, height: 200 }}
                   className={styles["profileImg"]}
                 />
@@ -124,7 +147,7 @@ const PrivateModal = ({ handleClose }) => {
               <Box sx={{ flexGrow: 1 }}>
                 <input
                   type="text"
-                  value={nickname}
+                  defaultValue={nickname}
                   onChange={handleNicknameChange}
                   className={styles["nickname"]}
                 />
@@ -191,7 +214,11 @@ const PrivateModal = ({ handleClose }) => {
         </Box>
 
         <Grid container justifyContent="flex-end">
-          <Button variant="contained" className={styles["joinBtn"]}>
+          <Button
+            variant="contained"
+            className={styles["joinBtn"]}
+            onClick={startPrivateMeeting}
+          >
             Start Private Meeting
           </Button>
         </Grid>
