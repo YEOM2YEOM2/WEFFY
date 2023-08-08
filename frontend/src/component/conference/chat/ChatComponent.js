@@ -83,9 +83,9 @@ export default class ChatComponent extends Component {
             <div id="chatContainer">
                 <div id="chatComponent" style={styleChat}>
                     <div id="chatToolbar">
-                        <span>{this.props.user.getStreamManager().stream.session.sessionId} - CHAT</span>
+                        <span style={{ fontFamily: "Agro", fontWeight: "400" }}>일반 채팅</span>
                         <IconButton id="closeButton" onClick={this.close}>
-                            <CancelOutlinedIcon color="secondary" />
+                            <CancelOutlinedIcon style={{ color: "red" }} />
                         </IconButton>
                     </div>
                     <div className="message-wrap" ref={this.chatScroll}>
@@ -100,11 +100,11 @@ export default class ChatComponent extends Component {
                                 <canvas id={'userImg-' + i} width="60" height="60" className="user-img" />
                                 <div className="msg-detail">
                                     <div className="msg-info">
-                                        <p> {data.nickname}</p>
+                                        <p style={{ fontFamily: "Poppins", fontSize: "12px" }}> {data.nickname}</p>
                                     </div>
                                     <div className="msg-content">
                                         <span className="triangle" />
-                                        <p className="text">{data.message}</p>
+                                        <p className="text" style={{ fontFamily: "GmarketSans" }}>{data.message}</p>
                                     </div>
                                 </div>
                             </div>
@@ -113,14 +113,15 @@ export default class ChatComponent extends Component {
 
                     <div id="messageInput">
                         <input
-                            placeholder="Send a messge"
+                            placeholder="메시지를 입력해주세요."
                             id="chatInput"
                             value={this.state.message}
                             onChange={this.handleChange}
                             onKeyPress={this.handlePressKey}
+                            style={{ fontFamily: "GmarketSans" }}
                         />
-                        <Tooltip title="채팅 보내기" placement="top">
-                            <IconButton size="small" id="sendButton" onClick={this.sendMessage}>
+                        <Tooltip title="채팅 전송" placement="top">
+                            <IconButton size="small" id="sendButton" onClick={this.sendMessage} style={{ padding: "10px", margin: "4px", }}>
                                 <ForwardToInboxOutlinedIcon />
                             </IconButton>
                         </Tooltip>
