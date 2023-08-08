@@ -39,7 +39,7 @@ public class UserTest extends TestConfig {
     @Transactional
     @DisplayName("로그인이 성공하여야한다.")
     void signInUser_O() {
-        UserSignInResDto res = userService.signIn((HttpServletRequest) user, null);
+        UserSignInResDto res = userService.signIn(user);
         Optional<WeffyUser> testUser = userRepository.findByEmail(email);
         //then
         Assertions.assertThat(testUser.get().getIdentification()).isEqualTo(res.getIdentification());

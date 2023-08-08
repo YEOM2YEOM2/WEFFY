@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
+
 import static org.mockito.Mockito.mock;
 
 @SpringBootTest
@@ -33,10 +35,10 @@ public class TestConfig {
     protected  KmsService kmsService;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         user = new UserSignInReqDto();
         user.setEmail(email);
         user.setPassword(kmsService.decryptData(password));
-        userService.signIn((HttpServletRequest) user, null);
+        userService.signUp(user, null);
     }
 }

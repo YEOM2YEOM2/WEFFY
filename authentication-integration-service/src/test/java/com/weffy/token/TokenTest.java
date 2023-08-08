@@ -6,6 +6,7 @@ import com.weffy.token.config.TokenProvider;
 import com.weffy.user.entity.WeffyUser;
 import com.weffy.user.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
+import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ public class TokenTest extends TestConfig{
     private String email;
 
     @Test
+    @Transactional
     @DisplayName("generateToken() : 유저 정보와 만료 기간을 전달해 토큰을 만들 수 있다.")
     void generateToken_O() {
         //given
@@ -53,6 +55,7 @@ public class TokenTest extends TestConfig{
     }
 
     @Test
+    @Transactional
     @DisplayName("validToken() : 만료된 토큰일 때 유효성 검증에 실패한다.")
     void validToken_X() {
         //given
@@ -67,6 +70,7 @@ public class TokenTest extends TestConfig{
     }
 
     @Test
+    @Transactional
     @DisplayName("validToken() : 유효한 토큰일 때 유효성 검증에 성공한다.")
     void validToken_O() {
         //given
@@ -78,6 +82,7 @@ public class TokenTest extends TestConfig{
     }
 
     @Test
+    @Transactional
     @DisplayName("getAuthentication() : 토큰 기반으로 인증 정보를 가져올 수 있다.")
     void getAuthentication_O() {
         //given
@@ -89,6 +94,7 @@ public class TokenTest extends TestConfig{
     }
 
     @Test
+    @Transactional
     @DisplayName("getUserId() : 토큰 기반으로 user의 identification을 가져올 수 있다.")
     void getUserId_O() {
         //given

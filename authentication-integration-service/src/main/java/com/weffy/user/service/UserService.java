@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface UserService {
 
     void signUp(UserSignInReqDto signinInfo, String role) throws IOException;
-    UserSignInResDto signIn(HttpServletRequest request, UserSignInReqDto signinInfo);
+    UserSignInResDto signIn(UserSignInReqDto signinInfo);
     WeffyUser findById(Long userId);
 
     UserMainResDto mainUser(String userId);
