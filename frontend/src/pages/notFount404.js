@@ -6,6 +6,7 @@ function NotFount404() {
 
   return (
     <body className={styles.body}>
+      <div className={styles.logo}>WEEFY</div>
       <div className={styles.errorPage}>
         <div className={styles.content}>
           <h2 className={styles.header} data-text="404">
