@@ -6,7 +6,7 @@ const setting = createSlice({
     micStatus: false,
     cameraStatus: false,
     session: null,
-    nickname: "default nickname",
+    nickname: "WEFFY",
     selectedMic: 0,
     selectedCam: 0,
   },
