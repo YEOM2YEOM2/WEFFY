@@ -35,18 +35,21 @@ const PrivateModal = ({ handleClose }) => {
   const [micList, setMicList] = useState([]);
   const [camList, setCamList] = useState([]);
   const OV = useRef(new OpenVidu()).current;
-  const micStatus = useSelector((state) => state.micStatus);
-  const cameraStatus = useSelector((state) => state.cameraStatus);
 
-  const selectedMic = useSelector((state) => state.selectedMic);
-  const selectedCam = useSelector((state) => state.selectedCam);
+  const micStatus = useSelector((state) => state.setting.micStatus);
+  const cameraStatus = useSelector((state) => state.setting.cameraStatus);
+
+  const selectedMic = useSelector((state) => state.setting.selectedMic);
+  const selectedCam = useSelector((state) => state.setting.selectedCam);
 
   const handleMicStatusToggle = () => {
     dispatch(toggleMicStatus());
+    console.log("Mic Status: ", micStatus);
   };
 
   const handleCameraStatusToggle = () => {
     dispatch(toggleCameraStatus());
+    console.log("Camera Status: ", cameraStatus);
   };
 
   useEffect(() => {
@@ -86,14 +89,23 @@ const PrivateModal = ({ handleClose }) => {
     dispatch(setNickname(newNickname));
   };
 
+  useEffect(() => {
+    console.log("Mic Status: ", micStatus);
+  }, [micStatus]);
+
+  useEffect(() => {
+    console.log("Camera Status: ", cameraStatus);
+  }, [cameraStatus]);
+
   const handleSelectMicrophone = (event) => {
-    const newMicId = event.target.value;
+    const newMicId = parseInt(event.target.value, 10);
+
     dispatch(setSelectedMic(newMicId)); // 인덱스만 전달
     console.log(`mic Id = ${newMicId}`);
   };
 
   const handleSelectCamera = (event) => {
-    const newCamId = event.target.value;
+    const newCamId = parseInt(event.target.value, 10);
     dispatch(setSelectedCam(newCamId)); // 인덱스만 전달
     console.log(`cam Id = ${newCamId}`);
   };
