@@ -7,7 +7,7 @@ let conference = createSlice({
     },
     reducers: {
         setActiveSessionId(state, action) {
-            state.activeSessionId = action.payload
+            state.activeSessionIdnpm = action.payload
         }
     }
 })
