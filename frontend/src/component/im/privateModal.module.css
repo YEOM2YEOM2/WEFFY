@@ -58,7 +58,7 @@
 }
 
 .nickname {
-  width: 100%;
+  width: 110%;
   margin-top: 20px;
   border-radius: 10px;
   background-color: #2d3440;
@@ -70,7 +70,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
+  margin-left: -10px;
   text-align: center;
 }
 
@@ -107,6 +107,7 @@
 .selectBox {
   width: 80%;
   background-color: white;
+  border-radius: 10pxpmnb ;
 }
 
 .selectContainer {
