@@ -8,7 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 
 import io.openvidu.java.client.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import openvidu.meeting.service.java.common.dto.BaseResponseBody;
+import openvidu.meeting.service.java.conference.entity.Conference;
+import openvidu.meeting.service.java.conference.entity.UserRole;
+import openvidu.meeting.service.java.conference.repository.ConferenceRepository;
+import openvidu.meeting.service.java.conference.service.ConferenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -26,27 +32,46 @@ import io.openvidu.java.client.RecordingProperties;
 @Slf4j
 @CrossOrigin(origins = "*")
 @RestController
+@RequiredArgsConstructor
 public class Controller {
-	Logger logger = LoggerFactory.getLogger("openvidu.meeting.service.java.Controller");
 	private OpenVidu openvidu;
-	private Map<String, Map<String, OpenViduRole>> mapSessionNamesTokens; // <sessionId, <token, role>>
+	private String root = "http://localhost:8080/";
+	//  private Map<String, String> mapIdentificationTokens;
+	private Map<String, Map<String, UserRole>> mapSessionNamesTokens; // <sessionId, <token, role>>
 	private Map<String, Boolean> sessionRecordings;
 
+	private final ConferenceRepository conferenceRepository;
+
+	private final ConferenceService conferenceService;
 
 	@PostConstruct
-	public void init() {
+	public void init() throws OpenViduJavaClientException, OpenViduHttpException {
 		openvidu = OpenviduDB.getOpenvidu();
 
-		mapSessionNamesTokens = new ConcurrentHashMap<>();
+		mapSessionNamesTokens = OpenviduDB.getMapSessionNameTokens();
 		sessionRecordings = OpenviduDB.getSessionRecordings();
+
+		conferenceSetting();
+	}
+
+	// DB에 있는 방(세션)을 모두 오픈비두에 넣어준다.
+	public void conferenceSetting() throws OpenViduJavaClientException, OpenViduHttpException {
+		List<Conference> roomList = conferenceRepository.findAll();
+
+		SessionProperties properties;
+		Session session;
+		for(Conference conference : roomList){
+			properties = new SessionProperties.Builder().customSessionId(conference.getClassId()).build();
+			session = openvidu.createSession(properties);
+
+			mapSessionNamesTokens.put(conference.getClassId(), new HashMap<String, UserRole>()); // 방의 이름, 유저 아이디, Role
+		}
 	}
 
 	// 방 생성하기
 	@PostMapping("/api/sessions")
 	public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
 			throws OpenViduJavaClientException, OpenViduHttpException {
-
-		logger.debug("====================initializeSession====================");
 
 		SessionProperties properties = SessionProperties.fromJson(params).build(); // customSessionId : "sessionId"
 
@@ -59,10 +84,12 @@ public class Controller {
 		Session session = openvidu.createSession(properties);
 
 		// 토큰 관리 저장소 생성
-		mapSessionNamesTokens.put(session.getSessionId(), new HashMap<String, OpenViduRole>());
+		mapSessionNamesTokens.put(session.getSessionId(), new HashMap<String, UserRole>());
 
 		return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
 	}
+
+
 
 
 	// 방(세션)을 생성한다.
@@ -92,27 +119,28 @@ public class Controller {
 	 * @param params    The Connection properties
 	 * @return The Token associated to the Connection
 	 */
-	@PostMapping("/api/sessions/{sessionId}/{role}/connections")
-	public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
-												   @PathVariable("role") String role,
+	@PostMapping("/api/sessions/{class_id}/{identification}/{role}/connections")
+	public ResponseEntity<String> createConnection(@PathVariable("class_id") String classId,
+												   @PathVariable("identification") String identification, @PathVariable("role") String role,
 												   @RequestBody(required = false) Map<String, Object> params)
 			throws OpenViduJavaClientException, OpenViduHttpException {
 
-		log.warn("====================createConnection====================");
+		System.out.println(classId+"/"+identification+"/"+role);
 
-		Session session = openvidu.getActiveSession(sessionId);
+		Session session = openvidu.getActiveSession(classId);
 
-		if (session == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		if(session == null){
+			return new ResponseEntity<>("방이 없음", HttpStatus.NOT_FOUND);
 		}
 
 		ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
+
 		Connection connection = session.createConnection(properties);
 
-		// 토큰 관리 저장소에 데이터를 넣음(SessionId, Token, Role)
-		mapSessionNamesTokens.get(sessionId).put(connection.getToken(), OpenViduRole.valueOf(role));
+		// 어디 방에 들어간 사람인지 구분하기 위함
+		mapSessionNamesTokens.get(classId).put(identification, UserRole.valueOf(role));
 
-		return new ResponseEntity<>(connection.getToken(), HttpStatus.OK); // 토큰을 반환함
+		return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
 	}
 	// 하나의 세션에 각자 다른 토큰을 가지고 있음
 

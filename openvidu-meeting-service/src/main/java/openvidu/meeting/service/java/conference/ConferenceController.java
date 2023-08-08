@@ -33,8 +33,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class ConferenceController {
     private OpenVidu openvidu;
-
-    private Map<String, String> mapIdentificationTokens;
+    private String root = "http://localhost:8080/";
     private Map<String, Map<String, UserRole>> mapSessionNamesTokens; // <sessionId, <token, role>>
     private Map<String, Boolean> sessionRecordings;
 
@@ -45,11 +44,8 @@ public class ConferenceController {
     @PostConstruct
     public void init() throws OpenViduJavaClientException, OpenViduHttpException {
         openvidu = OpenviduDB.getOpenvidu();
-
-        mapIdentificationTokens = OpenviduDB.getMapIdentificationTokens();
         mapSessionNamesTokens = OpenviduDB.getMapSessionNameTokens();
         sessionRecordings = OpenviduDB.getSessionRecordings();
-
 
         conferenceSetting();
     }
@@ -63,6 +59,8 @@ public class ConferenceController {
         for(Conference conference : roomList){
             properties = new SessionProperties.Builder().customSessionId(conference.getClassId()).build();
             session = openvidu.createSession(properties);
+
+            mapSessionNamesTokens.put(conference.getClassId(), new HashMap<String, UserRole>()); // 방의 이름, 유저 아이디, Role
         }
     }
 
@@ -73,7 +71,7 @@ public class ConferenceController {
 
         // 이미 만들어진 방(세션)인 경우
         if(conferenceRepository.findByClassId((String)reqDto.getClassId()) != null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(200, null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, null));
         }
 
         // openvidu에서 방(세션)을 생성함
@@ -85,15 +83,16 @@ public class ConferenceController {
                         .identification(reqDto.getIdentification())
                         .classId(reqDto.getClassId()).title(reqDto.getTitle())
                         .description(reqDto.getDescription())
-                .conferenceUrl("http://localhost:8080/"+reqDto.getClassId())
+                .conferenceUrl(root+reqDto.getClassId())
                 .active(reqDto.isActive()).build();
 
         // 새롭게 생성한 방을 DB에 저장한다.
         conferenceService.createSession(resDto);
 
-        mapSessionNamesTokens.put(reqDto.getClassId(), new HashMap<String, UserRole>());
+        mapSessionNamesTokens.put(reqDto.getClassId(), new HashMap<String, UserRole>()); // 방의 이름, 유저 아이디, Role
 
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto.getConferenceUrl()));
+        //return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, session));
     }
 
     // 유저가 host인 방 리스트 가져오기(방 이름, 설명, url을 반환함)
@@ -110,7 +109,7 @@ public class ConferenceController {
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(202, dtoList));
     }
 
-    // 사람이 방(세션)에 들어갈 때(방이 존재하는지 확인하고, 토큰을 발급해준다)
+    //  사람이 방(세션)에 들어갈 때(방이 존재하는지 확인하고, 토큰을 발급해준다)
     @PostMapping("/{class_id}")
     public ResponseEntity<? extends BaseResponseBody>connectionConference(@PathVariable("class_id") String classId,
                                                                           @RequestParam("identification") String identification, @RequestParam("role") String role,
@@ -128,8 +127,7 @@ public class ConferenceController {
         Connection connection = session.createConnection(properties);
 
         // 어디 방에 들어간 사람인지 구분하기 위함
-        mapIdentificationTokens.put(identification, connection.getToken());
-        mapSessionNamesTokens.get(classId).put(connection.getToken(), UserRole.valueOf(role));
+        mapSessionNamesTokens.get(classId).put(identification, UserRole.valueOf(role));
 
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "방에 들어갔습니다"));
     }
@@ -199,9 +197,6 @@ public class ConferenceController {
 
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resultList));
     }
-
-
-
 
 
 }
