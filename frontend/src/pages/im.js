@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Route, Routes, Outlet, useLocation } from "react-router-dom";
-import styles from "../pages/im.module.css";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+//리덕스
+import user from "../store/reducers/user.js";
+
+//CSS
+import styles from "../pages/im.module.css";
+
+//mui 라이브라리
 //mui 라이브라리
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -22,15 +28,14 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
-//icons
+// Icons
 import GridViewIcon from "@mui/icons-material/GridView";
 import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-//image
+// Images
 import defaultImg from "../assets/images/defualt_image.png";
-//buttons
 import newMM from "../assets/images/newMM.png";
 import newPrivate from "../assets/images/newPrivate.png";
 import participate from "../assets/images/participate.png";
@@ -40,9 +45,6 @@ import StartMM from "../component/im/startMM.js";
 import MMListModal from "../component/im/mmListModal";
 import PrivateModal from "../component/im/privateModal.js";
 import JoinMeetingModal from "../component/im/joinMeetingList.js";
-
-//redux 값 가져오기
-import { user } from "../store/reducers/user";
 
 const buttons = [
   { name: "PrivateModal", src: newPrivate },
@@ -136,10 +138,21 @@ export default function Im() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
-  const user = useSelector((state) => state.user);
-  console.log(user.accessToken);
+  // const user = useSelector((state) => state.user);
+  // console.log(user.accessToken);
 
   const navigate = useNavigate();
+  const identification = useSelector((state) => state.user.identification);
+
+  // accesToken null일 경우 다시 /로 빽~!
+  useEffect(() => {
+    console.log(identification);
+    console.log(user);
+
+    if (!identification) {
+      navigate("/");
+    }
+  }, [identification, navigate]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
