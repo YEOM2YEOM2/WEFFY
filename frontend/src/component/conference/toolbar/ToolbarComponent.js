@@ -84,7 +84,7 @@ export default class ToolbarComponent extends Component {
                         />
 
                         {this.props.sessionId && <div id="titleContent">
-                            <span id="session-title">뀨뀨뀨뀨</span>
+                            <span id="session-title" style={{ fontFamily: "Kalam", }}>{ mySessionId }</span>
                         </div>}
                     </div>
 
