@@ -58,6 +58,12 @@ function LoginForm() {
       }
   }, [cnt])
 
+  const handleKeyDown = (e) => {
+      if (e.keyCode === 13) {
+        handleLogin()
+      }
+  }
+
   const handleLogin = () => {
     if (!email.trim() ) {
       Swal.fire({
@@ -89,7 +95,6 @@ function LoginForm() {
         password: pw
       }
     }).then((res)=> {
-      console.log(res)
       dispatch(setIdentification(res.data.data.identification))
       dispatch(setAccessToken(res.data.data.token.accessToken))
       dispatch(setRefreshToken(res.data.data.token.refreshToken))
@@ -117,7 +122,7 @@ function LoginForm() {
           <Form.Group className="mb-3" controlId="exampleForm.ControlPassword">
             <Form.Label style={{marginLeft: '4px'}}>Password</Form.Label>
             <Form.Control type="password" placeholder="Mattermost Password" 
-            onChange={handlePw}
+            onChange={handlePw} onKeyDown={handleKeyDown}
             />
           </Form.Group>
           <div className={styles.forgot_password}>
