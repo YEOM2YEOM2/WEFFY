@@ -147,8 +147,7 @@ export default function Im() {
 
   // accesToken null일 경우 다시 /로 빽~!
   useEffect(() => {
-    console.log(identification);
-    console.log(user);
+
 
     if (!identification) {
       navigate("/");
