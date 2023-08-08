@@ -32,10 +32,15 @@
 .profileContainer {
   margin-top: 20px;
   margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
+
 .buttonContainer {
   display: flex;
-  justify-content: space-around; /* center the items horizontally */
+  justify-content: space-around;
   position: absolute;
   bottom: 10vh; /* 페이지 바닥에 고정 */
   width: 55%;
@@ -62,4 +67,9 @@
   max-width: 20vw;
   max-height: 20vh;
   object-fit: contain;
+}
+.nickname {
+  color: white;
+  margin-top: 20px;
+  font-family: "GmarketSans";
 }
