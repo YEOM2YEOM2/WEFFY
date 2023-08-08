@@ -51,8 +51,8 @@
   .user-img {
     position: absolute;
     border-radius: 45px;
-    width: 60px;
-    height: 60px;
+    width: 45px;
+    height: 45px;
     top: 15px;
   }
   
@@ -63,6 +63,7 @@
   
   .msg-detail p {
     margin: 0;
+    margin-right: 10px;
     font-size: 15px;
   }
   
@@ -94,7 +95,8 @@
   }
   
   .text {
-    word-break: break-all;color: #000000;
+    word-break: break-all;
+    color: #000000;
   }
   
   /* Start message from other user */
@@ -104,11 +106,12 @@
   }
   
   .message.left .msg-detail {
-    padding-left: 65px;
+    margin-top: px;
+    padding-left: 20px;
   }
   
   .message.left .user-img {
-    left: -5px;
+    left: 5px;
     border: 1px solid #f0f0f094;
   }
   
@@ -128,22 +131,17 @@
   /* Start my messages */
   
   .message.right .msg-detail .msg-info {
+    right: 5px;
     text-align: right;
   }
   .message.right .user-img {
-    right: -5px;
+    right: 5px;
     border: 1px solid #c8ffe8ab;
   }
   
   .message.right .msg-detail .msg-content {
     background-color: #c8ffe8;
     float: right;
-  }
-  .message.right .msg-detail .msg-content span.triangle {
-    background-color: #c8ffe8;
-    border-bottom-width: 0;
-    border-left-width: 0;
-    right: -5px;
   }
   
   /* End my messages */
@@ -155,7 +153,7 @@
     background-color: #ffffff;
     text-align: center;
     padding: 10px 0px;
-    height: 30px;
+    height: 45px;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
   }
