@@ -3,6 +3,7 @@ package openvidu.meeting.service.java;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
@@ -36,7 +37,7 @@ public class Controller {
 	public void init() {
 		openvidu = OpenviduDB.getOpenvidu();
 
-		mapSessionNamesTokens = OpenviduDB.getMapSessionNameTokens();
+		mapSessionNamesTokens = new ConcurrentHashMap<>();
 		sessionRecordings = OpenviduDB.getSessionRecordings();
 	}
 
