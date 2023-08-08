@@ -1,15 +1,18 @@
-*{
-  margin: 0;
-  padding: 0;
-  outline: none;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+.logo {
+  position: 'fixed';
+  text-align: end;
+  margin-right: 10px;
+  font-family: "Mogra";
+  font-size: 30px;
+  color: white;
 }
+
 .body{
   height: 100vh;
   background: -webkit-repeating-linear-gradient(-45deg, #71b7e6, #69a6ce, #b98acc, #ee8176, #b98acc, #69a6ce, #9b59b6);
   background-size: 400%;
 }
+
 .errorPage{
   position: absolute;
   top: 10%;
@@ -22,10 +25,12 @@
   background: #fff;
   box-shadow: 0px 5px 10px rgba(0,0,0,0.1);
 }
+
 .content{
   max-width: 600px;
   text-align: center;
 }
+
 .header{
   font-size: 18vw;
   font-family: "Poppins", "GmarketSans";
@@ -33,6 +38,7 @@
   line-height: 1em;
   position: relative;
 }
+
 .header:after{
   position: absolute;
   content: attr(data-text);
@@ -51,6 +57,7 @@
   top: 40px;
   font-family: "GmarketSans";
 }
+
 @keyframes animate {
   0%{
     background-position: 0 0;
@@ -68,6 +75,7 @@
     background-position: 0% 0%;
   }
 }
+
 .content h4{
   font-size: 1.5em;
   margin-bottom: 30px;
@@ -77,6 +85,7 @@
   max-width: 600px;
   position: relative;
 }
+
 .content h4:after{
   position: absolute;
   content: attr(data-text);
@@ -94,10 +103,12 @@
   font-family: "GmarketSans";
   color: #0d0d0d;
 }
+
 .content .btns{
   margin: 25px 0;
   display: inline-flex;
 }
+
 .content .btns a{
   display: inline-block;
   margin: 0 10px;
@@ -111,6 +122,7 @@
   text-transform: uppercase;
   transition: all 0.3s ease;
 }
+
 .content .btns a:hover{
   background: #69a6ce;
   color: #fff;
