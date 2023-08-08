@@ -27,7 +27,7 @@ public class Conference {
     private String identification;
 
     @NotNull
-    private String conference_url;
+    private String conferenceUrl;
 
     @NotNull
     @Column(name = "class_id")
@@ -42,29 +42,31 @@ public class Conference {
     private Long parent;
 
     @CreationTimestamp
-    private Date created_at;
+    @Column(name="created_at")
+    private Date createdAt;
 
     @UpdateTimestamp
-    private Date updated_at;
+    @Column(name = "updated_at")
+    private Date updatedAt;
 
     @PreUpdate
     protected void onUpdate() {
-        updated_at = new Date();
+        updatedAt = new Date();
     }
 
     @Builder
-    public Conference(Long id, String identification, String conference_url, String classId, String title,
-                      String description, boolean active, Long parent, Date created_at, Date updated_at) {
+    public Conference(Long id, String identification, String conferenceUrl, String classId, String title,
+                      String description, boolean active, Long parent, Date createdAt, Date updatedAt) {
         this.id = id;
         this.identification = identification;
-        this.conference_url = conference_url;
+        this.conferenceUrl = conferenceUrl;
         this.classId = classId;
         this.title = title;
         this.description = description;
         this.active = active;
         this.parent = parent;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     @PrePersist
