@@ -4,6 +4,7 @@ import io.openvidu.java.client.OpenVidu;
 import io.openvidu.java.client.OpenViduRole;
 import lombok.Getter;
 import lombok.Setter;
+import openvidu.meeting.service.java.conference.entity.UserRole;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,9 +19,11 @@ public class OpenviduDB {
 
     private static String OPENVIDU_SECRET = "MY_SECRET";
 
-    private static Map<String, Map<String, OpenViduRole>> mapSessionNamesTokens;
+    private static Map<String, Map<String, UserRole>> mapSessionNamesTokens;
 
     private static Map<String, Boolean> sessionRecordings;
+
+    private static Map<String, String> mapIdentificationTokens;
 
     public static OpenVidu getOpenvidu(){
         if(openvidu == null){
@@ -29,7 +32,7 @@ public class OpenviduDB {
         return openvidu;
     }
 
-    public static Map<String, Map<String, OpenViduRole>> getMapSessionNameTokens(){
+    public static Map<String, Map<String, UserRole>> getMapSessionNameTokens(){
         if(mapSessionNamesTokens == null){
             mapSessionNamesTokens = new ConcurrentHashMap<>();
         }
@@ -41,6 +44,13 @@ public class OpenviduDB {
             sessionRecordings = new ConcurrentHashMap<>();
         }
         return sessionRecordings;
+    }
+
+    public static Map<String, String> getMapIdentificationTokens(){
+        if(mapIdentificationTokens == null){
+            mapIdentificationTokens = new ConcurrentHashMap<>();
+        }
+        return mapIdentificationTokens;
     }
 
 
