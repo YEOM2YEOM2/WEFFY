@@ -58,6 +58,12 @@ function LoginForm() {
       }
   }, [cnt])
 
+  const handleKeyDown = (e) => {
+      if (e.keyCode === 13) {
+        handleLogin()
+      }
+  }
+
   const handleLogin = () => {
     if (!email.trim() ) {
       Swal.fire({
@@ -90,11 +96,11 @@ function LoginForm() {
       }
     }).then((res)=> {
       dispatch(setIdentification(res.data.data.identification))
-      dispatch(setAccessToken(res.data.data.accessToken))
-      dispatch(setRefreshToken(res.data.data.refreshToken))
-      dispatch(setCsrfToken(res.data.data.csrfToken))
-      // dispatch(setProfileImg(res.data.data.csrfToken))
-      // dispatch(setNickname(res.data.data.csrfToken))
+      dispatch(setAccessToken(res.data.data.token.accessToken))
+      dispatch(setRefreshToken(res.data.data.token.refreshToken))
+      dispatch(setCsrfToken(res.data.data.token.csrfToken))
+      dispatch(setProfileImg(res.data.data.profileImg))
+      dispatch(setNickname(res.data.data.nickName))
       navigate("/im")
     }).catch((err)=>{
       setCnt(cnt+1)
@@ -116,7 +122,7 @@ function LoginForm() {
           <Form.Group className="mb-3" controlId="exampleForm.ControlPassword">
             <Form.Label style={{marginLeft: '4px'}}>Password</Form.Label>
             <Form.Control type="password" placeholder="Mattermost Password" 
-            onChange={handlePw}
+            onChange={handlePw} onKeyDown={handleKeyDown}
             />
           </Form.Group>
           <div className={styles.forgot_password}>

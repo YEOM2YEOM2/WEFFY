@@ -34,7 +34,7 @@
   }
   
   #titleContent{
-    max-width: 100px;
+    max-width: 150px;
     background-color: #494949;
     margin: 5px -18px;
     padding: 0px 15px;
@@ -58,7 +58,7 @@
   }
 
   #session-title{
-    font-family: 'Open Sans', sans-serif; 
+    font-family: 'Kalam'; 
   }
 
 

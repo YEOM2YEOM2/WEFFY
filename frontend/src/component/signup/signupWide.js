@@ -70,6 +70,12 @@ function SignupWide() {
         }
     }, [cnt])
 
+    const handleKeyDown = (e) => {
+        if (e.keyCode === 13) {
+          handleSignup()
+        }
+    }
+
     const handleSignup = () => {
         if (!email.trim() ) {
           Swal.fire({
@@ -113,21 +119,26 @@ function SignupWide() {
               password: pw
             }
           }).then((res)=> {
-            dispatch(setIdentification(res.data.identification))
-            dispatch(setAccessToken(res.data.accessToken))
-            dispatch(setRefreshToken(res.data.refreshToken))
-            dispatch(setCsrfToken(res.data.csrfToken))
-            navigate("/")
+            if (res.data.status === 201) {
+                Swal.fire({
+                    icon: 'success',
+                    html: '<div style="font-family:GmarketSans">회원가입이 완료되었습니다.</div>',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#2672B9',
+                })
+                navigate("/")
+            }
           }).catch((err)=>{
-            if (err.response.status === 401) {
-                setCnt(cnt+1)
-            } else if (err.response.status === 403) {
+            if (err.response.data.errorCode === 4000) {
                 Swal.fire({
                     icon: 'warning',
                     html: '<div style="font-family:GmarketSans">회원가입이 이미 완료된 회원입니다.</div>',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#2672B9',
                 })
+                navigate("/")
+            } else if (err.response.data.errorCode === 4004) {
+                setCnt(cnt+1)
             }
         })
     }
@@ -181,6 +192,7 @@ function SignupWide() {
                         }
                         label="Password" style={{ fontFamily: 'Poppins' }}
                         onChange={handlePw}
+                        onKeyDown={handleKeyDown}
                     />
                 <FormHelperText id="outlined-weight-helper-text" style={{ fontFamily: 'NanumSquareNeo', fontWeight: '600' }}>Mattermost Password을 입력해주세요.</FormHelperText>
                 </FormControl>

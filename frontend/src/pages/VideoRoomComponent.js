@@ -499,6 +499,7 @@ class VideoRoomComponent extends Component {
 
         return (
             <div className="container" id="container">
+                {/* 브라우저 화면 공유를 위한 Chrome 확장 프로그램 설치 유도 및 설치 후 브라우저 새로고침 기능 제공 */}
                 <DialogExtensionComponent showDialog={this.state.showExtensionDialog} cancelClicked={this.closeDialogExtension} />
 
                 <div id="layout" className="bounds">
