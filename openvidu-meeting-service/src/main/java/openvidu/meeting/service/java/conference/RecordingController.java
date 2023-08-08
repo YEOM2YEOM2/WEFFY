@@ -40,7 +40,7 @@ public class RecordingController {
         openvidu = OpenviduDB.getOpenvidu();
 
         mapSessionNamesTokens = OpenviduDB.getMapSessionNameTokens();
-        sessionRecordings = OpenviduDB.getSessionRecordings();
+        sessionRecordings = new ConcurrentHashMap<>();
 
         sessionRecordingPerson = new ConcurrentHashMap<>();
     }

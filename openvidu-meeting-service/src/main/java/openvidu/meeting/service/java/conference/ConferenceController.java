@@ -35,7 +35,6 @@ public class ConferenceController {
     private OpenVidu openvidu;
     private String root = "http://localhost:8080/";
     private Map<String, Map<String, UserRole>> mapSessionNamesTokens; // <sessionId, <token, role>>
-    private Map<String, Boolean> sessionRecordings;
 
     private final ConferenceRepository conferenceRepository;
 
@@ -45,7 +44,6 @@ public class ConferenceController {
     public void init() throws OpenViduJavaClientException, OpenViduHttpException {
         openvidu = OpenviduDB.getOpenvidu();
         mapSessionNamesTokens = OpenviduDB.getMapSessionNameTokens();
-        sessionRecordings = OpenviduDB.getSessionRecordings();
 
         conferenceSetting();
     }
@@ -129,7 +127,24 @@ public class ConferenceController {
         // 어디 방에 들어간 사람인지 구분하기 위함
         mapSessionNamesTokens.get(classId).put(identification, UserRole.valueOf(role));
 
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "방에 들어갔습니다"));
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "입장합니다."));
+    }
+
+    // 사용자가 방을 나가는 경우
+    @PostMapping("/{class_id}/{identification}")
+    public ResponseEntity<? extends BaseResponseBody>disconnectionConference(@PathVariable("class_id") String classId,
+                                                                             @PathVariable("identification") String identification)
+            throws OpenViduJavaClientException, OpenViduHttpException{
+        mapSessionNamesTokens.get(classId).remove(identification);
+        if(!mapSessionNamesTokens.containsKey(classId))
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, "존재하지 않는 방입니다."));
+
+        if(!mapSessionNamesTokens.get(classId).containsKey(identification))
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, "참가하지 않은 방입니다."));
+
+        mapSessionNamesTokens.get(classId).remove(identification);
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "퇴장합니다."));
+
     }
 
 
