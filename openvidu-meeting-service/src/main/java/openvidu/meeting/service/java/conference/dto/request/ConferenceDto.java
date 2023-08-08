@@ -8,16 +8,14 @@ import lombok.Setter;
 @Setter
 public class ConferenceDto {
     private String identification;
-    private String conference_url;
     private String classId;
     private String title;
     private String description;
     private boolean active;
 
     @Builder
-    public ConferenceDto(String identification, String conference_url, String classId, String title, String description, boolean active) {
+    public ConferenceDto(String identification, String classId, String title, String description, boolean active) {
         this.identification = identification;
-        this.conference_url = conference_url;
         this.classId = classId;
         this.title = title;
         this.description = description;
