@@ -108,7 +108,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://3.39.223.169:3000", "http://i9d107.p.ssafy.io:3000", "https://3.39.223.169", "https://i9d107.p.ssafy.io"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "content-type", "x-auth-token", "x-xsrf-token"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "content-type", "x-auth-token", "X-CSRF-TOKEN"));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token"));
         configuration.setAllowCredentials(true); // 허용된 도메인에 쿠키를 전송하도록 허용
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
