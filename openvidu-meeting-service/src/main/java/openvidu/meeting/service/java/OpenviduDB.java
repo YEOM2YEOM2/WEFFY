@@ -23,7 +23,7 @@ public class OpenviduDB {
 
     private static Map<String, Boolean> sessionRecordings;
 
-    private static Map<String, String> mapIdentificationTokens;
+    //private static Map<String, String> mapIdentificationTokens;
 
     public static OpenVidu getOpenvidu(){
         if(openvidu == null){
@@ -46,12 +46,12 @@ public class OpenviduDB {
         return sessionRecordings;
     }
 
-    public static Map<String, String> getMapIdentificationTokens(){
-        if(mapIdentificationTokens == null){
-            mapIdentificationTokens = new ConcurrentHashMap<>();
-        }
-        return mapIdentificationTokens;
-    }
+//    public static Map<String, String> getMapIdentificationTokens(){
+//        if(mapIdentificationTokens == null){
+//            mapIdentificationTokens = new ConcurrentHashMap<>();
+//        }
+//        return mapIdentificationTokens;
+//    }
 
 
 
