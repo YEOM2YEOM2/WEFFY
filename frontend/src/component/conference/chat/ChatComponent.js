@@ -81,17 +81,38 @@ class ChatComponent extends Component {
 
   sendMessage() {
     console.log(this.state.message);
-    if (this.props.user && this.state.message) {
-      let message = this.state.message.replace(/ +(?= )/g, "");
-      if (message !== "" && message !== " ") {
+    if (typeof this.state.message === "string") {
+      if (this.props.user && this.state.message) {
+        let message = this.state.message.replace(/ +(?= )/g, "");
+        if (message !== "" && message !== " ") {
+          const data = {
+            message: message,
+            nickname: this.props.user.getNickname(),
+            streamId: this.props.user.getStreamManager().stream.streamId,
+          };
+          this.props.user.getStreamManager().stream.session.signal({
+            data: JSON.stringify(data),
+            type: "chat",
+          });
+        }
+      }
+    } else if (
+      typeof this.state.message === "object" &&
+      this.state.message.url &&
+      this.state.message.fileName
+    ) {
+      if (this.props.user) {
         const data = {
-          message: message,
+          message: {
+            url: this.state.message.url,
+            fileName: this.state.message.fileName,
+          },
           nickname: this.props.user.getNickname(),
           streamId: this.props.user.getStreamManager().stream.streamId,
         };
         this.props.user.getStreamManager().stream.session.signal({
           data: JSON.stringify(data),
-          type: "chat",
+          type: "file",
         });
       }
     }
@@ -120,7 +141,13 @@ class ChatComponent extends Component {
       })
         .then((res) => {
           console.log(res.data);
-          this.setState({ message: res.data.data }, () => {
+
+          const fileInfo = {
+            url: res.data.data,
+            fileName: res.data.data,
+          };
+
+          this.setState({ message: fileInfo }, () => {
             this.sendMessage();
           });
         })
@@ -184,7 +211,17 @@ class ChatComponent extends Component {
                   <div className="msg-content">
                     <span className="triangle" />
                     <p className="text" style={{ fontFamily: "GmarketSans" }}>
-                      {data.message}
+                      {typeof data.message === "object" && data.message.url ? (
+                        <a
+                          href={data.message.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {data.message.fileName}
+                        </a>
+                      ) : (
+                        data.message
+                      )}
                     </p>
                   </div>
                 </div>
