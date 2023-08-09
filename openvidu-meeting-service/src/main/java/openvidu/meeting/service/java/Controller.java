@@ -38,7 +38,7 @@ public class Controller {
 	private String root = "http://localhost:8080/";
 	//  private Map<String, String> mapIdentificationTokens;
 	private Map<String, Map<String, UserRole>> mapSessionNamesTokens; // <sessionId, <token, role>>
-	private Map<String, Boolean> sessionRecordings;
+	//private Map<String, Boolean> sessionRecordings;
 
 	private final ConferenceRepository conferenceRepository;
 
@@ -49,7 +49,7 @@ public class Controller {
 		openvidu = OpenviduDB.getOpenvidu();
 
 		mapSessionNamesTokens = OpenviduDB.getMapSessionNameTokens();
-		sessionRecordings = OpenviduDB.getSessionRecordings();
+		//sessionRecordings = OpenviduDB.getSessionRecordings();
 
 		conferenceSetting();
 	}
@@ -114,11 +114,6 @@ public class Controller {
 //	}
 
 
-	/**
-	 * @param sessionId The Session in which to create the Connection
-	 * @param params    The Connection properties
-	 * @return The Token associated to the Connection
-	 */
 	@PostMapping("/api/sessions/{class_id}/{identification}/{role}/connections")
 	public ResponseEntity<String> createConnection(@PathVariable("class_id") String classId,
 												   @PathVariable("identification") String identification, @PathVariable("role") String role,
@@ -149,86 +144,86 @@ public class Controller {
 	/** Recording API **/
 	/*******************/
 
-
-	@RequestMapping(value = "/recording-java/api/recording/start", method = RequestMethod.POST)
-	public ResponseEntity<?> startRecording(@RequestBody Map<String, Object> params) {
-		String sessionId = (String) params.get("session");
-		Recording.OutputMode outputMode = Recording.OutputMode.valueOf((String) params.get("outputMode")); // COMPOSED,INDIVIDUAL,COMPOSED_QUICK_START 에서 선택
-		boolean hasAudio = (boolean) params.get("hasAudio");
-		boolean hasVideo = (boolean) params.get("hasVideo");
-
-		RecordingProperties properties = new RecordingProperties.Builder().outputMode(outputMode).hasAudio(hasAudio)
-				.hasVideo(hasVideo).build();
-
-		System.out.println("Starting recording for session " + sessionId + " with properties {outputMode=" + outputMode
-				+ ", hasAudio=" + hasAudio + ", hasVideo=" + hasVideo + "}");
-
-		try {
-			Recording recording = this.openvidu.startRecording(sessionId, properties);
-			this.sessionRecordings.put(sessionId, true);
-			System.out.println(recording.getId());
-			return new ResponseEntity<>(recording, HttpStatus.OK);
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			e.printStackTrace();
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-	}
-
-	@RequestMapping(value = "/recording-java/api/recording/stop", method = RequestMethod.POST)
-	public ResponseEntity<?> stopRecording(@RequestBody Map<String, Object> params) {
-		String recordingId = (String) params.get("recording");
-
-		System.out.println("Stoping recording | {recordingId}=" + recordingId);
-
-		try {
-			Recording recording = this.openvidu.stopRecording(recordingId);
-			this.sessionRecordings.remove(recording.getSessionId());
-			return new ResponseEntity<>(recording, HttpStatus.OK);
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-	}
-
-	@RequestMapping(value = "/recording-java/api/recording/delete", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteRecording(@RequestBody Map<String, Object> params) {
-		String recordingId = (String) params.get("recording");
-
-		System.out.println("Deleting recording | {recordingId}=" + recordingId);
-
-		try {
-			this.openvidu.deleteRecording(recordingId);
-			return new ResponseEntity<>(HttpStatus.OK);
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-	}
-
-	@RequestMapping(value = "/recording-java/api/recording/get/{recordingId}", method = RequestMethod.GET)
-	public ResponseEntity<?> getRecording(@PathVariable(value = "recordingId") String recordingId) {
-
-		System.out.println("Getting recording | {recordingId}=" + recordingId);
-
-		try {
-			Recording recording = this.openvidu.getRecording(recordingId);
-			return new ResponseEntity<>(recording, HttpStatus.OK);
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-	}
-
-	@RequestMapping(value = "/recording-java/api/recording/list", method = RequestMethod.GET)
-	public ResponseEntity<?> listRecordings() {
-
-		System.out.println("Listing recordings");
-
-		try {
-			List<Recording> recordings = this.openvidu.listRecordings();
-
-			return new ResponseEntity<>(recordings, HttpStatus.OK);
-		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-	}
+//
+//	@RequestMapping(value = "/recording-java/api/recording/start", method = RequestMethod.POST)
+//	public ResponseEntity<?> startRecording(@RequestBody Map<String, Object> params) {
+//		String sessionId = (String) params.get("session");
+//		Recording.OutputMode outputMode = Recording.OutputMode.valueOf((String) params.get("outputMode")); // COMPOSED,INDIVIDUAL,COMPOSED_QUICK_START 에서 선택
+//		boolean hasAudio = (boolean) params.get("hasAudio");
+//		boolean hasVideo = (boolean) params.get("hasVideo");
+//
+//		RecordingProperties properties = new RecordingProperties.Builder().outputMode(outputMode).hasAudio(hasAudio)
+//				.hasVideo(hasVideo).build();
+//
+//		System.out.println("Starting recording for session " + sessionId + " with properties {outputMode=" + outputMode
+//				+ ", hasAudio=" + hasAudio + ", hasVideo=" + hasVideo + "}");
+//
+//		try {
+//			Recording recording = this.openvidu.startRecording(sessionId, properties);
+//			this.sessionRecordings.put(sessionId, true);
+//			System.out.println(recording.getId());
+//			return new ResponseEntity<>(recording, HttpStatus.OK);
+//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
+//			e.printStackTrace();
+//			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//		}
+//	}
+//
+//	@RequestMapping(value = "/recording-java/api/recording/stop", method = RequestMethod.POST)
+//	public ResponseEntity<?> stopRecording(@RequestBody Map<String, Object> params) {
+//		String recordingId = (String) params.get("recording");
+//
+//		System.out.println("Stoping recording | {recordingId}=" + recordingId);
+//
+//		try {
+//			Recording recording = this.openvidu.stopRecording(recordingId);
+//			this.sessionRecordings.remove(recording.getSessionId());
+//			return new ResponseEntity<>(recording, HttpStatus.OK);
+//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
+//			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//		}
+//	}
+//
+//	@RequestMapping(value = "/recording-java/api/recording/delete", method = RequestMethod.DELETE)
+//	public ResponseEntity<?> deleteRecording(@RequestBody Map<String, Object> params) {
+//		String recordingId = (String) params.get("recording");
+//
+//		System.out.println("Deleting recording | {recordingId}=" + recordingId);
+//
+//		try {
+//			this.openvidu.deleteRecording(recordingId);
+//			return new ResponseEntity<>(HttpStatus.OK);
+//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
+//			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//		}
+//	}
+//
+//	@RequestMapping(value = "/recording-java/api/recording/get/{recordingId}", method = RequestMethod.GET)
+//	public ResponseEntity<?> getRecording(@PathVariable(value = "recordingId") String recordingId) {
+//
+//		System.out.println("Getting recording | {recordingId}=" + recordingId);
+//
+//		try {
+//			Recording recording = this.openvidu.getRecording(recordingId);
+//			return new ResponseEntity<>(recording, HttpStatus.OK);
+//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
+//			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//		}
+//	}
+//
+//	@RequestMapping(value = "/recording-java/api/recording/list", method = RequestMethod.GET)
+//	public ResponseEntity<?> listRecordings() {
+//
+//		System.out.println("Listing recordings");
+//
+//		try {
+//			List<Recording> recordings = this.openvidu.listRecordings();
+//
+//			return new ResponseEntity<>(recordings, HttpStatus.OK);
+//		} catch (OpenViduJavaClientException | OpenViduHttpException e) {
+//			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+//		}
+//	}
 
 
 }
