@@ -48,20 +48,26 @@ public class MattermostServiceImpl implements MattermostService {
                 .orElseThrow(() ->  new CustomException(ExceptionEnum.USERNOTEXIST));
         for (JsonNode cur : result) {
             Team team;
-            Optional<Team> teamInfo = jpaTeamRepository.findByIdentification(identification);
+            String ident = String.valueOf(cur.get("id"));
+            // 팀 정보가 존재하지 않으면 저장
+            Optional<Team> teamInfo = jpaTeamRepository.findByIdentification(ident);
             if (teamInfo.isEmpty()) {
                 team = Team.builder()
-                        .identification(String.valueOf(cur.get("id")))
+                        .identification(ident)
                         .name(String.valueOf(cur.get("display_name")))
                         .build();
                 jpaTeamRepository.save(team);
             } else {
                 team = teamInfo.get();
             }
-            jpaUserTeamRepository.save(WeffyUserTeam.builder()
-                    .team(team)
-                    .weffyUser(weffyUser)
-                    .build());
+            // 해당 팀에 user가 존재하지 않으면 저장
+            Optional<WeffyUserTeam> weffyUserTeam = jpaUserTeamRepository.findByTeamAndWeffyUser(team, weffyUser);
+            if (weffyUserTeam.isEmpty()) {
+                jpaUserTeamRepository.save(WeffyUserTeam.builder()
+                        .team(team)
+                        .weffyUser(weffyUser)
+                        .build());
+            }
         }
     }
 }
