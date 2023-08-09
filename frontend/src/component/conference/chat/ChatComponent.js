@@ -80,7 +80,7 @@ class ChatComponent extends Component {
   }
 
   sendMessage() {
-    console.log(this.state.message);
+    // console.log(this.state.message);
     if (typeof this.state.message === "string") {
       if (this.props.user && this.state.message) {
         let message = this.state.message.replace(/ +(?= )/g, "");
@@ -112,17 +112,18 @@ class ChatComponent extends Component {
         };
         this.props.user.getStreamManager().stream.session.signal({
           data: JSON.stringify(data),
-          type: "file",
+          type: "chat",
         });
       }
     }
+
     this.setState({ message: "" });
   }
 
   sendFile(event) {
     const file = event.target.files[0];
     if (file) {
-      console.log(file);
+      // console.log(file);
 
       // const accessToken = useSelector((state) => state.user.accessToken);
       // console.log(this.props.accessToken);
@@ -140,11 +141,11 @@ class ChatComponent extends Component {
         data: formData,
       })
         .then((res) => {
-          console.log(res.data);
+          // console.log(res.data.data);
 
           const fileInfo = {
             url: res.data.data,
-            fileName: res.data.data,
+            fileName: "이름없는 파일",
           };
 
           this.setState({ message: fileInfo }, () => {
@@ -184,6 +185,7 @@ class ChatComponent extends Component {
             </IconButton>
           </div>
           <div className="message-wrap" ref={this.chatScroll}>
+            {console.log(this.state.messageList)}
             {this.state.messageList.map((data, i) => (
               <div
                 key={i}
@@ -210,17 +212,18 @@ class ChatComponent extends Component {
                   </div>
                   <div className="msg-content">
                     <span className="triangle" />
+
                     <p className="text" style={{ fontFamily: "GmarketSans" }}>
-                      {typeof data.message === "object" && data.message.url ? (
+                      {data.message && typeof data.message === "object" ? (
                         <a
-                          href={data.message.url}
+                          href={data.message.url || "#"}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          {data.message.fileName}
+                          {data.message.fileName || "이름 없는 파일"}
                         </a>
                       ) : (
-                        data.message
+                        data.message || ""
                       )}
                     </p>
                   </div>
