@@ -2,13 +2,14 @@ import React, { useEffect, useState, useRef } from "react";
 import styles from "./privateModal.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setSession,
-  setNickname,
+  setParticipateName,
   setSelectedCam,
   setSelectedMic,
   toggleMicStatus,
   toggleCameraStatus,
 } from "../../store/reducers/setting.js";
+
+import { setActiveSessionId } from "../../store/reducers/conference.js";
 
 import { OpenVidu } from "openvidu-browser";
 
@@ -60,7 +61,9 @@ const PrivateModal = ({ handleClose }) => {
   };
 
   useEffect(() => {
-    dispatch(setSession("SessionA"));
+    dispatch(setActiveSessionId("SessionA"));
+
+    console.log();
 
     OV.getDevices()
       .then((devices) => {
@@ -111,7 +114,7 @@ const PrivateModal = ({ handleClose }) => {
   };
 
   const startPrivateMeeting = () => {
-    dispatch(setNickname(localNickname));
+    dispatch(setParticipateName(localNickname));
     // Other logic related to starting the meeting can be placed here
   };
 
