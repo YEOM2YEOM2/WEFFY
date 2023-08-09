@@ -90,14 +90,14 @@ export default class ToolbarComponent extends Component {
 
                     <div className="buttonsContent">
                         <IconButton color="inherit" className="navButton" id="navMicButton" onClick={this.micStatusChanged}>
-                            {localUser !== undefined && localUser.isAudioActive() ? <MicIcon /> : <MicOffIcon color="secondary" />}
+                            {localUser !== undefined && localUser.isAudioActive() ? <MicIcon /> : <MicOffIcon style={{ color: "red" }} />}
                         </IconButton>
 
                         <IconButton color="inherit" className="navButton" id="navCamButton" onClick={this.camStatusChanged}>
                             {localUser !== undefined && localUser.isVideoActive() ? (
                                 <VideocamIcon />
                             ) : (
-                                <VideocamOffIcon color="secondary" />
+                                <VideocamOffIcon style={{ color: "red" }} />
                             )}
                         </IconButton>
 
@@ -108,22 +108,22 @@ export default class ToolbarComponent extends Component {
                         {localUser !== undefined &&
                             localUser.isScreenShareActive() && (
                                 <IconButton onClick={this.stopScreenShare} id="navScreenButton">
-                                    <StopScreenShareIcon color="secondary" />
+                                    <StopScreenShareIcon style={{ color: "red" }} />
                                 </IconButton>
                             )}
-
+                        {/* 카메라 스위치 버튼 
                         <IconButton color="inherit" className="navButton" onClick={this.switchCamera}>
                             <SwitchCameraIcon />
-                        </IconButton>
+                        </IconButton> */}
                         <IconButton color="inherit" className="navButton" onClick={this.toggleFullscreen}>
                             {localUser !== undefined && this.state.fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
                         </IconButton>
-                        <IconButton color="secondary" className="navButton" onClick={this.leaveSession} id="navLeaveButton">
+                        <IconButton className="navButton" onClick={this.leaveSession} id="navLeaveButton" style={{ color: "white",  backgroundColor: "red" }}>
                             <ExitToAppIcon />
                         </IconButton>
                          <IconButton color="inherit" onClick={this.toggleChat} id="navChatButton">
                             {this.props.showNotification && <div id="point" className="" />}
-                            <Tooltip title="Chat">
+                            <Tooltip title="채팅">
                                 <QuestionAnswerIcon />
                             </Tooltip>
                         </IconButton>
