@@ -274,5 +274,23 @@ public class ConferenceController {
         }
     }
 
+    // 회의에 참가하고 있는 사람들 목록 가져오기
+    @GetMapping("/enter/{class_id}")
+    public ResponseEntity<? extends BaseResponseBody>conferenceEntryList(@PathVariable("class_id")String classId){
+        List<String> userList;
+        Map<String, UserRole> map;
+
+        try{
+            userList = new ArrayList<>();
+            map = mapSessionNamesTokens.get(classId);
+            for(String key : map.keySet()){
+                userList.add(key);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, userList));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
+        }
+    }
+
 
 }
