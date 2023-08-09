@@ -1,5 +1,6 @@
 package com.weffy.token.service;
 
+import com.weffy.mattermost.MattermostHandler;
 import com.weffy.mattermost.service.MattermostService;
 import com.weffy.token.config.TokenProvider;
 import com.weffy.token.dto.response.CreateTokenResDto;
@@ -14,6 +15,7 @@ import net.bis5.mattermost.model.User;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,6 +26,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenProvider tokenProvider;
     private final MattermostService mattermostService;
+    private final MattermostHandler mattermostHandler;
 
     @Override
     @Transactional
@@ -39,10 +42,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
 
     @Override
-    public CreateTokenResDto createUserToken(ApiResponse<User> userInfo, WeffyUser weffyUser) {
+    public CreateTokenResDto createUserToken(ApiResponse<User> userInfo, WeffyUser weffyUser) throws IOException, InterruptedException {
         // Mattermost 세션 토큰
         String token = Objects.requireNonNull(userInfo.getRawResponse().getHeaders().get("Token").get(0).toString());
         mattermostService.saveSession(weffyUser, token);
+        mattermostHandler.getTeam(weffyUser.getIdentification(), token);
         // accessToken
         String accessToken = tokenProvider.generateToken(weffyUser,  Duration.ofHours(1));
         //  refreshToken

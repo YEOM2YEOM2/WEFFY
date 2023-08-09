@@ -63,7 +63,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description =  "서버 오류")
     })
     @PostMapping("/signin")
-    public ResponseEntity<? extends BaseResponseBody> signin(@RequestBody UserSignInReqDto signinInfo ) {
+    public ResponseEntity<? extends BaseResponseBody> signin(@RequestBody UserSignInReqDto signinInfo ) throws IOException, InterruptedException {
         UserSignInResDto weffyUser = userService.signIn(signinInfo);
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, weffyUser));
     }
