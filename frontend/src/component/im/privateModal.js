@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import styles from "./privateModal.module.css";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   setParticipateName,
   setSelectedCam,
@@ -113,9 +114,18 @@ const PrivateModal = ({ handleClose }) => {
     setLocalNickname(newNickname);
   };
 
+  // const navigate = useNavigate();
+
   const startPrivateMeeting = () => {
     dispatch(setParticipateName(localNickname));
-    // Other logic related to starting the meeting can be placed here
+
+    // navigate("/conference", {
+    //   state: {
+    //     nickname: setLocalNickname,
+    //   },
+    // });
+
+    
   };
 
   const handleSelectCamera = (event) => {

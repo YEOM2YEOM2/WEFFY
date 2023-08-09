@@ -516,7 +516,7 @@ class VideoRoomComponent extends Component {
                     {localUser !== undefined && localUser.getStreamManager() !== undefined && (
                         <div className="OT_root OT_publisher custom-class" style={chatDisplay}>
                             <ChatComponent
-                                user={localUser}
+                                user={localUser} 
                                 chatDisplay={this.state.chatDisplay}
                                 close={this.toggleChat}
                                 messageReceived={this.checkNotification}
