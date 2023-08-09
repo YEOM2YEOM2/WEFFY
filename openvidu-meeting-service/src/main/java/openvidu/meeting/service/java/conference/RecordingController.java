@@ -11,6 +11,7 @@ import openvidu.meeting.service.java.conference.entity.Conference;
 import openvidu.meeting.service.java.conference.entity.UserRole;
 import openvidu.meeting.service.java.conference.repository.ConferenceRepository;
 import openvidu.meeting.service.java.conference.service.ConferenceService;
+import openvidu.meeting.service.java.exception.ExceptionEnum;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -76,12 +77,12 @@ public class RecordingController {
 
             // 이미 녹화를 진행하고 있는 경우
             if(sessionRecordings.get(reqDto.getClassId()) != null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, "녹화를 진행하고 있습니다."));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4003, ExceptionEnum.RECORDING_CONTINUE));
             }
 
             // 녹화를 하려는 사람은 학생인데 방 안에 학생이 아닌 컨설턴트or코치or강사or프로님이 있는 경우
             if(role.equals("STUDENT") && !isPowerCheck(reqDto.getClassId()))
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(403, "녹화를 할 수 있는 권한이 없습니다."));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4004, ExceptionEnum.RECORDING_NOT_ALLOWED));
 
             this.sessionRecordings.put(reqDto.getClassId(), true);
 
@@ -90,7 +91,9 @@ public class RecordingController {
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, recording.getId()));
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, "녹화를 생성하지 못했습니다."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4005, ExceptionEnum.RECORDING_GENERATION_ERROR));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
 
@@ -101,7 +104,9 @@ public class RecordingController {
             this.sessionRecordings.remove(recording.getSessionId());
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, recording));
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, false));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4006, ExceptionEnum.RECORDING_STOP_FAILED));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
 
@@ -112,7 +117,9 @@ public class RecordingController {
             this.sessionRecordingPerson.remove(recordingId);
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, true));
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, false));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4007, ExceptionEnum.RECORDING_DELETE_FAILED));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
 
@@ -143,7 +150,9 @@ public class RecordingController {
 
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDtoList));
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4008,ExceptionEnum.RECORDING_VALIDATION_FAILED));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
 
@@ -157,7 +166,9 @@ public class RecordingController {
                     .build();
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto));
         }catch(OpenViduJavaClientException | OpenViduHttpException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4008,ExceptionEnum.RECORDING_VALIDATION_FAILED));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
 }
