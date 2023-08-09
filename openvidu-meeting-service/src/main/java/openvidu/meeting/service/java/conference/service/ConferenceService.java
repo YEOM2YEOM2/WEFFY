@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ConferenceService {
     // 세션 생성하기
-    void createSession(ConferenceCreateResDto dto);
+    Conference createSession(ConferenceCreateResDto dto);
 
     Page<Conference> recentConference(String identification);
 }

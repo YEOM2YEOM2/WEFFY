@@ -15,6 +15,8 @@ import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import openvidu.meeting.service.java.exception.ExceptionEnum;
+import openvidu.meeting.service.java.history.dto.request.HistoryReqDto;
+import openvidu.meeting.service.java.history.service.HistoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,8 @@ public class ConferenceController {
 
     private final ConferenceService conferenceService;
 
+    private final HistoryService historyService;
+
     @PostConstruct
     public void init() throws OpenViduJavaClientException, OpenViduHttpException {
         openvidu = OpenviduDB.getOpenvidu();
@@ -63,10 +67,10 @@ public class ConferenceController {
         }
     }
 
-
+    //방 생성
     @PostMapping
     public ResponseEntity<? extends BaseResponseBody>createConference(@RequestBody(required = false) ConferenceCreateReqDto reqDto)
-        throws OpenViduJavaClientException , OpenViduHttpException{
+            throws OpenViduJavaClientException , OpenViduHttpException{
 
         // 이미 만들어진 방(세션)인 경우
         if(conferenceRepository.findByClassId((String)reqDto.getClassId()) != null){
@@ -87,9 +91,15 @@ public class ConferenceController {
                     .active(reqDto.isActive()).build();
 
             // 새롭게 생성한 방을 DB에 저장한다.
-            conferenceService.createSession(resDto);
+            Conference newConference = conferenceService.createSession(resDto);
 
             mapSessionNamesTokens.put(reqDto.getClassId(), new HashMap<String, UserRole>()); // 방의 이름, 유저 아이디, Role
+
+            //history save
+            HistoryReqDto dto = new HistoryReqDto();
+            dto.setConference_id(newConference.getId());
+            dto.setIdentification(newConference.getIdentification());
+            historyService.createHistory(dto,"CREATE");
 
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto.getConferenceUrl()));
         }catch(Exception e){
@@ -132,6 +142,13 @@ public class ConferenceController {
             // 어디 방에 들어간 사람인지 구분하기 위함
             mapSessionNamesTokens.get(classId).put(identification, UserRole.valueOf(role));
 
+            //history connection
+            HistoryReqDto dto = new HistoryReqDto();
+            Conference nowConference = conferenceRepository.findByClassId(classId);
+            dto.setConference_id(nowConference.getId());
+            dto.setIdentification(identification);
+            historyService.createHistory(dto,"CONNECTION");
+
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "입장합니다."));
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
@@ -143,8 +160,6 @@ public class ConferenceController {
     public ResponseEntity<? extends BaseResponseBody>disconnectionConference(@PathVariable("class_id") String classId,
                                                                              @PathVariable("identification") String identification) {
 
-        mapSessionNamesTokens.get(classId).remove(identification);
-
         if(!mapSessionNamesTokens.containsKey(classId))
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_NOT_EXIST));
 
@@ -153,6 +168,19 @@ public class ConferenceController {
 
         try{
             mapSessionNamesTokens.get(classId).remove(identification);
+
+            //history exit/leave
+            HistoryReqDto dto = new HistoryReqDto();
+            Conference nowConference = conferenceRepository.findByClassId(classId);
+            dto.setConference_id(nowConference.getId());
+            dto.setIdentification(identification);
+            historyService.createHistory(dto,"EXIT");
+            //방을 나갔는데 모두 나가게 되어서 LEAVE
+            if(mapSessionNamesTokens.get(classId).size() == 0){
+                historyService.createHistory(dto,"LEAVE");
+
+            }
+
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "퇴장합니다."));
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
@@ -164,16 +192,16 @@ public class ConferenceController {
     // title, description, updatedAt을 반환한다.
     @GetMapping("/{class_id}")
     public ResponseEntity<? extends BaseResponseBody>conferenceDetail(@PathVariable(name="class_id")String classId) {
-            try{
-                Conference conference = conferenceRepository.findByClassId(classId);
-                ConferenceDetailResDto resDto = ConferenceDetailResDto.builder()
-                        .title(conference.getTitle())
-                        .description(conference.getDescription())
-                        .updatedAt(conference.getUpdatedAt()).build();
-                return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto));
-            }catch(Exception e){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
-            }
+        try{
+            Conference conference = conferenceRepository.findByClassId(classId);
+            ConferenceDetailResDto resDto = ConferenceDetailResDto.builder()
+                    .title(conference.getTitle())
+                    .description(conference.getDescription())
+                    .updatedAt(conference.getUpdatedAt()).build();
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
+        }
     }
 
     // 회의 수정 (제목, 내용)
@@ -203,24 +231,31 @@ public class ConferenceController {
 
     // 회의 비활성화
     @PatchMapping("/{class_id}/status")
-    public ResponseEntity<? extends BaseResponseBody>enableConference(@PathVariable(name = "class_id") String classId,
-                                   @RequestParam(name = "active") boolean active) {
+    public ResponseEntity<? extends BaseResponseBody>disableConference(@PathVariable(name = "class_id") String classId,
+                                                                      @RequestParam(name = "active") boolean active) {
 
-            Conference conference = conferenceRepository.findByClassId(classId);
+        Conference conference = conferenceRepository.findByClassId(classId);
 
-            // 방이 존재하지 않음
-            if(conference == null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_NOT_EXIST));
-            }
+        // 방이 존재하지 않음
+        if(conference == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_NOT_EXIST));
+        }
 
-            try{
-                conference.setActive(active);
-                conferenceRepository.save(conference);
+        try{
+            conference.setActive(active);
+            conferenceRepository.save(conference);
 
-                return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "비활성화 되었습니다."));
-            }catch(Exception e){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
-            }
+            //history DELETE
+            HistoryReqDto dto = new HistoryReqDto();
+            Conference nowConference = conferenceRepository.findByClassId(classId);
+            dto.setConference_id(nowConference.getId());
+            dto.setIdentification(nowConference.getIdentification());
+            historyService.createHistory(dto,"DELETE");
+
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "비활성화 되었습니다."));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
+        }
     }
 
     //user가 방문한 회의 리스트 조회 (최근 10개)
