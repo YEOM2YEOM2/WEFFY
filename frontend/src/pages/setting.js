@@ -72,7 +72,7 @@ const Setting = (props) => {
         accept: "application/json",
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${accessToken}`,
-        "X-CSRF-TOKEN": '378774b7-78f9-4c89-a9cf-ada442b46414',
+        "X-CSRF-TOKEN": 'c138db3c-b48a-418f-b12a-28ead92c9c5b',
       },
       data: formData,
     })
