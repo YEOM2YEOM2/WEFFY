@@ -12,6 +12,8 @@ import Im from "./pages/im.js";
 import MyList from "./pages/myList.js";
 import Setting from "./pages/setting.js";
 import VideoRoomComponent from "./pages/VideoRoomComponent.js";
+import Meeting from "./pages/meetingDesign.js"
+import NotFount404 from "./pages/notFount404";
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
           <Route path="setting" element={<Setting />} />
         </Route>
         <Route path="/conference" element={<VideoRoomComponent />} />
+        <Route path="/meeting" element={<Meeting/>} />
+        <Route path="*" element={<NotFount404 />} />
       </Routes>
     </div>
   );
