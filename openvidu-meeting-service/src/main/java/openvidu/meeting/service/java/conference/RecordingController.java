@@ -90,7 +90,7 @@ public class RecordingController {
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, recording.getId()));
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, "녹화를 생성하지 못했습니다."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(406, "녹화를 생성하지 못했습니다."));
         }
     }
 
@@ -101,7 +101,7 @@ public class RecordingController {
             this.sessionRecordings.remove(recording.getSessionId());
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, recording));
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, false));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(407, "녹화를 멈출 수 없습니다. 녹화를 시작하고 있는지 다시 확인하세요."));
         }
     }
 
@@ -112,7 +112,7 @@ public class RecordingController {
             this.sessionRecordingPerson.remove(recordingId);
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, true));
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, false));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(408, "녹화를 삭제할 수 없습니다. 녹화 목록을 다시 확인하세요."));
         }
     }
 
@@ -143,7 +143,7 @@ public class RecordingController {
 
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDtoList));
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(409,"녹화를 확인할 수 없습니다."));
         }
     }
 
@@ -157,7 +157,7 @@ public class RecordingController {
                     .build();
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto));
         }catch(OpenViduJavaClientException | OpenViduHttpException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(409, "녹화를 확인할 수 없습니다."));
         }
     }
 }
