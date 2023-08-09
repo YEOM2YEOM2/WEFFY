@@ -34,7 +34,7 @@ public class HistoryServiceImpl implements HistoryService{
         else if(active.equals("LEAVE")){
             type = Active.LEAVE;
         }
-        else if (active.equals("DELTE")){
+        else if (active.equals("DELETE")){
             type = Active.DELETE;
         }
         historyRepository.save(
