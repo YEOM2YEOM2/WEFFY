@@ -54,7 +54,6 @@ video {
     display: flex;
     top: 10px;
     right: 35px;
-    background: #c71100;
     width: 40px;
     height: fit-content;
     position: absolute;
@@ -66,7 +65,6 @@ video {
     text-align: center;
     padding: 6px;
     color: red;
-    background-color: black;
 }
 
 #fullscreenButton {
