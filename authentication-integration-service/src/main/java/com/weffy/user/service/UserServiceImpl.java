@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserSignInResDto signIn(UserSignInReqDto signInInfo) {
+    public UserSignInResDto signIn(UserSignInReqDto signInInfo) throws IOException, InterruptedException {
         ApiResponse<User> userInfo = mattermostHandler.login(signInInfo);
         User mmClient = userInfo.readEntity();
 
