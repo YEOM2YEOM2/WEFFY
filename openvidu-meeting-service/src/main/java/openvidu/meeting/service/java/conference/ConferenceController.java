@@ -14,6 +14,7 @@ import openvidu.meeting.service.java.conference.service.ConferenceService;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import openvidu.meeting.service.java.exception.ExceptionEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,11 +65,12 @@ public class ConferenceController {
 
 
     @PostMapping
-    public ResponseEntity<? extends BaseResponseBody>createConference(@RequestBody(required = false) ConferenceCreateReqDto reqDto) {
+    public ResponseEntity<? extends BaseResponseBody>createConference(@RequestBody(required = false) ConferenceCreateReqDto reqDto)
+        throws OpenViduJavaClientException , OpenViduHttpException{
 
         // 이미 만들어진 방(세션)인 경우
         if(conferenceRepository.findByClassId((String)reqDto.getClassId()) != null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(400, "이미 존재하는 방입니다."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4000, ExceptionEnum.CONFERENCE_EXIST));
         }
 
         try{
@@ -90,10 +92,8 @@ public class ConferenceController {
             mapSessionNamesTokens.put(reqDto.getClassId(), new HashMap<String, UserRole>()); // 방의 이름, 유저 아이디, Role
 
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto.getConferenceUrl()));
-        }catch(OpenViduJavaClientException | OpenViduHttpException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(405, "Openvidu Error"));
         }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, "404 Error"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
 
@@ -108,7 +108,7 @@ public class ConferenceController {
                     .collect(Collectors.toList());
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, dtoList));
         }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
 
@@ -121,7 +121,7 @@ public class ConferenceController {
         Session session = openvidu.getActiveSession(classId);
 
         if(session == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(401, "존재하지 않는 방입니다."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_NOT_EXIST));
         }
 
         try{
@@ -134,7 +134,7 @@ public class ConferenceController {
 
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "입장합니다."));
         }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
 
@@ -146,16 +146,16 @@ public class ConferenceController {
         mapSessionNamesTokens.get(classId).remove(identification);
 
         if(!mapSessionNamesTokens.containsKey(classId))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(401, "존재하지 않는 방입니다."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_NOT_EXIST));
 
         if(!mapSessionNamesTokens.get(classId).containsKey(identification))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(402, "참가하지 않은 방입니다."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4002, ExceptionEnum.CONFERENCE_NOT_PARTICIPATED));
 
         try{
             mapSessionNamesTokens.get(classId).remove(identification);
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "퇴장합니다."));
         }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
 
@@ -172,7 +172,7 @@ public class ConferenceController {
                         .updatedAt(conference.getUpdatedAt()).build();
                 return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto));
             }catch(Exception e){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, e.getMessage()));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
             }
     }
 
@@ -197,7 +197,7 @@ public class ConferenceController {
 
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resDto));
         }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
 
@@ -210,7 +210,7 @@ public class ConferenceController {
 
             // 방이 존재하지 않음
             if(conference == null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(400, "존재하지 않는 방입니다."));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_NOT_EXIST));
             }
 
             try{
@@ -219,7 +219,7 @@ public class ConferenceController {
 
                 return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "비활성화 되었습니다."));
             }catch(Exception e){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, e.getMessage()));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
             }
     }
 
@@ -235,7 +235,7 @@ public class ConferenceController {
 
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resultList));
         }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
 
