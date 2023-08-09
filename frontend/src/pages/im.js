@@ -174,6 +174,15 @@ export default function Im() {
 
   const isImPage = location.pathname === "/im";
 
+  useEffect(() => {
+    setModalStatus({
+      startMM: false,
+      newPrivate: false,
+      JoinMeetingModal: false,
+      MMListModal: false,
+    });
+  }, [location]);
+
   // 모달 상태 선언
   const [modalStatus, setModalStatus] = useState({
     startMM: false,
