@@ -16,11 +16,11 @@ public class WeffyUserTeam {
     private Long id;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "weffyUser_id")
+    @ManyToOne(fetch = FetchType.EAGER) @JoinColumn(name = "weffyUser_id")
     private WeffyUser weffyUser;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "team_id")
+    @ManyToOne(fetch = FetchType.EAGER) @JoinColumn(name = "team_id")
     private Team team;
 
     @Builder

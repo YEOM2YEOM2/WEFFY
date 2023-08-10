@@ -112,6 +112,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST));
     }
 
+
+    @Override
+    public WeffyUser findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST));
+    }
+
     @Override
     public UserInfoResDto getUser(WeffyUser weffyUser) {
         return new UserInfoResDto(weffyUser);

@@ -16,7 +16,7 @@ public interface UserService {
     void signUp(UserSignInReqDto signinInfo, String role) throws IOException;
     UserSignInResDto signIn(UserSignInReqDto signinInfo) throws IOException, InterruptedException;
     WeffyUser findById(Long userId);
-
+    WeffyUser findByEmail(String email);
     UserMainResDto mainUser(String userId);
     UserInfoResDto getUser(WeffyUser weffyUser);
 

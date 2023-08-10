@@ -15,11 +15,11 @@ public class WeffyUserChannel {
     private Long id;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "weffyUser_id")
+    @ManyToOne(fetch = FetchType.EAGER) @JoinColumn(name = "weffyUser_id")
     private WeffyUser weffyUser;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "channel_id")
+    @ManyToOne(fetch = FetchType.EAGER) @JoinColumn(name = "channel_id")
     private Channel channel;
 
 
