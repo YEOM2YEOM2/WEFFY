@@ -26,7 +26,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenProvider tokenProvider;
     private final MattermostService mattermostService;
-    private final MattermostHandler mattermostHandler;
+
 
     @Override
     @Transactional
@@ -46,7 +46,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
         // Mattermost 세션 토큰
         String token = Objects.requireNonNull(userInfo.getRawResponse().getHeaders().get("Token").get(0).toString());
         mattermostService.saveSession(weffyUser, token);
-        mattermostHandler.getTeam(weffyUser.getIdentification(), token);
+        mattermostService.saveTeam(weffyUser.getIdentification(), token);
         // accessToken
         String accessToken = tokenProvider.generateToken(weffyUser,  Duration.ofHours(1));
         //  refreshToken
