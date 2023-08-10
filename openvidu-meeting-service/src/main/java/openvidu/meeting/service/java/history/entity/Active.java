@@ -4,9 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum Active {
-    JOIN("JOIN"),
+    CREATE("CREATE"),
+    CONNECTION("CONNECTION"),
     EXIT("EXIT"),
-    CREATE("CREATE");
+    LEAVE("LEAVE"),
+    DELETE("DELETE");
     private String active;
 
     Active(String active){

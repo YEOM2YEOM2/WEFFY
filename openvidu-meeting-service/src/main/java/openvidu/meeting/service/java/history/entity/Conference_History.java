@@ -17,9 +17,10 @@ public class Conference_History {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String user_identification;
+    private String identification;
 
-    private Long conference_id;
+    @Column(name = "conference_id")
+    private Long conferenceId;
 
     @Enumerated(value = EnumType.STRING)
     private Active active;
@@ -27,10 +28,10 @@ public class Conference_History {
     private Date insert_time;
 
     @Builder
-    public Conference_History(Long id, String user_identification, Long conference_id, Active active, Date insert_time) {
+    public Conference_History(Long id, String identification, Long conference_id, Active active, Date insert_time) {
         this.id = id;
-        this.user_identification = user_identification;
-        this.conference_id = conference_id;
+        this.identification = identification;
+        this.conferenceId = conference_id;
         this.active = active;
         this.insert_time = insert_time;
     }

@@ -20,8 +20,8 @@ public class ConferenceServiceImpl implements ConferenceService{
     private final ConferenceRepository conferenceRepository;
 
     @Override
-    public void createSession(ConferenceCreateResDto dto) {
-        conferenceRepository.save(
+    public Conference createSession(ConferenceCreateResDto dto) {
+        return conferenceRepository.save(
                 Conference.builder()
                         .identification(dto.getIdentification())
                         .conferenceUrl(dto.getConferenceUrl())
