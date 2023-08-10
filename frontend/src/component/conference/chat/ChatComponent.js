@@ -61,8 +61,16 @@ class ChatComponent extends Component {
           );
           const video = document.getElementById("video-" + data.streamId);
           const avatar = userImg.getContext("2d");
-          avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
-          this.props.messageReceived();
+
+          if (
+            video &&
+            video instanceof HTMLVideoElement &&
+            video.readyState === 4
+          ) {
+            // readyState 4 means the video is fully loaded
+            avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
+            this.props.messageReceived();
+          }
         }, 50);
         this.setState({ messageList: messageList });
         this.scrollToBottom();
