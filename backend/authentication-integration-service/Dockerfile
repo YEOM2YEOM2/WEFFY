@@ -34,5 +34,5 @@ WORKDIR /app/build/libs
 EXPOSE 8081
 
 # Run the application
-CMD ["java", "-jar", "weffy-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "authentication-integration-service-0.0.1-SNAPSHOT.jar"]
 
