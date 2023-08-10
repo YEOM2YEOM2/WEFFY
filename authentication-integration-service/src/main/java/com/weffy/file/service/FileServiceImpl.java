@@ -2,6 +2,9 @@ package com.weffy.file.service;
 
 import com.weffy.exception.CustomException;
 import com.weffy.exception.ExceptionEnum;
+import com.weffy.file.dto.response.FileResDto;
+import com.weffy.file.entity.Files;
+import com.weffy.file.repository.JpaFileRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,24 +28,25 @@ import java.nio.charset.StandardCharsets;
 @Service("FileService")
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
+    private final JpaFileRepository jpaFileRepository;
 
     private final S3Client s3Client;
     private final String bucketName = "weffy";
 
     @Override
-    public String uploadFile(MultipartFile file) {
+    public FileResDto uploadFile(MultipartFile file,  String conferenceId) {
         String fileName = file.getOriginalFilename();
         String type = file.getContentType();
 
         String encodedFileName;
         try {
-            // 한글 인코딩
+//             한글 인코딩
             encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString())
                     .replaceAll("\\+", "%2B");
             s3Client.putObject(
                     PutObjectRequest.builder()
                             .bucket(bucketName)
-                            .key(encodedFileName)
+                            .key(fileName)
                             .contentDisposition("inline")
                             .contentType(type)
                             .build(),
@@ -51,8 +55,16 @@ public class FileServiceImpl implements FileService {
         } catch (IOException e) {
             throw new IllegalStateException("파일 업로드 실패", e);
         }
-
-        return String.format("https://weffy.s3.ap-northeast-2.amazonaws.com/%s", encodedFileName.toLowerCase());
+        String url = String.format("https://weffy.s3.ap-northeast-2.amazonaws.com/%s", fileName.toLowerCase());
+        Files files = Files.builder()
+                .title(encodedFileName)
+                .url(url)
+                .conferenceId(conferenceId)
+                .size(file.getSize())
+                .build();
+        jpaFileRepository.save(files);
+        FileResDto fileResDto = new FileResDto().of(files);
+        return fileResDto;
     }
 
 
