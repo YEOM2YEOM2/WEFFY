@@ -1,6 +1,7 @@
 package com.weffy.file;
 
 import com.weffy.common.dto.BaseResponseBody;
+import com.weffy.file.dto.response.FileResDto;
 import com.weffy.file.service.FileService;
 import com.weffy.user.dto.Request.UserSignInReqDto;
 import com.weffy.user.dto.Response.UserSignInResDto;
@@ -21,9 +22,9 @@ import java.io.IOException;
 public class FileController {
     private final FileService fileService;
 
-    @PostMapping("")
-    public ResponseEntity<? extends BaseResponseBody> upload(@RequestPart MultipartFile file) throws IOException {
-        String fileUrl = fileService.uploadFile(file);
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, fileUrl));
+    @PostMapping("/{conferenceId}")
+    public ResponseEntity<? extends BaseResponseBody> upload(@RequestPart MultipartFile file, @PathVariable String conferenceId) throws IOException {
+        FileResDto fileResDto = fileService.uploadFile(file, conferenceId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, fileResDto));
     }
 }
