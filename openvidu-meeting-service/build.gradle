@@ -51,6 +51,13 @@ dependencies {
 
     // Logback (Logging Implementation)
     // implementation 'ch.qos.logback:logback-classic:1.2.6'
+
+    // ffmpeg
+    implementation group: 'net.bramp.ffmpeg', name: 'ffmpeg', version: '0.1'
+
+
+//    // scheduled
+//    implementation 'org.springframework.boot:spring-boot-starter-task'
 }
 
 group = 'io.openvidu'

@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Route, Routes, Outlet, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 //리덕스
-import user from "../store/reducers/user.js";
+import {
+  setIdentification,
+  setAccessToken,
+  setRefreshToken,
+  setCsrfToken,
+  setProfileImg,
+  setNickname,
+} from "../store/reducers/user.js";
 
 //CSS
 import styles from "../pages/im.module.css";
@@ -135,21 +142,21 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function Im() {
+  const dispatch = useDispatch();
+
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
   //redux에서 사진, 닉네임 가져오기
-  const profileImg = useSelector((state) => state.user.profileImg);
-  const nickname = useSelector((state) => state.user.nickname);
+  const profileImg =
+    useSelector((state) => state.user.profileImg) || defaultImg;
+  const nickname = useSelector((state) => state.user.nickname) || "WEBBY";
 
   const navigate = useNavigate();
   const identification = useSelector((state) => state.user.identification);
 
   // accesToken null일 경우 다시 /로 빽~!
   useEffect(() => {
-    console.log(identification);
-    console.log(user);
-
     if (!identification) {
       navigate("/");
     }
@@ -166,6 +173,15 @@ export default function Im() {
   const location = useLocation();
 
   const isImPage = location.pathname === "/im";
+
+  useEffect(() => {
+    setModalStatus({
+      startMM: false,
+      newPrivate: false,
+      JoinMeetingModal: false,
+      MMListModal: false,
+    });
+  }, [location]);
 
   // 모달 상태 선언
   const [modalStatus, setModalStatus] = useState({
@@ -227,6 +243,13 @@ export default function Im() {
   const handleLogoutClick = () => {
     console.log("Logout was clicked");
     // Profile 클릭 시 수행할 동작
+    dispatch(setIdentification(null));
+    dispatch(setAccessToken(null));
+    dispatch(setRefreshToken(null));
+    dispatch(setCsrfToken(null));
+    dispatch(setProfileImg(null));
+    dispatch(setNickname(null));
+
     navigate("/");
   };
 
