@@ -45,77 +45,81 @@ public class MattermostServiceImpl implements MattermostService {
     @Override
     @Transactional
     public void saveTeam(String identification, String sessionToken) throws IOException, InterruptedException {
-        WeffyUser weffyUser = userRepository.findByIdentification(identification)
-                .orElseThrow(() ->  new CustomException(ExceptionEnum.USERNOTEXIST));
-
-        // 팀 정보 조회
+        WeffyUser weffyUser = findWeffyUserByIdentification(identification);
         JsonNode teamResult = mattermostHandler.getTeam(identification, sessionToken);
+
         for (JsonNode cur : teamResult) {
-            Team team;
-            String ident = cur.get("id").asText();
-            // 팀 정보가 존재하지 않으면 저장
-            Optional<Team> teamInfo = jpaTeamRepository.findByIdentification(ident);
-            if (teamInfo.isEmpty()) {
-                team = Team.builder()
-                        .identification(ident)
-                        .name(cur.get("display_name").asText())
-                        .build();
-                jpaTeamRepository.save(team);
-            } else {
-                team = teamInfo.get();
-            }
-            // 해당 팀에 user가 존재하지 않으면 저장
-            Optional<WeffyUserTeam> weffyUserTeam = jpaUserTeamRepository.findByTeamAndWeffyUser(team, weffyUser);
-            if (weffyUserTeam.isEmpty()) {
-                jpaUserTeamRepository.save(WeffyUserTeam.builder()
-                        .team(team)
-                        .weffyUser(weffyUser)
-                        .build());
-            }
+            Team team = handleTeamData(cur);
+            handleUserTeamData(weffyUser, team);
+            handleChannelData(identification, sessionToken, weffyUser, team, cur);
+        }
+    }
 
-            // 채널 정보를 조회
-            JsonNode channelResult = mattermostHandler.getChannel(identification, ident, sessionToken);
-            for (JsonNode channelCur : channelResult) {
+    private WeffyUser findWeffyUserByIdentification(String identification) {
+        return userRepository.findByIdentification(identification)
+                .orElseThrow(() ->  new CustomException(ExceptionEnum.USERNOTEXIST));
+    }
 
-                String type = channelCur.get("type").asText();
-                if (type.equals("O") || type.equals("P")) {
-                    String channelId = channelCur.get("id").asText();
-                    String channelName = channelCur.get("display_name").asText();
-                    Channel channel;
-                    // 채널 정보가 존재하지 않으면 저장
-                    Optional<Channel> channelInfo = jpaChannelRepository.findByIdentification(channelId);
-                    if (channelInfo.isEmpty()) {
-                        channel = Channel.builder()
-                                .identification(channelId)
-                                .name(channelName)
-                                .type(type)
-                                .team(team)
-                                .build();
+    private Team handleTeamData(JsonNode cur) {
+        String ident = cur.get("id").asText();
+        return jpaTeamRepository.findByIdentification(ident).orElseGet(() -> {
+            Team team = Team.builder()
+                    .identification(ident)
+                    .name(cur.get("display_name").asText())
+                    .build();
+            return jpaTeamRepository.save(team);
+        });
+    }
 
-                        jpaChannelRepository.save(channel);
-                    } else {
-                        channel = channelInfo.get();
-                    }
-                    // 해당 채널에 user가 존재하지 않으면 저장
-                    WeffyUserChannel weffyUserChannel;
-                    Optional<WeffyUserChannel> weffyUserChannelInfo = jpaUserChannelRepository.findByChannelAndWeffyUser(channel, weffyUser);
-                    Role role = mattermostHandler.getChannelRole(identification, channelId, sessionToken);
+    private void handleUserTeamData(WeffyUser weffyUser, Team team) {
+        jpaUserTeamRepository.findByTeamAndWeffyUser(team, weffyUser).orElseGet(() -> {
+            return jpaUserTeamRepository.save(WeffyUserTeam.builder()
+                    .team(team)
+                    .weffyUser(weffyUser)
+                    .build());
+        });
+    }
 
-                    if (weffyUserChannelInfo.isEmpty()) {
-                        weffyUserChannel = WeffyUserChannel.builder()
-                                .channel(channel)
-                                .weffyUser(weffyUser)
-                                .role(role)
-                                .build();
-                    } else {
-                        weffyUserChannel = weffyUserChannelInfo.get();
-                        if (!weffyUserChannel.getRole().equals(role)){
-                            weffyUserChannel.setRole(role);
-                        }
-                    }
-                    jpaUserChannelRepository.save(weffyUserChannel);
-                }
+    private void handleChannelData(String identification, String sessionToken, WeffyUser weffyUser, Team team, JsonNode cur) throws IOException, InterruptedException {
+        JsonNode channelResult = mattermostHandler.getChannel(identification, team.getIdentification(), sessionToken);
+        for (JsonNode channelCur : channelResult) {
+            String type = channelCur.get("type").asText();
+            if (type.equals("O") || type.equals("P")) {
+                Channel channel = handleChannelInfo(channelCur, team);
+                handleUserChannelData(identification, sessionToken, weffyUser, channel);
             }
         }
     }
+
+    private Channel handleChannelInfo(JsonNode channelCur, Team team) {
+        String channelId = channelCur.get("id").asText();
+        return jpaChannelRepository.findByIdentification(channelId).orElseGet(() -> {
+            Channel channel = Channel.builder()
+                    .identification(channelId)
+                    .name(channelCur.get("display_name").asText())
+                    .type(channelCur.get("type").asText())
+                    .team(team)
+                    .build();
+            return jpaChannelRepository.save(channel);
+        });
+    }
+
+    private void handleUserChannelData(String identification, String sessionToken, WeffyUser weffyUser, Channel channel) throws IOException, InterruptedException {
+        Role role = mattermostHandler.getChannelRole(identification, channel.getIdentification(), sessionToken);
+        jpaUserChannelRepository.findByChannelAndWeffyUser(channel, weffyUser)
+                .ifPresentOrElse(weffyUserChannel -> {
+                    if (!weffyUserChannel.getRole().equals(role)){
+                        weffyUserChannel.setRole(role);
+                        jpaUserChannelRepository.save(weffyUserChannel);
+                    }
+                }, () -> {
+                    WeffyUserChannel weffyUserChannel = WeffyUserChannel.builder()
+                            .channel(channel)
+                            .weffyUser(weffyUser)
+                            .role(role)
+                            .build();
+                    jpaUserChannelRepository.save(weffyUserChannel);
+                });
+    }
+
 }
