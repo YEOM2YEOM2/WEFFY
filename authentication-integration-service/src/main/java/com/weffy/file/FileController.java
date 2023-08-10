@@ -23,8 +23,9 @@ public class FileController {
     private final FileService fileService;
 
     @PostMapping("/{conferenceId}")
-    public ResponseEntity<? extends BaseResponseBody> upload(@RequestPart MultipartFile file, @PathVariable String conferenceId) throws IOException {
-        FileResDto fileResDto = fileService.uploadFile(file, conferenceId);
+    public ResponseEntity<? extends BaseResponseBody> upload(@RequestPart MultipartFile file, @PathVariable(required = false) String conferenceId) throws IOException {
+        String bucketName = (conferenceId == null) ? "weffy" : "weffy-conference";
+        FileResDto fileResDto = fileService.uploadFile(file, conferenceId, bucketName);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, fileResDto));
     }
 }
