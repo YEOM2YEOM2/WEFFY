@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
         User mmClient = userInfo.readEntity();
         InputStream profileImg = mattermostHandler.image(mmClient.getId());
         BufferedImage bImageFromConvert = ImageIO.read(profileImg);
-        String profileUrl = fileService.uploadInputStream(bImageFromConvert, mmClient.getId() + ".png");
+        String profileUrl = fileService.uploadInputStream(bImageFromConvert, mmClient.getId() + ".png", "weffy");
 
         Optional<WeffyUser> existUser = userRepository.findByIdentification(mmClient.getId());
         if (existUser.isEmpty()) {
@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void setUser(WeffyUser weffyUser, MultipartFile profileImg, String nickName) {
         if(!profileImg.isEmpty()) {
-            String img = fileService.uploadFile(profileImg);
+            String img = fileService.uploadFile(profileImg, null, "weffy").getUrl();
             weffyUser.setProfileImg(img);
         }
         if(!nickName.isEmpty()) weffyUser.setNickname(nickName);

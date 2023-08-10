@@ -37,8 +37,9 @@ public class SecurityConfig {
         http
                 // CSRF 토큰을 활성화, CSRF 토큰의 생성, 저장, 검증 등은 Spring Security가 자동으로 처리
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/v1/users/signin", "/api/v1/users/signup")
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                                .disable()
+//                        .ignoringRequestMatchers("/api/v1/users/signin", "/api/v1/users/signup")
+//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
                 .cors(cors -> cors
                         .configurationSource(corsConfigurationSource()))
