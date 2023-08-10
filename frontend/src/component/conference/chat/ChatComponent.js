@@ -41,24 +41,38 @@ class ChatComponent extends Component {
     this.close = this.close.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
     this.addFile = this.addFile.bind(this);
+    this.getCurTimeStamp = this.getCurTimeStamp.bind(this);
+  }
+
+  getCurTimeStamp() {
+    const now = new Date();
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+
+    hours = hours < 10 ? "0" + hours : hours;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+
+    return hours + ":" + minutes;
   }
 
   componentDidMount() {
-    this.props.user.getStreamManager().stream.session.on('signal:chat', (event) => {
+    this.props.user
+      .getStreamManager()
+      .stream.session.on("signal:chat", (event) => {
         const data = JSON.parse(event.data);
+
+        console.log(data.timestamp);
         let messageList = this.state.messageList;
-        messageList.push({ connectionId: event.from.connectionId, nickname: data.nickname, message: data.message });
+        messageList.push({
+          connectionId: event.from.connectionId,
+          nickname: data.nickname,
+          message: data.message,
+          timestamp: this.getCurTimeStamp(),
+        });
         const document = window.document;
-        setTimeout(() => {
-            const userImg = document.getElementById('userImg-' + (this.state.messageList.length - 1));
-            const video = document.getElementById('video-' + data.streamId);
-            const avatar = userImg.getContext('2d');
-            avatar.drawImage(video, 200, 120, 285, 285, 0, 0, 60, 60);
-            this.props.messageReceived();
-        }, 50);
         this.setState({ messageList: messageList });
         this.scrollToBottom();
-    });
+      });
   }
 
   handleChange(event) {
@@ -72,7 +86,6 @@ class ChatComponent extends Component {
   }
 
   sendMessage() {
-    console.log(this.state.message);
     if (typeof this.state.message === "string") {
       if (this.props.user && this.state.message) {
         let message = this.state.message.replace(/ +(?= )/g, "");
@@ -81,8 +94,9 @@ class ChatComponent extends Component {
             message: message,
             nickname: this.props.user.getNickname(),
             streamId: this.props.user.getStreamManager().stream.streamId,
-            timsStamp: new Date().toLocaleDateString(),
+            timestamp: this.getCurTimeStamp(),
           };
+          console.log(data.timestamp);
           this.props.user.getStreamManager().stream.session.signal({
             data: JSON.stringify(data),
             type: "chat",
@@ -102,6 +116,7 @@ class ChatComponent extends Component {
           },
           nickname: this.props.user.getNickname(),
           streamId: this.props.user.getStreamManager().stream.streamId,
+          timestamp: this.getCurTimeStamp(),
         };
         this.props.user.getStreamManager().stream.session.signal({
           data: JSON.stringify(data),
@@ -112,9 +127,6 @@ class ChatComponent extends Component {
   }
 
   sendMessage() {
-    console.log(this.state.message);
-
-    // Check if there's a file to upload
     if (this.state.fileData) {
       axios({
         method: "post",
@@ -261,7 +273,7 @@ class ChatComponent extends Component {
             </IconButton>
           </div>
           <div className="message-wrap" ref={this.chatScroll}>
-            {console.log(this.state.messageList)}
+            {/* {console.log(this.state.messageList)} */}
             {this.state.messageList.map((data, i) => (
               <div
                 key={i}
@@ -273,37 +285,34 @@ class ChatComponent extends Component {
                     : " right")
                 }
               >
-                <canvas
-                  id={"userImg-" + i}
-                  width="60"
-                  height="60"
-                  className="user-img"
-                />
                 <div className="msg-detail">
                   <div className="msg-info">
                     <p style={{ fontFamily: "Poppins", fontSize: "12px" }}>
-                      {" "}
                       {data.nickname}
                     </p>
                   </div>
-                  <div className="msg-content">
-                    <span className="triangle" />
-                    <p style={{ fontFamily: "Poppins", fontSize: "120px" }}>
-                      {data.timestamp}
-                    </p>
-                    <p className="text" style={{ fontFamily: "GmarketSans" }}>
-                      {data.message && typeof data.message === "object" ? (
-                        <a
-                          href={data.message.url || "#"}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                  <div className="content-with-timestamp">
+                    <div className="msg-content">
+                      <p className="text" style={{ fontFamily: "GmarketSans" }}>
+                        <p
+                          className="text"
+                          style={{ fontFamily: "GmarketSans" }}
                         >
-                          {data.message.fileName || "이름 없는 파일"}
-                        </a>
-                      ) : (
-                        data.message || ""
-                      )}
-                    </p>
+                          {data.message && typeof data.message === "object" ? (
+                            <a
+                              href={data.message.url || "#"}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {data.message.fileName || "이름 없는 파일"}
+                            </a>
+                          ) : (
+                            data.message || ""
+                          )}
+                        </p>
+                      </p>
+                    </div>
+                    <span className="timeStamp">{data.timestamp}</span>
                   </div>
                 </div>
               </div>
