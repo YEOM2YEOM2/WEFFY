@@ -1,28 +1,35 @@
 package com.weffy.file.service;
 
-
+import com.weffy.exception.CustomException;
+import com.weffy.exception.ExceptionEnum;
+import com.weffy.file.entity.Files;
 import com.weffy.file.dto.request.FileReqDto;
 import com.weffy.file.dto.response.FileResDto;
 import com.weffy.file.dto.response.GetFileDto;
-import com.weffy.file.entity.Files;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import com.weffy.file.repository.JpaFileRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+
+
+
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.File;
+import java.nio.file.StandardCopyOption;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,6 +105,22 @@ public class FileServiceImpl implements FileService {
                 .map(Files::of)
                 .collect(Collectors.toList());
         return dtoList;
+    }
+
+    @Override
+    public void fileDownload(String url, String filename) throws IOException {
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<Resource> response = restTemplate.exchange(url, HttpMethod.GET, null, Resource.class);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            String userHomeDirectory = System.getProperty("user.home");
+            String downloadsPath = userHomeDirectory + File.separator + "Downloads" + File.separator + filename;
+            File targetFile = new File(downloadsPath);
+            java.nio.file.Files.copy(response.getBody().getInputStream(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } else {
+            throw new CustomException(ExceptionEnum.FILENOTFOUND);
+        }
     }
 }
 
