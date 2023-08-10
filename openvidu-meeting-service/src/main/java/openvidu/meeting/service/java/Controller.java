@@ -2,6 +2,7 @@ package openvidu.meeting.service.java;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -69,25 +70,25 @@ public class Controller {
 	}
 
 	// 방 생성하기
-	@PostMapping("/api/sessions")
-	public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
-			throws OpenViduJavaClientException, OpenViduHttpException {
-
-		SessionProperties properties = SessionProperties.fromJson(params).build(); // customSessionId : "sessionId"
-
-		// 해당 세션이 이미 만들어진 경우
-		if(openvidu.getActiveSession(properties.customSessionId()) != null){
-			System.out.println(properties.customSessionId()+"===============>");
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-
-		Session session = openvidu.createSession(properties);
-
-		// 토큰 관리 저장소 생성
-		mapSessionNamesTokens.put(session.getSessionId(), new HashMap<String, UserRole>());
-
-		return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
-	}
+//	@PostMapping("/api/sessions")
+//	public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
+//			throws OpenViduJavaClientException, OpenViduHttpException {
+//
+//		SessionProperties properties = SessionProperties.fromJson(params).build(); // customSessionId : "sessionId"
+//
+//		// 해당 세션이 이미 만들어진 경우
+//		if(openvidu.getActiveSession(properties.customSessionId()) != null){
+//			System.out.println(properties.customSessionId()+"===============>");
+//			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//		}
+//
+//		Session session = openvidu.createSession(properties);
+//
+//		// 토큰 관리 저장소 생성
+//		mapSessionNamesTokens.put(session.getSessionId(), new HashMap<String, UserRole>());
+//
+//		return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
+//	}
 
 
 
@@ -130,7 +131,18 @@ public class Controller {
 
 		ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
 
+
 		Connection connection = session.createConnection(properties);
+
+		System.out.println("ConnectionId : "+ connection.getConnectionId()+"/"+connection.getToken());
+
+		List<Publisher> list = connection.getPublishers();
+
+		System.out.println("---------------");
+		for(Publisher publisher : list){
+			System.out.println("정답 : "+ publisher.getStreamId());
+		}
+		System.out.println("---------------");
 
 		// 어디 방에 들어간 사람인지 구분하기 위함
 		mapSessionNamesTokens.get(classId).put(identification, UserRole.valueOf(role));
