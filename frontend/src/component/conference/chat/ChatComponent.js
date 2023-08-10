@@ -2,13 +2,13 @@ import React, { Component } from "react";
 import IconButton from "@mui/material/IconButton";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import ForwardToInboxOutlinedIcon from "@mui/icons-material/ForwardToInboxOutlined";
-import FilePresentIcon from "@mui/icons-material/FilePresent";
-
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { connect } from "react-redux";
 
 import "./ChatComponent.css";
 import Tooltip from "@mui/material/Tooltip";
 import { yellow } from "@mui/material/colors";
+import SendIcon from "@mui/icons-material/Send";
 
 import axios from "axios";
 
@@ -40,7 +40,7 @@ class ChatComponent extends Component {
     this.handlePressKey = this.handlePressKey.bind(this);
     this.close = this.close.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
-    this.sendFile = this.sendFile.bind(this);
+    this.addFile = this.addFile.bind(this);
   }
 
   componentDidMount() {
@@ -80,7 +80,7 @@ class ChatComponent extends Component {
   }
 
   sendMessage() {
-    // console.log(this.state.message);
+    console.log(this.state.message);
     if (typeof this.state.message === "string") {
       if (this.props.user && this.state.message) {
         let message = this.state.message.replace(/ +(?= )/g, "");
@@ -116,11 +116,92 @@ class ChatComponent extends Component {
         });
       }
     }
-
-    this.setState({ message: "" });
   }
 
-  sendFile(event) {
+  sendMessage() {
+    console.log(this.state.message);
+
+    // Check if there's a file to upload
+    if (this.state.fileData) {
+      axios({
+        method: "post",
+        url: "http://i9d107.p.ssafy.io:8081/api/v1/files",
+        headers: {
+          accept: "application/json",
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${this.props.accessToken}`,
+        },
+        data: this.state.fileData,
+      })
+        .then((res) => {
+          const fileInfo = {
+            url: res.data.data,
+            fileName: "이름없는 파일",
+          };
+
+          this.setState(
+            {
+              message: fileInfo,
+              fileData: null, // Reset the fileData once it's sent
+            },
+            () => {
+              this.sendMessage(); // This will handle the file info as a message now
+            }
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    // Check if it's a text message
+    else if (
+      typeof this.state.message === "string" &&
+      this.props.user &&
+      this.state.message
+    ) {
+      let message = this.state.message.replace(/ +(?= )/g, "");
+
+      if (message !== "" && message !== " ") {
+        const data = {
+          message: message,
+          nickname: this.props.user.getNickname(),
+          streamId: this.props.user.getStreamManager().stream.streamId,
+        };
+
+        this.props.user.getStreamManager().stream.session.signal({
+          data: JSON.stringify(data),
+          type: "chat",
+        });
+
+        this.setState({ message: "" });
+      }
+    }
+    // Check if it's a file info message
+    else if (
+      typeof this.state.message === "object" &&
+      this.state.message.url &&
+      this.state.message.fileName &&
+      this.props.user
+    ) {
+      const data = {
+        message: {
+          url: this.state.message.url,
+          fileName: this.state.message.fileName,
+        },
+        nickname: this.props.user.getNickname(),
+        streamId: this.props.user.getStreamManager().stream.streamId,
+      };
+
+      this.props.user.getStreamManager().stream.session.signal({
+        data: JSON.stringify(data),
+        type: "chat",
+      });
+
+      this.setState({ message: "" });
+    }
+  }
+
+  addFile(event) {
     const file = event.target.files[0];
     if (file) {
       // console.log(file);
@@ -130,6 +211,8 @@ class ChatComponent extends Component {
 
       const formData = new FormData();
       formData.append("file", file);
+
+      this.setState({ fileData: formData });
       axios({
         method: "post",
         url: "http://i9d107.p.ssafy.io:8081/api/v1/files",
@@ -232,6 +315,25 @@ class ChatComponent extends Component {
             ))}
           </div>
 
+          <div id="fileContainer">
+            <Tooltip title="파일 첨부" placement="top">
+              <IconButton
+                size="small"
+                id="fileButton"
+                onClick={() => document.getElementById("fileInput").click()}
+                style={{ padding: "10px", margin: "4px" }}
+              >
+                <input
+                  type="file"
+                  id="fileInput"
+                  style={{ display: "none" }}
+                  onChange={this.addFile}
+                />
+                <AttachFileIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
+
           <div id="messageInput">
             <input
               placeholder="메시지를 입력해주세요."
@@ -242,33 +344,16 @@ class ChatComponent extends Component {
               style={{ fontFamily: "GmarketSans" }}
             />
             <div style={{ display: "flex" }}>
-              <Tooltip title="파일 전송" placement="top">
-                <IconButton
-                  size="small"
-                  id="fileButton"
-                  onClick={() => document.getElementById("fileInput").click()}
-                  style={{ padding: "10px", margin: "4px" }}
-                >
-                  <input
-                    type="file"
-                    id="fileInput"
-                    style={{ display: "none" }}
-                    onChange={this.sendFile}
-                  />
-                  <FilePresentIcon />
-                </IconButton>
-              </Tooltip>
-
-              <Tooltip title="채팅 전송" placement="top">
-                <IconButton
-                  size="small"
-                  id="sendButton"
-                  onClick={this.sendMessage}
-                  style={{ padding: "10px", margin: "4px" }}
-                >
-                  <ForwardToInboxOutlinedIcon />
-                </IconButton>
-              </Tooltip>
+              {/* <Tooltip title="전송" placement="top"> */}
+              <IconButton
+                size="small"
+                id="sendButton"
+                onClick={this.sendMessage}
+                style={{ padding: "10px", margin: "4px" }}
+              >
+                <SendIcon style={{ color: "white" }} />
+              </IconButton>
+              {/* </Tooltip> */}
             </div>
           </div>
         </div>
