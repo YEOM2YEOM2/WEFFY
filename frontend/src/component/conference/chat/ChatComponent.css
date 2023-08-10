@@ -1,10 +1,19 @@
 #chatContainer {
+<<<<<<< HEAD
   position: absolute;
   z-index: 0;
   width: 100%;
   height: 100%;
 }
 
+=======
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+>>>>>>> 030361b4df33d78cb4cbce7b6e866452cd5dac41
 #chatToolbar {
   height: 30px;
   background-color: #3d3d3d;
@@ -24,6 +33,7 @@
   top: -8px;
 }
 
+<<<<<<< HEAD
 #fileButton {
   /* background-color: #81d6e9; */
   position: absolute;
@@ -55,6 +65,8 @@
   align-items: center;
 }
 
+=======
+>>>>>>> 030361b4df33d78cb4cbce7b6e866452cd5dac41
 #chatComponent {
   background-color: #b8b8b8;
   position: absolute;
@@ -73,7 +85,10 @@
   padding: 0 15px;
   height: calc(100% - 80px);
   overflow: auto;
+<<<<<<< HEAD
   background-color: #17202e;
+=======
+>>>>>>> 030361b4df33d78cb4cbce7b6e866452cd5dac41
 }
 
 .message {
@@ -101,7 +116,11 @@
 
 .msg-info p {
   font-size: 0.8em;
+<<<<<<< HEAD
   color: #ffffff;
+=======
+  color: #000000;
+>>>>>>> 030361b4df33d78cb4cbce7b6e866452cd5dac41
   font-style: italic;
 }
 
@@ -133,8 +152,13 @@ span.triangle {
 
 /* Start message from other user */
 
+<<<<<<< HEAD
 .message.left .msg-detail .msg-info {
   text-align: left !important;
+=======
+.message > .left .msg-detail .msg-info {
+  text-align: left;
+>>>>>>> 030361b4df33d78cb4cbce7b6e866452cd5dac41
 }
 
 .message.left .msg-detail {
@@ -149,12 +173,16 @@ span.triangle {
 
 .message.left .msg-detail .msg-content {
   background-color: #f0f0f0;
+<<<<<<< HEAD
 
   float: left;
   display: flex;
   justify-content: start;
   align-items: center;
   padding: 5px;
+=======
+  float: left;
+>>>>>>> 030361b4df33d78cb4cbce7b6e866452cd5dac41
 }
 .message.left .msg-detail .msg-content span.triangle {
   background-color: #f0f0f0;
@@ -177,12 +205,17 @@ span.triangle {
 }
 
 .message.right .msg-detail .msg-content {
+<<<<<<< HEAD
   background-color: #fffb91;
   float: right;
   display: flex;
   justify-content: start;
   align-items: center;
   padding: 5px;
+=======
+  background-color: #c8ffe8;
+  float: right;
+>>>>>>> 030361b4df33d78cb4cbce7b6e866452cd5dac41
 }
 
 /* End my messages */
@@ -235,3 +268,7 @@ span.triangle {
 .chatComponentLight ::-webkit-scrollbar-thumb {
   background-color: #eeeeee !important;
 }
+<<<<<<< HEAD
+=======
+  
+>>>>>>> 030361b4df33d78cb4cbce7b6e866452cd5dac41
