@@ -89,6 +89,7 @@ class ChatComponent extends Component {
             message: message,
             nickname: this.props.user.getNickname(),
             streamId: this.props.user.getStreamManager().stream.streamId,
+            timsStamp: new Date().toLocaleDateString(),
           };
           this.props.user.getStreamManager().stream.session.signal({
             data: JSON.stringify(data),
@@ -295,7 +296,9 @@ class ChatComponent extends Component {
                   </div>
                   <div className="msg-content">
                     <span className="triangle" />
-
+                    <p style={{ fontFamily: "Poppins", fontSize: "120px" }}>
+                      {data.timestamp}
+                    </p>
                     <p className="text" style={{ fontFamily: "GmarketSans" }}>
                       {data.message && typeof data.message === "object" ? (
                         <a
