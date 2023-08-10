@@ -19,4 +19,6 @@ public interface FileService {
     String uploadInputStream(BufferedImage image, String fileName, String bucketName) throws IOException;
 
     List<GetFileDto> getFiles(FileReqDto fileReqDto);
+
+    void fileDownload(String url, String filename) throws IOException;
 }
