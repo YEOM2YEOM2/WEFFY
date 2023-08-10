@@ -13,8 +13,7 @@ import openvidu.meeting.service.java.conference.service.ConferenceService;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import openvidu.meeting.service.java.conference.streaming.Recording;
-import openvidu.meeting.service.java.conference.streaming.ZipFileDownloader;
+import openvidu.meeting.service.java.conference.streaming.MediaRecording;
 import openvidu.meeting.service.java.exception.ExceptionEnum;
 import openvidu.meeting.service.java.history.dto.request.HistoryReqDto;
 import openvidu.meeting.service.java.history.service.HistoryService;
@@ -47,7 +46,7 @@ public class ConferenceController {
 
     private final HistoryService historyService;
 
-    private Map<String, Recording> schedulerList;
+    private Map<String, MediaRecording> schedulerList;
 
     @PostConstruct
     public void init() throws OpenViduJavaClientException, OpenViduHttpException {
@@ -148,9 +147,9 @@ public class ConferenceController {
             if(mapSessionNamesTokens.get(classId).size() == 1){
                 System.out.println("처음 입장합니다");
 
-                schedulerList.put(classId, new Recording(classId, identification));
+                schedulerList.put(classId, new MediaRecording(classId, identification));
 
-                schedulerList.get(classId).myScheduledMethod();
+                schedulerList.get(classId).scheduledMethod();
 
                 //ZipFileDownloader zipFileDownloader = new ZipFileDownloader();
                 //zipFileDownloader.setZipFileUrl("http://localhost:4443/openvidu/recordings/SessionZ/SessionZ.zip");
