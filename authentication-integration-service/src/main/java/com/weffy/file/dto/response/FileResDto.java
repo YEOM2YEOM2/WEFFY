@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 public class FileResDto {
 
-    private Long id;
     private String url;
     private String title;
     private Long size;
