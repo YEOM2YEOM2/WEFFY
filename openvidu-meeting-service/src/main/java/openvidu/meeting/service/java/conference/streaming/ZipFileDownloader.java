@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,14 +48,16 @@ public class ZipFileDownloader {
     }
 
     public String downloadRecording() throws IOException {
-        System.out.println("start");
-        // Create Basic Auth header
+
+
         try{
+            // Openvidu의 인증 절차
+            // 이름과 비밀번호를 만들어서 http header에 넣어준다.
             String authHeaderValue = "Basic " + Base64.getEncoder().encodeToString((openViduApiUsername + ":" + openViduApiPassword).getBytes());
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", authHeaderValue);
 
-            System.out.println(recordingId);
+            // System.out.println(recordingId);
 
             // 녹화 파일을 GET 요청으로 다운로드한다.
             ResponseEntity<byte[]> response = restTemplate.exchange(
@@ -64,43 +67,50 @@ public class ZipFileDownloader {
                     byte[].class
             );
 
-            // 다운로드한 zip 파일을 임시 파일로 저장합니다. recordingId 변수를 파일 이름에 사용하며, Files.write를 사용하여 내용을 기록합니다.
+            // 다운로드한 zip 파일을 임시 파일로 저장한다.
+            // recordingId 변수를 파일 이름에 사용하고 Files.write를 사용하여 내용을 기록한다.
             byte[] zipBytes = response.getBody();
-            Path tempFile = Files.createTempFile(recordingId, ".zip");
+            Path tempFile = Files.createTempFile(title, ".zip");
             Files.write(tempFile, zipBytes);
-            System.out.println(tempFile.toString());
 
-            // 다운로드한 zip 파일을 압축 해제하고 내부의 파일을 처리합니다. unzipDir에 압축 해제된 파일들이 저장됩니다.
-            Path unzipDir = Files.createTempDirectory(recordingId);
+            // 다운로드한 zip 파일을 압축 해제하고 내부의 파일을 처리한다.
+            // unzipDir에 압축 해제된 파일들을 저장함
+            Path unzipDir = Files.createTempDirectory(title);
             try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(tempFile))) {
                 ZipEntry entry;
                 while ((entry = zipInputStream.getNextEntry()) != null) {
                     Path entryPath = unzipDir.resolve(entry.getName());
                     Files.copy(zipInputStream, entryPath, StandardCopyOption.REPLACE_EXISTING);
                     zipInputStream.closeEntry();
-                    System.out.println("name : "+ entry.getName());
+                    //System.out.println("name : "+ entry.getName());
                     // Rename and move the extracted file
                     if (entry.getName().endsWith(".webm")) {
                         Path renamedMp4Path = unzipDir.resolve(title+".mp4"); // 바꿀 이름 설정
+                        //System.out.println("RENAME : "+ renamedMp4Path);
                         Files.move(entryPath, renamedMp4Path, StandardCopyOption.REPLACE_EXISTING);
                     }
                 }
             }
-            System.out.println(unzipDir);
 
-            // 압축 해제된 디렉토리에 있는 mp4 파일의 경로와 로컬 저장 경로를 설정합니다.
-            // 이 부분에서 extractedMp4Path와 targetPath의 경로가 정확한지 확인하는 데 유용합니다.
-            Path extractedMp4Path = unzipDir.resolve(recordingId+".mp4");
-            Path targetPath = Paths.get(localRecordingPath, recordingId+".mp4");
-            System.out.println(extractedMp4Path);
-            System.out.println(targetPath);
+            //System.out.println(unzipDir);
 
-            //Files.move(extractedMp4Path, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            // 압축 해제된 디렉토리에 있는 mp4 파일의 경로와 로컬 저장 경로를 설정한다.
+            Path extractedMp4Path = unzipDir.resolve(title+".mp4");
+            Path targetPath = Paths.get(localRecordingPath, title+".mp4");
+            //System.out.println(extractedMp4Path);
+            //System.out.println(targetPath);
 
-            //Files.delete(tempFile);
-            //Files.delete(unzipDir);
+            // 기존에 저장한 폴더에서 지정한 로컬 경로로 파일을 옮긴다.
+            Files.move(extractedMp4Path, targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-            return "Recording downloaded and saved locally.";
+            // 로컬에 다운받은 임시 파일을 지운다.
+            Files.delete(tempFile);
+
+            // 압축을 폴었던 파일에 json 파일도 있었기 때문에 하위 파일을 먼저 지우고 폴더를 삭제한다.
+            Files.delete(Paths.get(unzipDir.toString()).resolve(recordingId+".json"));
+            Files.delete(unzipDir);
+
+            return new StringBuilder(title).append(".mp4").toString();
         }catch (Exception e){
             e.printStackTrace();
             return null;
