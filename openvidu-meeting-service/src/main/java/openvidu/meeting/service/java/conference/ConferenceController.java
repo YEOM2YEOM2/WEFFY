@@ -3,7 +3,6 @@ package openvidu.meeting.service.java.conference;
 import openvidu.meeting.service.java.OpenviduDB;
 import openvidu.meeting.service.java.common.dto.BaseResponseBody;
 import openvidu.meeting.service.java.conference.dto.request.ConferenceCreateReqDto;
-import openvidu.meeting.service.java.conference.dto.request.ConferenceconnectionReqDto;
 import openvidu.meeting.service.java.conference.dto.response.ConferenceCreateResDto;
 import openvidu.meeting.service.java.conference.dto.response.ConferenceDetailResDto;
 import openvidu.meeting.service.java.conference.dto.response.ConferenceHostListResDto;
@@ -14,6 +13,8 @@ import openvidu.meeting.service.java.conference.service.ConferenceService;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import openvidu.meeting.service.java.conference.streaming.Recording;
+import openvidu.meeting.service.java.conference.streaming.ZipFileDownloader;
 import openvidu.meeting.service.java.exception.ExceptionEnum;
 import openvidu.meeting.service.java.history.dto.request.HistoryReqDto;
 import openvidu.meeting.service.java.history.service.HistoryService;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,11 +47,14 @@ public class ConferenceController {
 
     private final HistoryService historyService;
 
+    private Map<String, Recording> schedulerList;
+
     @PostConstruct
     public void init() throws OpenViduJavaClientException, OpenViduHttpException {
         openvidu = OpenviduDB.getOpenvidu();
         mapSessionNamesTokens = OpenviduDB.getMapSessionNameTokens();
 
+        schedulerList = new ConcurrentHashMap<>();
         conferenceSetting();
     }
 
@@ -139,6 +144,19 @@ public class ConferenceController {
 
             Connection connection = session.createConnection(properties);
 
+            // 방에 제일 처음 입장하는 경우
+            if(mapSessionNamesTokens.get(classId).size() == 1){
+                System.out.println("처음 입장합니다");
+
+                schedulerList.put(classId, new Recording(classId, identification));
+
+                schedulerList.get(classId).myScheduledMethod();
+
+                //ZipFileDownloader zipFileDownloader = new ZipFileDownloader();
+                //zipFileDownloader.setZipFileUrl("http://localhost:4443/openvidu/recordings/SessionZ/SessionZ.zip");
+                //zipFileDownloader.downloadApplication();
+            }
+
             // 어디 방에 들어간 사람인지 구분하기 위함
             mapSessionNamesTokens.get(classId).put(identification, UserRole.valueOf(role));
 
@@ -149,7 +167,7 @@ public class ConferenceController {
             dto.setIdentification(identification);
             historyService.createHistory(dto,"CONNECTION");
 
-            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "입장합니다."));
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "입장했습니다."));
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
