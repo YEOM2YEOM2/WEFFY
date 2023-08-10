@@ -1,7 +1,6 @@
 package com.weffy.mattermost.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.weffy.user.entity.WeffyUser;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,7 +26,7 @@ public class Channel {
     private List<WeffyUserChannel> weffyUsers = new ArrayList<>();
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "team_id")
+    @ManyToOne(fetch = FetchType.EAGER) @JoinColumn(name = "team_id")
     private Team team;
 
     @Builder

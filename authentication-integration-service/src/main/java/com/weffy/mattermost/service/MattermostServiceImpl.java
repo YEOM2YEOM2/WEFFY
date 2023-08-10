@@ -4,17 +4,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.weffy.exception.CustomException;
 import com.weffy.exception.ExceptionEnum;
 import com.weffy.mattermost.MattermostHandler;
+import com.weffy.mattermost.dto.response.TeamChannelResDto;
 import com.weffy.mattermost.entity.*;
 import com.weffy.mattermost.repository.*;
 import com.weffy.user.entity.WeffyUser;
 import com.weffy.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service("MattermostService")
 @RequiredArgsConstructor
@@ -122,4 +127,38 @@ public class MattermostServiceImpl implements MattermostService {
                 });
     }
 
+
+    @Override
+    public List<TeamChannelResDto> getTeamAndChannel(WeffyUser weffyUser) {
+        List<TeamChannelResDto> teamChannelResDtoList = new ArrayList<>();
+        // 유저와 관련된 모든 팀 찾기
+        List<WeffyUserTeam> userTeams = jpaUserTeamRepository.findByWeffyUser(weffyUser);
+
+        for (WeffyUserTeam userTeam : userTeams) {
+            TeamChannelResDto teamChannelResDto = new TeamChannelResDto();
+            Team team = userTeam.getTeam();
+
+            // 각 팀에 해당하는 모든 채널 찾기
+            List<WeffyUserChannel> userChannels = jpaUserChannelRepository.findByWeffyUserAndChannel_Team(weffyUser, team);
+
+            List<TeamChannelResDto.ChannelDto> channelDtos = userChannels.stream()
+                    .map(userChannel -> {
+                        TeamChannelResDto.ChannelDto channelDto = new TeamChannelResDto.ChannelDto();
+                        Channel channel = userChannel.getChannel();
+                        channelDto.setId(channel.getId());
+                        channelDto.setIdentification(channel.getIdentification());
+                        channelDto.setName(channel.getName());
+                        channelDto.setAdmin(userChannel.getRole().equals(Role.channel_admin));
+                        return channelDto;
+                    })
+                    .collect(Collectors.toList());
+
+            teamChannelResDto.setId(team.getId());
+            teamChannelResDto.setIdentification(team.getIdentification());
+            teamChannelResDto.setName(team.getName());
+            teamChannelResDto.setChannels(channelDtos);
+            teamChannelResDtoList.add(teamChannelResDto);
+        }
+        return teamChannelResDtoList;
+    }
 }

@@ -1,7 +1,5 @@
 package com.weffy.mattermost.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.weffy.user.entity.WeffyUser;
 import jakarta.persistence.*;
 import lombok.*;
 
