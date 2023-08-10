@@ -1,14 +1,7 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux'; 
 import './StreamComponent.css';
 
-const mapStateToProps = state => {
-    return {
-        imageURL: state.user.profileImg
-    }
-}
-
-class OvVideoComponent extends Component {
+export default class OvVideoComponent extends Component {
     constructor(props) {
         super(props);
         this.videoRef = React.createRef();
@@ -32,26 +25,18 @@ class OvVideoComponent extends Component {
 
     componentDidUpdate(props) {
         if (props && !!this.videoRef) {
-            console.log(this.props.user)
             this.props.user.getStreamManager().addVideoElement(this.videoRef.current);
         }
     }
 
     render() {
-        const imageURL = this.props.imageURL
-        console.log(imageURL)
-
         return (
-            // <div className="video-container" style={{ backgroundImage: `url(${imageURL})` }}>
-                <video
-                    autoPlay={true}
-                    id={'video-' + this.props.user.getStreamManager().stream.streamId}
-                    ref={this.videoRef}
-                    muted={this.props.mutedSound}
-                />
-            // </div>
+            <video
+                autoPlay={true}
+                id={'video-' + this.props.user.getStreamManager().stream.streamId}
+                ref={this.videoRef}
+                muted={this.props.mutedSound}
+            />
         );
     }
 }
-
-export default connect(mapStateToProps)(OvVideoComponent);
