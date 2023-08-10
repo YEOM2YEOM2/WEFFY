@@ -1,47 +1,52 @@
 package openvidu.meeting.service.java.conference.streaming;
 
 import io.openvidu.java.client.*;
+import lombok.Getter;
+import lombok.Setter;
 import openvidu.meeting.service.java.OpenviduDB;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 
 import java.io.IOException;
 
-public class Recording {
+
+@Getter
+@Setter
+public class MediaRecording {
     private OpenVidu openvidu;
 
-    public String classId;
+    private String classId;
 
-    public String identification;
-    public String recordingId;
-    public ZipFileDownloader zipFileDownloader;
+    private String identification;
+    private String recordingId; // 녹화한 파일 이름 Ex) SessionA, SessionA~1, SessionA~2
+    private ZipFileDownloader zipFileDownloader; // 녹화한 url
+    private int index; // 파일(classId)식별자  Ex) SessionA.mp4, SessionA1.mp4, SessionA2.mp4
 
-    public int index;
-
-    public Recording(String classId, String identification){
+    public MediaRecording(String classId, String identification){
+        openvidu = OpenviduDB.getOpenvidu();
         this.classId = classId;
         this.identification = identification;
         this.zipFileDownloader = new ZipFileDownloader(new RestTemplateBuilder());
-
         this.index = 0;
-        openvidu = OpenviduDB.getOpenvidu();
     }
 
-    public void myScheduledMethod() {
+    // 처음에 시작하는 메소드
+    public void scheduledMethod() {
         this.startRecording();
-        //zipFileDownloader = new ZipFileDownloader();
     }
 
 
-    public void startRecording(){
+    private void startRecording(){
         try{
+            // 녹화 설정
             RecordingProperties properties = new RecordingProperties.Builder()
                     .outputMode(io.openvidu.java.client.Recording.OutputMode.INDIVIDUAL)
                     .hasAudio(true)
                     .hasVideo(true).build();
 
-            io.openvidu.java.client.Recording recording = this.openvidu.startRecording(this.classId, properties);
-            this.recordingId = recording.getId();
-            System.out.println("녹음을 시작합니다.");
+            Recording recording = openvidu.startRecording(this.classId, properties);
+            setRecordingId(recording.getId()); // 녹화를 정지할 때 recordingId를 활용한다.
+
+            System.out.println("녹화를 시작합니다.");
 
             // 10초 동안 녹화한다.
             try {
@@ -50,35 +55,39 @@ public class Recording {
                 e.printStackTrace();
             }
 
+            // 녹화 정지
             this.stopRecording();
         }catch (OpenViduJavaClientException | OpenViduHttpException e) {
             e.printStackTrace(); // 예외 정보를 출력하거나 다른 처리를 수행할 수 있습니다.
         }
     }
 
-    public void stopRecording(){
+    private void stopRecording(){
         try{
-            io.openvidu.java.client.Recording recording = this.openvidu.stopRecording(this.recordingId);
+            Recording recording = openvidu.stopRecording(this.recordingId);
 
-            System.out.println(recording.getUrl());
+            System.out.println("녹화 url : "+recording.getUrl());
 
+            // url 설정
             zipFileDownloader.setZipFileUrl(recording.getUrl());
 
+            // 파일명 설정
             if(index == 0){
                 zipFileDownloader.setTitle(classId);
             }else{
-                zipFileDownloader.setTitle(classId+(index++));
+                zipFileDownloader.setTitle(classId+index);
             }
 
+            index++;
 
+            // recordingId 설정
             zipFileDownloader.setRecordingId(this.recordingId);
 
-            String result = zipFileDownloader.downloadRecording();
 
-            if (result != null) {
-                System.out.println("ERROR : "+ result);
+            if (zipFileDownloader.downloadRecording() != null) {
+                System.out.println("Download Success");
             } else {
-                System.out.println("Recording download failed.");
+                System.out.println("Download Fail");
             }
 
             this.startRecording();

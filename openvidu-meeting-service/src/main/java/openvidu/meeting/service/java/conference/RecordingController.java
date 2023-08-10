@@ -65,16 +65,9 @@ public class RecordingController {
     public ResponseEntity<? extends BaseResponseBody> startRecording(
             @PathVariable(name="identification") String identification,
             @PathVariable(name="role") String role,
-            @RequestBody ConferenceRecStartReqDto reqDto) throws OpenViduJavaClientException, OpenViduHttpException{
-
-        RecordingProperties properties = new RecordingProperties.Builder()
-                .outputMode(reqDto.getOutputMode())
-                .hasAudio(reqDto.isHasAudio())
-                .hasVideo(reqDto.isHasVideo()).build();
-
+            @RequestBody ConferenceRecStartReqDto reqDto){
 
         try {
-            Recording recording = this.openvidu.startRecording(reqDto.getClassId(), properties);
 
             // 이미 녹화를 진행하고 있는 경우
             if(sessionRecordings.get(reqDto.getClassId()) != null){
@@ -87,13 +80,9 @@ public class RecordingController {
 
             this.sessionRecordings.put(reqDto.getClassId(), true);
 
-            this.sessionRecordingPerson.put(recording.getId(), identification);
 
-            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, recording.getId()));
-        } catch (OpenViduJavaClientException | OpenViduHttpException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4005, ExceptionEnum.RECORDING_GENERATION_ERROR));
-        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "녹화시작"));
+        } catch(Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
