@@ -44,6 +44,7 @@ public class RecordingController {
         sessionRecordings = new ConcurrentHashMap<>();
 
         sessionRecordingPerson = new ConcurrentHashMap<>();
+
     }
 
     public boolean isPowerCheck(String classId){
@@ -101,6 +102,8 @@ public class RecordingController {
     public ResponseEntity<? extends BaseResponseBody> stopRecording(@PathVariable(name="recording_id")String recordingId) {
         try {
             Recording recording = this.openvidu.stopRecording(recordingId);
+
+
             this.sessionRecordings.remove(recording.getSessionId());
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, recording));
         } catch (OpenViduJavaClientException | OpenViduHttpException e) {
@@ -144,6 +147,7 @@ public class RecordingController {
                                 .url(recording.getUrl())
                                 .build();
                         resDtoList.add(resDto);
+
                     }
                 }
             }
