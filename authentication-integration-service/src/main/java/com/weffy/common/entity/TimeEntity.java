@@ -10,7 +10,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Getter
 @MappedSuperclass
@@ -18,19 +17,19 @@ import java.time.format.DateTimeFormatter;
 public abstract class TimeEntity {
 
     @CreatedDate
-    private String createdAt;
-
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private String modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @PrePersist
     public void onPrePersist() {
-        this.createdAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
+        this.createdAt = LocalDateTime.now();
         this.modifiedAt = this.createdAt;
     }
+
     @PreUpdate
     public void onPreUpdate(){
-    this.modifiedAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
+        this.modifiedAt = LocalDateTime.now();
     }
 }

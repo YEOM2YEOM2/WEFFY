@@ -2,6 +2,7 @@ package com.weffy.file.entity;
 
 
 import com.weffy.common.entity.TimeEntity;
+import com.weffy.file.dto.response.GetFileDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,5 +30,14 @@ public class Files extends TimeEntity {
         this.title = title;
         this.size = size;
         this.conferenceId = conferenceId;
+    }
+
+    public GetFileDto of() {
+        GetFileDto getFileListDto = new GetFileDto();
+        getFileListDto.setId(this.id);
+        getFileListDto.setUrl(this.url);
+        getFileListDto.setTitle(this.title);
+        getFileListDto.setSize(this.size);
+        return getFileListDto;
     }
 }

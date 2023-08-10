@@ -1,7 +1,9 @@
 package com.weffy.file.service;
 
 
+import com.weffy.file.dto.request.FileReqDto;
 import com.weffy.file.dto.response.FileResDto;
+import com.weffy.file.dto.response.GetFileDto;
 import com.weffy.file.entity.Files;
 import com.weffy.file.repository.JpaFileRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service("FileService")
@@ -82,6 +89,15 @@ public class FileServiceImpl implements FileService {
         s3Client.putObject(putRequest, RequestBody.fromBytes(buffer));
 
         return String.format("https://%s.s3.ap-northeast-2.amazonaws.com/%s", bucketName, fileName.toLowerCase());
+    }
+
+    @Override
+    public List<GetFileDto> getFiles(FileReqDto fileReqDto) {
+        List<Files> filesList = jpaFileRepository.findByConferenceIdAndCreatedAtBetween(fileReqDto.getConferenceId(), fileReqDto.getStart(), fileReqDto.getEnd());
+        List<GetFileDto> dtoList = filesList.stream()
+                .map(Files::of)
+                .collect(Collectors.toList());
+        return dtoList;
     }
 }
 
