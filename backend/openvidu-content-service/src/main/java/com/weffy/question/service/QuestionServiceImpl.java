@@ -5,6 +5,7 @@ import com.weffy.exception.ExceptionEnum;
 import com.weffy.question.Repository.JpaQuestionRepository;
 import com.weffy.question.dto.request.QuestionReqDto;
 import com.weffy.question.dto.response.QuestionResDto;
+import com.weffy.question.dto.response.QuestionStateResDto;
 import com.weffy.question.entity.Question;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.awt.desktop.QuitResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service("QuestionService")
@@ -32,6 +34,14 @@ public class QuestionServiceImpl implements QuestionService{
                 .build();
         jpaQuestionRepository.save(question);
         return new QuestionResDto().of(question);
+    }
+
+    @Override
+    public List<QuestionStateResDto> getQuestions(String conferenceId) {
+        List<Question> questions =  jpaQuestionRepository.findByConferenceId(conferenceId);
+        return questions.stream()
+                .map(QuestionStateResDto::of)
+                .collect(Collectors.toList());
     }
 
 }

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ExceptionEnum {
 
+    QUESTIONNOTEXIST(HttpStatus.BAD_REQUEST,4000,"질문이 존재하지 않습니다.")
    ;
 
 

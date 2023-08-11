@@ -14,4 +14,14 @@ public class QuestionResDto {
     boolean isComplete;
     boolean isAnonymous;
 
+    public QuestionResDto of(Question question) {
+        QuestionResDto res = new QuestionResDto();
+        res.id = question.getId();
+        res.senderId = question.getSenderId();
+        res.conferenceId = question.getConferenceId();
+        res.content = question.getContent();
+        res.isComplete = question.isComplete();
+        res.isAnonymous = question.isAnonymous();
+        return res;
+    }
 }
