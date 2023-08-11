@@ -21,14 +21,14 @@ public class Files extends TimeEntity {
 
     private String url;
     private String title;
-    private Long size;
+    private String objectKey;
     private String conferenceId;
 
     @Builder
-    public Files(String url, String title, Long size, String conferenceId) {
+    public Files(String url, String title, String objectKey, String conferenceId) {
         this.url = url;
         this.title = title;
-        this.size = size;
+        this.objectKey = objectKey;
         this.conferenceId = conferenceId;
     }
 
@@ -37,7 +37,7 @@ public class Files extends TimeEntity {
         getFileListDto.setId(this.id);
         getFileListDto.setUrl(this.url);
         getFileListDto.setTitle(this.title);
-        getFileListDto.setSize(this.size);
+        getFileListDto.setObjectKey(this.objectKey);
         return getFileListDto;
     }
 }
