@@ -13,14 +13,11 @@ import java.io.IOException;
 @Setter
 public class MediaRecording {
     private OpenVidu openvidu;
-
     private String classId;
-
     private String identification;
     private String recordingId; // 녹화한 파일 이름 Ex) SessionA, SessionA~1, SessionA~2
     private ZipFileDownloader zipFileDownloader; // 녹화한 url
     private int index; // 파일(classId)식별자  Ex) SessionA.mp4, SessionA1.mp4, SessionA2.mp4
-
 
     private boolean status;
 
@@ -38,7 +35,6 @@ public class MediaRecording {
         this.startRecording();
     }
 
-
     private void startRecording(){
         try{
             // 녹화 설정
@@ -52,9 +48,9 @@ public class MediaRecording {
 
             System.out.println("녹화를 시작합니다.");
 
-            // 10초 동안 녹화한다.
+            // 10분 동안 녹화한다.
             try {
-                Thread.sleep(10000);
+                Thread.sleep(600000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -98,6 +94,8 @@ public class MediaRecording {
             } else {
                 System.out.println("Download Fail");
             }
+
+            // 저장한 파일을 보내준다.
 
             if(status){
                 this.startRecording();
