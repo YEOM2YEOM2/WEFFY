@@ -10,6 +10,5 @@ public class QuestionReqDto {
     String senderId;
     String conferenceId;
     String content;
-    boolean isComplete;
     boolean isAnonymous;
 }

@@ -29,7 +29,7 @@ public class QuestionServiceImpl implements QuestionService{
                 .senderId(questionReqDto.getSenderId())
                 .conferenceId(questionReqDto.getConferenceId())
                 .content(questionReqDto.getContent())
-                .isComplete(questionReqDto.isComplete())
+                .isComplete(false) // 처음 질문 생성 시 false default
                 .isAnonymous(questionReqDto.isAnonymous())
                 .build();
         jpaQuestionRepository.save(question);
