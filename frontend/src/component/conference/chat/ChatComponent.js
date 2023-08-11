@@ -2,6 +2,10 @@ import React, { Component } from "react";
 import IconButton from "@mui/material/IconButton";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import ForwardToInboxOutlinedIcon from "@mui/icons-material/ForwardToInboxOutlined";
+import DownloadIcon from "@mui/icons-material/Download";
+import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
+
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { connect } from "react-redux";
 
@@ -33,12 +37,14 @@ class ChatComponent extends Component {
     this.state = {
       messageList: [],
       message: "",
+      // : "",
       // authorization: "",
     };
     this.chatScroll = React.createRef();
 
     this.handleChange = this.handleChange.bind(this);
     this.handlePressKey = this.handlePressKey.bind(this);
+    this.fileDownload = this.fileDownload.bind(this);
     this.close = this.close.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
     this.addFile = this.addFile.bind(this);
@@ -83,6 +89,10 @@ class ChatComponent extends Component {
     if (event.key === "Enter") {
       this.sendMessage();
     }
+  }
+
+  fileDownload() {
+    console.log("다운로드 시도!");
   }
 
   sendMessage() {
@@ -152,10 +162,16 @@ class ChatComponent extends Component {
           this.setState({ message: fileInfo }, () => {
             // console.log("전송!");
             this.sendMessage();
+            this.setState({ message: "" });
           });
         })
         .catch((err) => {
           console.log(err);
+          // Set the message state to the error message you want to display.
+          this.setState({ message: "파일 전송에 실패했습니다" }, () => {
+            this.sendMessage();
+            this.setState({ message: "" });
+          });
         });
     }
   }
@@ -213,13 +229,25 @@ class ChatComponent extends Component {
                           style={{ fontFamily: "GmarketSans" }}
                         >
                           {data.message && typeof data.message === "object" ? (
-                            <a
-                              href={data.message.url || "#"}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <IconButton
+                              className="downloadText"
+                              onClick={this.fileDownload}
                             >
+                              <SimCardDownloadIcon
+                                style={{
+                                  color: "orange",
+                                }}
+                              />
                               {data.message.title}
-                            </a>
+
+                              {/* <DownloadIcon
+                                style={{
+                                  backgroundColor: "black",
+                                  color: "white",
+                                  borderRadius: "3px",
+                                }}
+                              /> */}
+                            </IconButton>
                           ) : (
                             data.message || ""
                           )}
