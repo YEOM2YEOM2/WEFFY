@@ -1,0 +1,68 @@
+.toolbar{
+  position: fixed;
+  bottom: 0;
+  min-height: 45px !important;
+  padding: 0 !important;
+  z-index: 999999;
+}
+
+.headerLight{
+  color: #706969 !important;
+  background-color: #eeeeee !important;
+}
+
+#navSessionInfo {
+  position: absolute;
+}
+
+#navButtons {
+  position: absolute;
+  left: 0;
+  right: 0;
+  min-width: 400px;
+}
+#navChatButton {
+  position: absolute;
+  right: 10px;
+  top: 0;
+}
+
+#titleContent{
+  max-width: 150px;
+  background-color: #494949;
+  margin: 5px -18px;
+  padding: 0px 15px;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  float: right;
+  margin-top: 20px;
+}
+
+.titleContentLight{
+  background-color: #dfdfdf !important; 
+  color: #000;
+}
+
+#header_img {
+  max-width: 110px;
+  margin-left: 7px;
+  margin-right: 10px;
+  margin-top: 5px;
+}
+
+#session-title{
+  font-family: 'Kalam'; 
+}
+
+
+.pointLight{
+border: 1px solid #ffffff !important;
+}
+
+
+@media only screen and (max-width: 700px) {
+#titleContent, #navChatButton {
+    display: none;
+}
+}
