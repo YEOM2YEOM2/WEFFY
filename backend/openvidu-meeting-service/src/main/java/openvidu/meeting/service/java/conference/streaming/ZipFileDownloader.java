@@ -106,6 +106,14 @@ public class ZipFileDownloader {
             // 기존에 저장한 폴더에서 지정한 로컬 경로로 파일을 옮긴다.
             Files.move(extractedMp4Path, targetPath, StandardCopyOption.REPLACE_EXISTING);
 
+            try{
+                SendVideo sv = new SendVideo();
+                sv.sendRequest(classId, title);
+            }catch(Exception e){
+                System.out.println("Error : ");
+                e.printStackTrace();
+            }
+
             // 로컬에 다운받은 임시 파일을 지운다.
             Files.delete(tempFile);
 

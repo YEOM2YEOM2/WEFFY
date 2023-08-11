@@ -52,7 +52,10 @@ dependencies {
     // Logback (Logging Implementation)
     // implementation 'ch.qos.logback:logback-classic:1.2.6'
 
-    implementation 'net.bramp.ffmpeg:ffmpeg:0.7.0'
+    // implementation 'net.bramp.ffmpeg:ffmpeg:0.7.0'
+
+    implementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13' // 최신 버전 사용
+
 
 
 //    // scheduled
