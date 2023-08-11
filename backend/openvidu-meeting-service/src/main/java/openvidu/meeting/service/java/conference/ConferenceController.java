@@ -1,5 +1,6 @@
 package openvidu.meeting.service.java.conference;
 
+import lombok.Value;
 import openvidu.meeting.service.java.OpenviduDB;
 import openvidu.meeting.service.java.common.dto.BaseResponseBody;
 import openvidu.meeting.service.java.conference.dto.request.ConferenceCreateReqDto;
@@ -40,7 +41,9 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class ConferenceController {
     private OpenVidu openvidu;
+
     private String root = "http://localhost:8080/";
+
     private Map<String, Map<String, UserRole>> mapSessionNamesTokens; // <sessionId, <token, role>>
 
     private final ConferenceRepository conferenceRepository;
