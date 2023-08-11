@@ -1,36 +1,30 @@
 package com.weffy.file.service;
 
-import com.weffy.exception.CustomException;
-import com.weffy.exception.ExceptionEnum;
 import com.weffy.file.entity.Files;
 import com.weffy.file.dto.request.FileReqDto;
 import com.weffy.file.dto.response.FileResDto;
 import com.weffy.file.dto.response.GetFileDto;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import com.weffy.file.repository.JpaFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-
-
-
 
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.File;
-import java.nio.file.StandardCopyOption;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -43,12 +37,14 @@ public class FileServiceImpl implements FileService {
     @Override
     public FileResDto uploadFile(MultipartFile file, String conferenceId, String bucketName) {
 
-        String fileName = file.getOriginalFilename();
+        String originalFileName = file.getOriginalFilename();
         String type = file.getContentType();
+
+        String fileName = UUID.randomUUID().toString() + "_" + originalFileName;
 
         String encodedFileName;
         try {
-//             한글 인코딩
+            // 한글 인코딩
             encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString())
                     .replaceAll("\\+", "%20");
             s3Client.putObject(
@@ -64,18 +60,19 @@ public class FileServiceImpl implements FileService {
             throw new IllegalStateException("파일 업로드 실패", e);
         }
 
-        String url = String.format("https://%s.s3.ap-northeast-2.amazonaws.com/%s", bucketName, encodedFileName.toLowerCase());
-        Files files = saveFileToDatabase(fileName, url, conferenceId, file.getSize());
+        String url = String.format("https://%s.s3.ap-northeast-2.amazonaws.com/%s", bucketName, encodedFileName);
+        Files files = saveFileToDatabase(originalFileName, url, conferenceId, fileName);
 
         return new FileResDto().of(files);
     }
 
-    private Files saveFileToDatabase(String title, String url, String conferenceId, long size) {
+
+    private Files saveFileToDatabase(String title, String url, String conferenceId, String objectKey) {
         Files files = Files.builder()
                 .title(title)
                 .url(url)
                 .conferenceId(conferenceId)
-                .size(size)
+                .objectKey(objectKey)
                 .build();
 
         return jpaFileRepository.save(files);
@@ -95,7 +92,7 @@ public class FileServiceImpl implements FileService {
                 .build();
         s3Client.putObject(putRequest, RequestBody.fromBytes(buffer));
 
-        return String.format("https://%s.s3.ap-northeast-2.amazonaws.com/%s", bucketName, fileName.toLowerCase());
+        return String.format("https://%s.s3.ap-northeast-2.amazonaws.com/%s", bucketName, fileName);
     }
 
     @Override
@@ -107,20 +104,25 @@ public class FileServiceImpl implements FileService {
         return dtoList;
     }
 
+    private String bucketName = "weffy-conference";
     @Override
-    public void fileDownload(String url, String filename) throws IOException {
-        RestTemplate restTemplate = new RestTemplate();
+    public void downloadFile(String objectKey, String filename) {
+        try {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .build();
 
-        ResponseEntity<Resource> response = restTemplate.exchange(url, HttpMethod.GET, null, Resource.class);
-
-        if (response.getStatusCode().is2xxSuccessful()) {
             String userHomeDirectory = System.getProperty("user.home");
             String downloadsPath = userHomeDirectory + File.separator + "Downloads" + File.separator + filename;
-            File targetFile = new File(downloadsPath);
-            java.nio.file.Files.copy(response.getBody().getInputStream(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } else {
-            throw new CustomException(ExceptionEnum.FILENOTFOUND);
+
+            s3Client.getObject(getObjectRequest, ResponseTransformer.toFile(Paths.get(downloadsPath)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("파일 다운로드 실패", e);
         }
     }
+
 }
 

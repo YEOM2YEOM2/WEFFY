@@ -65,6 +65,7 @@ public class MattermostServiceImpl implements MattermostService {
                 .orElseThrow(() ->  new CustomException(ExceptionEnum.USERNOTEXIST));
     }
 
+
     private Team handleTeamData(JsonNode cur) {
         String ident = cur.get("id").asText();
         return jpaTeamRepository.findByIdentification(ident).orElseGet(() -> {
@@ -161,4 +162,12 @@ public class MattermostServiceImpl implements MattermostService {
         }
         return teamChannelResDtoList;
     }
+
+    @Override
+    public String findByWeffyUser(WeffyUser weffyUser) {
+        return jpaSessionRepository.findByWeffyUser(weffyUser)
+                .map(Session::getToken)
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST));
+    }
+
 }
