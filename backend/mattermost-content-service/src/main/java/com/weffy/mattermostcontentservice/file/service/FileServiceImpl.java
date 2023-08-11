@@ -17,6 +17,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -27,6 +28,7 @@ import java.util.List;
 @Transactional
 @Service("fileService")
 @RequiredArgsConstructor
+
 public class FileServiceImpl implements FileService{
     private final Logger logger = (Logger) LoggerFactory.getLogger(FileServiceImpl.class);
 
