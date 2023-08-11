@@ -15,4 +15,6 @@ public interface MattermostService {
     void saveTeam(String identification, String sessionToken) throws IOException, InterruptedException;
 
     List<TeamChannelResDto> getTeamAndChannel(WeffyUser weffyUser);
+
+    String findByWeffyUser(WeffyUser weffyUser);
 }
