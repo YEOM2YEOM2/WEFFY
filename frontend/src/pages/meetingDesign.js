@@ -10,7 +10,7 @@ import OpenViduLayout from '../layout/openvidu-layout.js';
 import ChatComponent from '../component/conference/chat/ChatComponent.js';
 import DialogExtensionComponent from '../component/conference/dialog-extension/DialogExtension.js';
 import StreamComponent from '../component/conference/stream/StreamComponent.js';
-import ToolbarComponent from '../component/conference/toolbar/ToolbarComponent.js';
+import BottomToolbar from '../component/conference/toolbar/BottomToolbar.js';
 
 // mui
 import { styled, useTheme } from '@mui/material/styles';
@@ -48,7 +48,7 @@ const drawerWidth = 320;
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: theme.spacing(0),
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -113,13 +113,16 @@ class Conference extends Component {
 
           // mui 사용을 위한 변수
           open : true,
-          partChatToggle: 'part'
+          partChatToggle: 'part',
+
+          // default & Grid Mode toggle 변수
+          defaultMode: true,
       };
 
       this.joinSession = this.joinSession.bind(this);
       this.leaveSession = this.leaveSession.bind(this);
       this.onbeforeunload = this.onbeforeunload.bind(this);
-      this.updateLayout = this.updateLayout.bind(this);
+    //   this.updateLayout = this.updateLayout.bind(this);
       this.camStatusChanged = this.camStatusChanged.bind(this);
       this.micStatusChanged = this.micStatusChanged.bind(this);
       this.nicknameChanged = this.nicknameChanged.bind(this);
@@ -137,6 +140,10 @@ class Conference extends Component {
       this.handleDrawerClose = this.handleDrawerClose.bind(this);
       this.handlePartChatToggle = this.handlePartChatToggle.bind(this);
 
+      // default & Grid Mode toggle 함수
+      this.handleDefaultMode = this.handleDefaultMode.bind(this);
+      this.handleGridMode = this.handleGridMode.bind(this);
+
   }
 
   componentDidMount() {
@@ -153,16 +160,16 @@ class Conference extends Component {
           animate: true, // Whether you want to animate the transitions
       };
 
-      this.layout.initLayoutContainer(document.getElementById('layout'), openViduLayoutOptions);
+    //   this.layout.initLayoutContainer(document.getElementById('layout'), openViduLayoutOptions);
       window.addEventListener('beforeunload', this.onbeforeunload);
-      window.addEventListener('resize', this.updateLayout);
+    //   window.addEventListener('resize', this.updateLayout);
       window.addEventListener('resize', this.checkSize);
       this.joinSession();
   }
 
   componentWillUnmount() {
       window.removeEventListener('beforeunload', this.onbeforeunload);
-      window.removeEventListener('resize', this.updateLayout);
+    //   window.removeEventListener('resize', this.updateLayout);
       window.removeEventListener('resize', this.checkSize);
       this.leaveSession();
   }
@@ -260,7 +267,7 @@ class Conference extends Component {
 
       this.setState({ currentVideoDevice: videoDevices[0], localUser: localUser }, () => {
           this.state.localUser.getStreamManager().on('streamPlaying', (e) => {
-              this.updateLayout();
+            //   this.updateLayout();
               publisher.videos[0].video.parentElement.classList.remove('custom-class');
           });
       });
@@ -281,7 +288,7 @@ class Conference extends Component {
                       isScreenShareActive: this.state.localUser.isScreenShareActive(),
                   });
               }
-              this.updateLayout();
+            //   this.updateLayout();
           },
       );
   }
@@ -369,7 +376,7 @@ class Conference extends Component {
               this.checkSomeoneShareScreen();
           }, 20);
           event.preventDefault();
-          this.updateLayout();
+        //   this.updateLayout();
       });
   }
 
@@ -517,7 +524,7 @@ class Conference extends Component {
           });
       });
       publisher.on('streamPlaying', () => {
-          this.updateLayout();
+        //   this.updateLayout();
           publisher.videos[0].video.parentElement.classList.remove('custom-class');
       });
   }
@@ -548,7 +555,7 @@ class Conference extends Component {
           animate: true,
       };
       this.layout.setLayoutOptions(openviduLayoutOptions);
-      this.updateLayout();
+    //   this.updateLayout();
   }
 
   toggleChat(property) {
@@ -563,7 +570,7 @@ class Conference extends Component {
           console.log('chat', display);
           this.setState({ chatDisplay: display });
       }
-      this.updateLayout();
+    //   this.updateLayout();
   }
 
   checkNotification(event) {
@@ -594,10 +601,21 @@ class Conference extends Component {
     this.setState({ partChatToggle: val });
   }
 
+  handleDefaultMode () {
+    this.setState({ defaultMode: true})
+  }
+
+  handleGridMode () {
+    this.setState({ defaultMode: false})
+  }
+
   render() {
       const mySessionId = this.state.mySessionId;
       const localUser = this.state.localUser;
       var chatDisplay = { display: this.state.chatDisplay };
+
+      // Mode toggle 버튼
+      let defaultMode = this.state.defaultMode;
 
       return (
         <div className="container" id="container">
@@ -611,14 +629,16 @@ class Conference extends Component {
               <Toolbar style={{ backgroundColor: '#374151' }}>
                 <p className={styles.logo}>WEEFY</p>
                 {mySessionId && <div className={ styles.sessionId }>
-                    <span id="session-title" style={{  }}>{ mySessionId }</span>
+                    <span id="session-title">{ mySessionId }</span>
                 </div>}
                 <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div" className={styles.screenMode}>
-                    <IconButton>
+                    <IconButton style={{ height: "64px" }} onClick={this.handleDefaultMode}>
                         <SquareRoundedIcon fontSize='medium' style={{ color: 'white' }}/>
+                        { defaultMode ? <div className={styles.line}></div> : null }
                     </IconButton>
-                    <IconButton>
-                        <GridViewRoundedIcon style={{ color: 'white' }} />
+                    <IconButton style={{ height: "64px" }} onClick={this.handleGridMode}>
+                        <GridViewRoundedIcon style={{ color: 'white' }}/>
+                        { !defaultMode ? <div className={styles.line}></div> : null }
                     </IconButton>
                 </Typography>
                 <div>
@@ -628,35 +648,18 @@ class Conference extends Component {
                 </div>
               </Toolbar>
             </AppBar>
-            <Main open={this.state.open}  style={{ backgroundColor: '#10161F', color:'white' }}>
-              <DrawerHeader />
-              <Typography paragraph>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
-                enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
-                imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
-                Convallis convallis tellus id interdum velit laoreet id donec ultrices.
-                Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-                adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
-                nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
-                leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
-                feugiat vivamus at augue. At augue eget arcu dictum varius duis at
-                consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
-                sapien faucibus et molestie ac.
-              </Typography>
-              <Typography paragraph>
-                Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-                eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
-                neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
-                tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
-                sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
-                tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
-                gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
-                et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis
-                tristique sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-                eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-                posuere sollicitudin aliquam ultrices sagittis orci a.
-              </Typography>
+            <Main open={this.state.open}  style={{ backgroundColor: '#10161F', color:'white'}}>
+              {/* Main Component 자리 */}
+              {
+                defaultMode ? 
+                <div>
+                    {localUser !== undefined && localUser.getStreamManager() !== undefined && (
+                        <div className={ styles.videoMe } id="localUser">
+                            <StreamComponent user={localUser} handleNickname={this.nicknameChanged} />
+                        </div>
+                    )}
+                </div> : <div></div>
+              }
               <div className={styles.openDrawer}>
                 <IconButton
                     color="inherit"
@@ -722,6 +725,19 @@ class Conference extends Component {
               </Drawer>
             </Box>
           </div>
+          <BottomToolbar
+            sessionId={mySessionId}
+            user={localUser}
+            showNotification={this.state.messageReceived}
+            camStatusChanged={this.camStatusChanged}
+            micStatusChanged={this.micStatusChanged}
+            screenShare={this.screenShare}
+            stopScreenShare={this.stopScreenShare}
+            toggleFullscreen={this.toggleFullscreen}
+            switchCamera={this.switchCamera}
+            leaveSession={this.leaveSession}
+            toggleChat={this.toggleChat}
+        />
       </div>
       );
   }
