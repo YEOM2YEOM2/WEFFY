@@ -21,12 +21,16 @@ public class MediaRecording {
     private ZipFileDownloader zipFileDownloader; // 녹화한 url
     private int index; // 파일(classId)식별자  Ex) SessionA.mp4, SessionA1.mp4, SessionA2.mp4
 
+
+    private boolean status;
+
     public MediaRecording(String classId, String identification){
         openvidu = OpenviduDB.getOpenvidu();
         this.classId = classId;
         this.identification = identification;
         this.zipFileDownloader = new ZipFileDownloader(new RestTemplateBuilder());
         this.index = 0;
+        this.status = true;
     }
 
     // 처음에 시작하는 메소드
@@ -55,8 +59,10 @@ public class MediaRecording {
                 e.printStackTrace();
             }
 
-            // 녹화 정지
-            this.stopRecording();
+            if(status){
+                // 녹화 정지
+                this.stopRecording();
+            }
         }catch (OpenViduJavaClientException | OpenViduHttpException e) {
             e.printStackTrace(); // 예외 정보를 출력하거나 다른 처리를 수행할 수 있습니다.
         }
@@ -83,6 +89,9 @@ public class MediaRecording {
             // recordingId 설정
             zipFileDownloader.setRecordingId(this.recordingId);
 
+            // classId 설정
+            zipFileDownloader.setClassId(this.classId);
+
 
             if (zipFileDownloader.downloadRecording() != null) {
                 System.out.println("Download Success");
@@ -90,7 +99,9 @@ public class MediaRecording {
                 System.out.println("Download Fail");
             }
 
-            this.startRecording();
+            if(status){
+                this.startRecording();
+            }
         }catch (OpenViduJavaClientException | OpenViduHttpException e) {
             e.printStackTrace();
         } catch (IOException e) {
