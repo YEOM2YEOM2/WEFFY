@@ -41,15 +41,21 @@ dependencies {
 
 	implementation 'commons-fileupload:commons-fileupload:1.4'
 
-//	implementation 'software.amazon.awssdk:s3:latest'
+//	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
+//	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
+//
+//	implementation 'org.springdoc:springdoc-openapi-data-rest:1.5.12'
+//
+//	implementation 'javax.servlet:javax.servlet-api:4.0.1'
+//
+//	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:1.7.0'
+//
+//	implementation 'org.springdoc:springdoc-openapi-starter-common:1.7.0'
+
+	implementation 'io.swagger.core.v3:swagger-annotations:2.1.6'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'  // 버전은 가장 최신의 안정된 버전을 사용하세요.
 
 
-
-
-
-
-//	// https://mvnrepository.com/artifact/software.amazon.awssdk/s3
-//	implementation group: 'software.amazon.awssdk', name: 's3', version: '2.20.121'
 
 }
 

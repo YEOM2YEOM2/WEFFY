@@ -3,6 +3,10 @@ package com.weffy.mattermostcontentservice.file;
 import com.weffy.mattermostcontentservice.file.dto.FileDto;
 import com.weffy.mattermostcontentservice.file.dto.GetFileReqDto;
 import com.weffy.mattermostcontentservice.file.service.FileService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -16,6 +20,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v4/files")
 @CrossOrigin("*")
+//@Tag(name = "File Operations", description = "APIs related to file operations")
 public class FileController {
     private final FileService fileService;
 
@@ -23,6 +28,12 @@ public class FileController {
 
 
     @PostMapping("/uploadFilesToMattermost")
+//    @Operation(summary = "Upload files to Mattermost",
+//            description = "Accepts a session token, class ID and a list of files to upload to Mattermost.")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Files successfully sent to Mattermost"),
+//            @ApiResponse(responseCode = "400", description = "Failed to send files")
+//    })
     public ResponseEntity<String> uploadFiles(@RequestBody GetFileReqDto getFileDto) {
         try {
             String sessionToken = getFileDto.getSessionToken();
