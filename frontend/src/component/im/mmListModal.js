@@ -11,17 +11,57 @@ import Typography from "@mui/material/Typography";
 
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
-//dump 값
-const Group = [
-  { group: "구미 5반", names: [1, 2, 3] },
-  { group: "구미 1반", names: [4, 5, 6] },
-  { group: "구미 2반", names: [7, 8, 9] },
-  { group: "구미 4반", names: [10, 11, 12] },
-];
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
-const drawerWidth = 240;
+// //dump 값
+// const Group = [
+//   { group: "구미 5반", names: [1, 2, 3] },
+//   { group: "구미 1반", names: [4, 5, 6] },
+//   { group: "구미 2반", names: [7, 8, 9] },
+//   { group: "구미 4반", names: [10, 11, 12] },
+// ];
 
 const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
+  // const [groupData, setGroupData] = useState([]);
+  const [groupData, setGroupData] = useState([]);
+
+  const accessToken = useSelector((state) => state.user.accessToken);
+  const inintMMList = async () => {
+    axios({
+      method: "get",
+      url: "http://i9d107.p.ssafy.io:8081/api/v1/mattermost",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then((res) => {
+        res.data.data.map((val) => {
+          let temp = { name: "", channels: [] };
+          temp.name = val.name;
+          val.channels.map((value) => {
+            let tmp = { name: "", identification: "", admin: false };
+            tmp.name = value.name;
+            tmp.identification = value.identification;
+            tmp.admin = value.admin;
+            temp.channels.push(tmp);
+          });
+          groupData.push(temp);
+        });
+
+        console.log(groupData);
+      })
+      .catch((err) => {
+        // Handle the error here.
+      });
+  };
+
+  useEffect(() => {
+    inintMMList();
+  }, []);
+
   const [selectedGroup, setSelectedGroup] = React.useState("");
   const [selectedNames, setSelectedNames] = React.useState([]);
 
@@ -34,8 +74,10 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
     setSelectedNames([name]);
   };
 
-  const currentGroup = Group.find((group) => group.group === selectedGroup);
-  const currentNames = currentGroup ? currentGroup.names : [];
+  const currentGroup = groupData.find((group) => group.name === selectedGroup);
+  const currentNames = currentGroup
+    ? currentGroup.channels.map((channel) => channel.name)
+    : [];
 
   return (
     <div
@@ -61,28 +103,27 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
             >
               {selectedGroup || "MatterMost Group"}
             </Typography>
-            <List
-              className={styles["textFieldInput"]}
-              // style={{ fontFamily: "GmarketSans" }}
-            >
-              {Group.map(({ group }) => (
-                <ListItem
-                  key={group}
-                  button
-                  onClick={() => handleGroupChange(group)}
-                >
-                  <ListItemText
-                    primary={
-                      <Typography sx={{ fontFamily: "GmarketSans" }}>
-                        {group}
-                      </Typography>
-                    }
-                  />
-                  <NavigateNextIcon
-                    style={{ color: "red", margin: "0 10px" }}
-                  />
-                </ListItem>
-              ))}
+            <List className={styles["textFieldInput"]}>
+              <List className={styles["textFieldInput"]}>
+                {groupData.map((group, idx) => (
+                  <ListItem
+                    key={idx}
+                    button
+                    onClick={() => handleGroupChange(group.name)}
+                  >
+                    <ListItemText
+                      primary={
+                        <Typography sx={{ fontFamily: "GmarketSans" }}>
+                          {group.name}
+                        </Typography>
+                      }
+                    />
+                    <NavigateNextIcon
+                      style={{ color: "red", margin: "0 10px" }}
+                    />
+                  </ListItem>
+                ))}
+              </List>
             </List>
           </Grid>
           <Grid item xs={6}>
