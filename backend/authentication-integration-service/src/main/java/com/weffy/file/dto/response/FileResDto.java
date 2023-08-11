@@ -10,7 +10,7 @@ public class FileResDto {
 
     private String url;
     private String title;
-    private Long size;
+    private String objectKey;
     private String conferenceId;
 
 
@@ -18,7 +18,7 @@ public class FileResDto {
         FileResDto fileResDto = new FileResDto();
         fileResDto.setUrl(files.getUrl());
         fileResDto.setTitle(files.getTitle());
-        fileResDto.setSize(files.getSize());
+        fileResDto.setObjectKey(files.getObjectKey());
         fileResDto.setConferenceId(files.getConferenceId());
         return fileResDto;
     }

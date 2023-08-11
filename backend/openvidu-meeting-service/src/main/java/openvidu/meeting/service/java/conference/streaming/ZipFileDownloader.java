@@ -1,8 +1,6 @@
 package openvidu.meeting.service.java.conference.streaming;
 
-
 import lombok.Setter;
-import lombok.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
@@ -34,6 +32,8 @@ public class ZipFileDownloader {
 
     private String zipFileUrl;
 
+    private String classId;
+
     private String title; // classId + index
 
     private String recordingId;
@@ -49,15 +49,12 @@ public class ZipFileDownloader {
 
     public String downloadRecording() throws IOException {
 
-
         try{
             // Openvidu의 인증 절차
             // 이름과 비밀번호를 만들어서 http header에 넣어준다.
             String authHeaderValue = "Basic " + Base64.getEncoder().encodeToString((openViduApiUsername + ":" + openViduApiPassword).getBytes());
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", authHeaderValue);
-
-            // System.out.println(recordingId);
 
             // 녹화 파일을 GET 요청으로 다운로드한다.
             ResponseEntity<byte[]> response = restTemplate.exchange(
@@ -66,6 +63,16 @@ public class ZipFileDownloader {
                     new HttpEntity<>(headers),
                     byte[].class
             );
+
+            // classId에 해당하는 폴더를 만든다.
+            Path recordingFolderPath = Paths.get(localRecordingPath+this.classId);
+            try {
+                Files.createDirectories(recordingFolderPath);
+                System.out.println("Folder created :" + recordingFolderPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("Failed to create folder: " + recordingFolderPath);
+            }
 
             // 다운로드한 zip 파일을 임시 파일로 저장한다.
             // recordingId 변수를 파일 이름에 사용하고 Files.write를 사용하여 내용을 기록한다.
@@ -82,26 +89,30 @@ public class ZipFileDownloader {
                     Path entryPath = unzipDir.resolve(entry.getName());
                     Files.copy(zipInputStream, entryPath, StandardCopyOption.REPLACE_EXISTING);
                     zipInputStream.closeEntry();
-                    //System.out.println("name : "+ entry.getName());
-                    // Rename and move the extracted file
+
+                    // 이름을 변경하고 파일을 옮긴다.
                     if (entry.getName().endsWith(".webm")) {
                         Path renamedMp4Path = unzipDir.resolve(title+".mp4"); // 바꿀 이름 설정
-                        //System.out.println("RENAME : "+ renamedMp4Path);
                         Files.move(entryPath, renamedMp4Path, StandardCopyOption.REPLACE_EXISTING);
                     }
                 }
             }
 
-            //System.out.println(unzipDir);
-
             // 압축 해제된 디렉토리에 있는 mp4 파일의 경로와 로컬 저장 경로를 설정한다.
             Path extractedMp4Path = unzipDir.resolve(title+".mp4");
-            Path targetPath = Paths.get(localRecordingPath, title+".mp4");
-            //System.out.println(extractedMp4Path);
-            //System.out.println(targetPath);
+
+            Path targetPath = Paths.get(new StringBuilder().append(this.localRecordingPath).append(this.classId).append("/").toString(), title+".mp4");
 
             // 기존에 저장한 폴더에서 지정한 로컬 경로로 파일을 옮긴다.
             Files.move(extractedMp4Path, targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+            try{
+                SendVideo sv = new SendVideo();
+                sv.sendRequest(classId, title);
+            }catch(Exception e){
+                System.out.println("Error : ");
+                e.printStackTrace();
+            }
 
             // 로컬에 다운받은 임시 파일을 지운다.
             Files.delete(tempFile);
@@ -115,6 +126,26 @@ public class ZipFileDownloader {
             e.printStackTrace();
             return null;
         }
+
+    }
+
+    public void removeFolder(String classId){
+
+        System.out.println("come!!!!!!!!!!!!!!");
+
+        File folder = new File(localRecordingPath+classId);
+
+        if(folder.exists() && folder.isDirectory()){
+            File[] files = folder.listFiles();
+            if(files != null){
+                for(File f : files){
+                    f.delete();
+                    System.out.println(f.getName()+"삭제 완료");
+                }
+            }
+        }
+
+        folder.delete();
 
     }
 
