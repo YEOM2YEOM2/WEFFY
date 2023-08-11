@@ -34,10 +34,8 @@ public class Files extends TimeEntity {
 
     public GetFileDto of() {
         GetFileDto getFileListDto = new GetFileDto();
-        getFileListDto.setId(this.id);
-        getFileListDto.setUrl(this.url);
-        getFileListDto.setTitle(this.title);
-        getFileListDto.setObjectKey(this.objectKey);
+        getFileListDto.setFileUrl(this.url);
+        getFileListDto.setFileName(this.title);
         return getFileListDto;
     }
 }
