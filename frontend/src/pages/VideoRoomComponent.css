@@ -1,6 +1,6 @@
 #header {
   color: #ffffff;
-  background-color: #1d1a2e;
+  background-color: #374151;
   padding: 0 14px 0 0;
   z-index: 999999;
   min-width: 400px !important;
@@ -47,7 +47,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 40px;
+  top: 64px;
   bottom: 0;
   height: inherit;
   min-width: 400px !important;
