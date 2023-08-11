@@ -20,7 +20,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 @Setter
-public class ZipFileDownloader {
+public class ZipFileDownloader{
 
     private final RestTemplate restTemplate;
 

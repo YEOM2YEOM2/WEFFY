@@ -20,11 +20,11 @@ public class SendVideo {
     //"?type=lecture"
     public void sendRequest(String classId, String fileName) throws IOException {
 
-        String accessToken = "토큰이름";
+        String accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXRoeWxlZXNoN0BnbWFpbC5jb20iLCJpYXQiOjE2OTE3MzIzODksImV4cCI6MTY5MTczNTk4OSwic3ViIjoicHNpMTkwOEBuYXZlci5jb20iLCJpZGVudGlmaWNhdGlvbiI6InFra3U5OWUxa3BmanVqOGRlOGhya3o0aGFoIn0.MGiE4sDAcBNFjavW-7gjQkObIIN6_CrRk8TCJ1abLGE";
 
         HttpClient httpClient = HttpClients.createDefault();
 
-        HttpPost postRequest = new HttpPost("http://i9d107.p.ssafy.io:8081/api/v1/files/" + classId );
+        HttpPost postRequest = new HttpPost("http://i9d107.p.ssafy.io:8081/api/v1/files/" + classId +"?type=lecture");
 
         postRequest.addHeader("Authorization", "Bearer " + accessToken);
 
