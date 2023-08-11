@@ -1,5 +1,6 @@
 package openvidu.meeting.service.java.conference;
 
+import lombok.Value;
 import openvidu.meeting.service.java.OpenviduDB;
 import openvidu.meeting.service.java.common.dto.BaseResponseBody;
 import openvidu.meeting.service.java.conference.dto.request.ConferenceCreateReqDto;
@@ -14,9 +15,12 @@ import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import openvidu.meeting.service.java.conference.streaming.MediaRecording;
+import openvidu.meeting.service.java.conference.streaming.VideoMerge;
+import openvidu.meeting.service.java.conference.streaming.ZipFileDownloader;
 import openvidu.meeting.service.java.exception.ExceptionEnum;
 import openvidu.meeting.service.java.history.dto.request.HistoryReqDto;
 import openvidu.meeting.service.java.history.service.HistoryService;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,7 +41,9 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class ConferenceController {
     private OpenVidu openvidu;
+
     private String root = "http://localhost:8080/";
+
     private Map<String, Map<String, UserRole>> mapSessionNamesTokens; // <sessionId, <token, role>>
 
     private final ConferenceRepository conferenceRepository;
@@ -45,8 +51,17 @@ public class ConferenceController {
     private final ConferenceService conferenceService;
 
     private final HistoryService historyService;
-
     private Map<String, MediaRecording> schedulerList;
+
+    // 스레드 관련 변수
+    private ThreadPoolExecutor executor;
+    private int corePoolSize = 1;         // 초기 스레드 풀 크기
+    private int maxPoolSize = 20;          // 최대 스레드 풀 크기
+    long keepAliveTime = 60;
+    private BlockingQueue<Runnable> workQueue;
+
+    // 녹화 삭제 관련 변수
+    private ZipFileDownloader zipFileDownloader;
 
     @PostConstruct
     public void init() throws OpenViduJavaClientException, OpenViduHttpException {
@@ -54,7 +69,31 @@ public class ConferenceController {
         mapSessionNamesTokens = OpenviduDB.getMapSessionNameTokens();
 
         schedulerList = new ConcurrentHashMap<>();
+
+        // 스레드 관련 초기화
+        workQueue = new LinkedBlockingQueue<>();
+
+        // ThreadPoolExecutor를 생성하여 초기 설정을 적용함
+        executor = new ThreadPoolExecutor(
+                corePoolSize, maxPoolSize, keepAliveTime, TimeUnit.SECONDS, workQueue
+        );
+
+        // 녹화 삭제 관련 초기화
+        this.zipFileDownloader = new ZipFileDownloader(new RestTemplateBuilder());
+
         conferenceSetting();
+    }
+
+    public void threadSizeCheck(){
+        // 주기적으로 스레드 풀 크기를 조정하는 로직 실행
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(corePoolSize);
+        scheduler.scheduleAtFixedRate(() -> {
+            // 현재 활성 스레드 개수가 최소 스레드 개수보다 많고 최대 스레드 개수를 넘지 않을 경우
+            if (executor.getActiveCount() > corePoolSize && executor.getPoolSize() < maxPoolSize) {
+                int threadsToAdd = Math.min(maxPoolSize - executor.getPoolSize(), corePoolSize);
+                executor.setMaximumPoolSize(executor.getMaximumPoolSize() + threadsToAdd);
+            }
+        }, 1, 1, TimeUnit.SECONDS);
     }
 
     // DB에 있는 방(세션)을 모두 오픈비두에 넣어준다.
@@ -144,16 +183,14 @@ public class ConferenceController {
             Connection connection = session.createConnection(properties);
 
             // 방에 제일 처음 입장하는 경우
-            if(mapSessionNamesTokens.get(classId).size() == 1){
+            if(mapSessionNamesTokens.get(classId).size() == 1){  // ============> 원래 size()는 0인게 맞지만 test 때문에 임시로 1로 맞춰둠
                 System.out.println("처음 입장합니다");
+
+                threadSizeCheck();
 
                 schedulerList.put(classId, new MediaRecording(classId, identification));
 
-                schedulerList.get(classId).scheduledMethod();
-
-                //ZipFileDownloader zipFileDownloader = new ZipFileDownloader();
-                //zipFileDownloader.setZipFileUrl("http://localhost:4443/openvidu/recordings/SessionZ/SessionZ.zip");
-                //zipFileDownloader.downloadApplication();
+                executor.submit(() -> schedulerList.get(classId).scheduledMethod());
             }
 
             // 어디 방에 들어간 사람인지 구분하기 위함
@@ -262,6 +299,13 @@ public class ConferenceController {
             conference.setActive(active);
             conferenceRepository.save(conference);
 
+            // 스케줄링을 끝낸다.
+            schedulerList.get(classId).setStatus(false);
+            schedulerList.remove(classId);
+
+            // 로컬의 녹화 파일들 삭제하기
+            zipFileDownloader.removeFolder(classId);
+
             //history DELETE
             HistoryReqDto dto = new HistoryReqDto();
             Conference nowConference = conferenceRepository.findByClassId(classId);
@@ -271,6 +315,7 @@ public class ConferenceController {
 
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "비활성화 되었습니다."));
         }catch(Exception e){
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
     }
