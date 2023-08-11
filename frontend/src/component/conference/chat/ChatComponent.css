@@ -87,6 +87,7 @@
 .message.left {
   display: flex;
   justify-content: flex-start;
+  margin-left: 12px;
 }
 
 .message.right {
@@ -153,7 +154,6 @@
   justify-content: start;
   align-items: center;
   padding: 5px;
-  /* margin: 5px; */
 }
 
 .message.right .msg-detail .msg-info {
@@ -232,7 +232,9 @@
 .timeStamp {
   font-size: 10px;
   bottom: 5px; /* 메시지 박스와의 거리 */
-  color: yellow;
+  margin-top: 10px !important;
+  color: whitesmoke;
+  font-family: "GmarketSans" !important;
 }
 
 .timeStamp.right {
@@ -263,6 +265,7 @@
 .timeStamp {
   font-size: 10px;
   margin-left: 8px; /* 메시지와의 간격 */
+  margin-right: 8px; /* 메시지와의 간격 */
 }
 
 .message.left .timeStamp {
