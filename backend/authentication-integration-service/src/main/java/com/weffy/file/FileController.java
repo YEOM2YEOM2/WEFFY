@@ -7,9 +7,11 @@ import com.weffy.file.dto.response.GetFileDto;
 import com.weffy.file.dto.response.UploadResDto;
 import com.weffy.file.service.FileService;
 import com.weffy.mattermost.repository.JpaSessionRepository;
+import com.weffy.mattermost.service.MattermostService;
 import com.weffy.token.util.SecurityUtil;
 import com.weffy.user.entity.WeffyUser;
 import com.weffy.user.repository.UserRepository;
+import com.weffy.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,8 +28,8 @@ import java.util.Optional;
 @RequestMapping("/api/v1/files")
 public class FileController {
     private final FileService fileService;
-    private final UserRepository userRepository;
-    private final JpaSessionRepository jpaSessionRepository;
+    private final UserService userService;
+    private final MattermostService mattermostService;
 
     @PostMapping("/{conferenceId}")
     public ResponseEntity<? extends BaseResponseBody> upload(@RequestPart MultipartFile file, @PathVariable(required = false) String conferenceId) {
@@ -39,8 +41,8 @@ public class FileController {
     @GetMapping("")
     public ResponseEntity<? extends BaseResponseBody> upload(@RequestBody FileReqDto fileReqDto) {
         String authorizedMember = SecurityUtil.getAuthorizedMember();
-        Optional<WeffyUser> weffyUser = userRepository.findByEmail(authorizedMember);
-        String sessionToken = weffyUser.map(user -> jpaSessionRepository.findByWeffyUser(user).get().getToken()).orElse(null);
+        WeffyUser weffyUser = userService.findByEmail(authorizedMember);
+        String sessionToken = mattermostService.findByWeffyUser(weffyUser);
         List<GetFileDto> getFileDto = fileService.getFiles(fileReqDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(200, new UploadResDto().of(sessionToken, fileReqDto.getConferenceId(), getFileDto)));
     }
