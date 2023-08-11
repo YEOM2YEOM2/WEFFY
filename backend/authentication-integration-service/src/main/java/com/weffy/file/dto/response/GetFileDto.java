@@ -11,6 +11,6 @@ public class GetFileDto {
     private Long id;
     private String url;
     private String title;
-    private Long size;
+    private String objectKey;
 
 }

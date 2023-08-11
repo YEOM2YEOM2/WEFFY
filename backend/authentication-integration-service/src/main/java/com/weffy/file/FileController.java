@@ -1,8 +1,6 @@
 package com.weffy.file;
 
 import com.weffy.common.dto.BaseResponseBody;
-import com.weffy.exception.CustomException;
-import com.weffy.exception.ExceptionEnum;
 import com.weffy.file.dto.request.FileReqDto;
 import com.weffy.file.dto.response.FileResDto;
 import com.weffy.file.dto.response.GetFileDto;
@@ -14,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -38,12 +35,8 @@ public class FileController {
     }
 
     @GetMapping("/download")
-    public ResponseEntity<? extends BaseResponseBody> downloadFile(@RequestParam String url, @RequestParam String filename) {
-        try {
-            fileService.fileDownload(url, filename);
-            return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(200, "SUCCESS"));
-        } catch (IOException e) {
-            return  ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.FILENOTFOUND)));
-        }
+    public ResponseEntity<? extends BaseResponseBody> downloadFile(@RequestParam String objectKey, @RequestParam String title) {
+        fileService.downloadFile(objectKey, title);
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "SUCCESS"));
     }
 }
