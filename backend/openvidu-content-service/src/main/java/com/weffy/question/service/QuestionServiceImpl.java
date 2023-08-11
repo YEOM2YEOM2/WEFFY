@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.awt.desktop.QuitResponse;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -22,16 +23,15 @@ public class QuestionServiceImpl implements QuestionService{
 
     @Override
     public QuestionResDto createQuestion(QuestionReqDto questionReqDto) {
-        jpaQuestionRepository.save(
-                Question.builder()
-                        .senderId(questionReqDto.getSenderId())
-                        .conferenceId(questionReqDto.getConferenceId())
-                        .content(questionReqDto.getContent())
-                        .isComplete(questionReqDto.isComplete())
-                        .isAnonymous(questionReqDto.isAnonymous())
-                        .build()
-        );
-        return null;
+        Question question = Question.builder()
+                .senderId(questionReqDto.getSenderId())
+                .conferenceId(questionReqDto.getConferenceId())
+                .content(questionReqDto.getContent())
+                .isComplete(questionReqDto.isComplete())
+                .isAnonymous(questionReqDto.isAnonymous())
+                .build();
+        jpaQuestionRepository.save(question);
+        return new QuestionResDto().of(question);
     }
 
 }
