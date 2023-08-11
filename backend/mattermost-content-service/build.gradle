@@ -1,0 +1,58 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.1.2'
+	id 'io.spring.dependency-management' version '1.1.2'
+}
+
+group = 'com.weffy'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-web-services'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	testImplementation 'org.mockito:mockito-core:3.12.4'
+
+	// https://mvnrepository.com/artifact/org.json/json
+	implementation group: 'org.json', name: 'json', version: '20230618'
+
+	implementation 'commons-io:commons-io:2.11.0'
+
+	implementation 'commons-fileupload:commons-fileupload:1.4'
+
+//	implementation 'software.amazon.awssdk:s3:latest'
+
+
+
+
+
+
+//	// https://mvnrepository.com/artifact/software.amazon.awssdk/s3
+//	implementation group: 'software.amazon.awssdk', name: 's3', version: '2.20.121'
+
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
