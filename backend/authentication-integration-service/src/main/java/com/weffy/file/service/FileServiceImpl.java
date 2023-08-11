@@ -2,47 +2,59 @@ package com.weffy.file.service;
 
 import com.weffy.exception.CustomException;
 import com.weffy.exception.ExceptionEnum;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.weffy.file.entity.Files;
+import com.weffy.file.dto.request.FileReqDto;
+import com.weffy.file.dto.response.FileResDto;
+import com.weffy.file.dto.response.GetFileDto;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import com.weffy.file.repository.JpaFileRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
+
+
+
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.File;
+import java.nio.file.StandardCopyOption;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service("FileService")
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
-
+    private final JpaFileRepository jpaFileRepository;
     private final S3Client s3Client;
-    private final String bucketName = "weffy";
 
     @Override
-    public String uploadFile(MultipartFile file) {
+    public FileResDto uploadFile(MultipartFile file, String conferenceId, String bucketName) {
+
         String fileName = file.getOriginalFilename();
         String type = file.getContentType();
 
         String encodedFileName;
         try {
-            // 한글 인코딩
+//             한글 인코딩
             encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString())
-                    .replaceAll("\\+", "%2B");
+                    .replaceAll("\\+", "%20");
             s3Client.putObject(
                     PutObjectRequest.builder()
                             .bucket(bucketName)
-                            .key(encodedFileName)
+                            .key(fileName)
                             .contentDisposition("inline")
                             .contentType(type)
                             .build(),
@@ -52,35 +64,63 @@ public class FileServiceImpl implements FileService {
             throw new IllegalStateException("파일 업로드 실패", e);
         }
 
-        return String.format("https://weffy.s3.ap-northeast-2.amazonaws.com/%s", encodedFileName.toLowerCase());
+        String url = String.format("https://%s.s3.ap-northeast-2.amazonaws.com/%s", bucketName, encodedFileName.toLowerCase());
+        Files files = saveFileToDatabase(fileName, url, conferenceId, file.getSize());
+
+        return new FileResDto().of(files);
     }
 
+    private Files saveFileToDatabase(String title, String url, String conferenceId, long size) {
+        Files files = Files.builder()
+                .title(title)
+                .url(url)
+                .conferenceId(conferenceId)
+                .size(size)
+                .build();
+
+        return jpaFileRepository.save(files);
+    }
+    @Override
+    public String uploadInputStream(BufferedImage image, String fileName, String bucketName) throws IOException {
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", os);
+        byte[] buffer = os.toByteArray();
+
+        PutObjectRequest putRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .contentDisposition("inline")
+                .contentType("image/png")
+                .build();
+        s3Client.putObject(putRequest, RequestBody.fromBytes(buffer));
+
+        return String.format("https://%s.s3.ap-northeast-2.amazonaws.com/%s", bucketName, fileName.toLowerCase());
+    }
 
     @Override
-    public String uploadInputStream(BufferedImage image, String fileName) throws IOException {
-        try {
-            // BufferedImage를 바이트 배열로 변환합니다.
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", os); // 원하는 이미지 형식을 선택합니다 (png, jpg 등)
-            byte[] buffer = os.toByteArray();
+    public List<GetFileDto> getFiles(FileReqDto fileReqDto) {
+        List<Files> filesList = jpaFileRepository.findByConferenceIdAndCreatedAtBetween(fileReqDto.getConferenceId(), fileReqDto.getStart(), fileReqDto.getEnd());
+        List<GetFileDto> dtoList = filesList.stream()
+                .map(Files::of)
+                .collect(Collectors.toList());
+        return dtoList;
+    }
 
-            S3Client s3Client = S3Client.builder().region(Region.AP_NORTHEAST_2).build();
+    @Override
+    public void fileDownload(String url, String filename) throws IOException {
+        RestTemplate restTemplate = new RestTemplate();
 
-            // S3에 바이트 배열을 업로드합니다.
-            PutObjectRequest putRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(fileName)
-                    .contentDisposition("inline")
-                    .contentType("image/png")
-                    .build(); //.contentDisposition("inline") 브라우저 열기
-            s3Client.putObject(putRequest, RequestBody.fromBytes(buffer));
+        ResponseEntity<Resource> response = restTemplate.exchange(url, HttpMethod.GET, null, Resource.class);
 
-            System.out.println("Image uploaded successfully");
-        } catch (IOException e) {
-            throw new CustomException(ExceptionEnum.IMAGENOTFOUND);
+        if (response.getStatusCode().is2xxSuccessful()) {
+            String userHomeDirectory = System.getProperty("user.home");
+            String downloadsPath = userHomeDirectory + File.separator + "Downloads" + File.separator + filename;
+            File targetFile = new File(downloadsPath);
+            java.nio.file.Files.copy(response.getBody().getInputStream(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } else {
+            throw new CustomException(ExceptionEnum.FILENOTFOUND);
         }
-
-        return String.format("https://weffy.s3.ap-northeast-2.amazonaws.com/%s", fileName.toLowerCase());
     }
 }
 

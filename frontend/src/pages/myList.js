@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import styles from "../pages/myList.module.css";
+
+//mui component
 import Button from "@mui/material/Button"; // Button imported
 import Divider from "@mui/material/Divider"; // Divider imported
-import Grid from "@mui/material/Grid"; // Grid imported
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
-import defaultImg from "../assets/images/defualt_image.png";
 import Typography from "@mui/material/Typography";
+
+//image
+import defaultImg from "../assets/images/defualt_image.png";
 
 const itemData = [
   {
