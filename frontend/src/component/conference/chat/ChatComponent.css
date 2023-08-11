@@ -78,7 +78,8 @@
 
 .message {
   position: relative;
-  padding: 7px 0;
+  padding: 5px 0;
+  /* align-self: center !important; */
   /* background-color: red; */
   display: flex;
   margin-top: 2px !important;
@@ -111,7 +112,7 @@
 
 .msg-detail p {
   margin: 0;
-  margin-right: 10px;
+  margin: 0px 2px;
   font-size: 15px;
 }
 
@@ -275,4 +276,8 @@
 
 .message.right .timeStamp {
   margin-right: 10px;
+}
+
+.downloadText {
+  font-size: 15px !important;
 }
