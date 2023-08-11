@@ -61,6 +61,8 @@ dependencies {
     implementation 'software.amazon.awssdk:netty-nio-client:2.20.120'
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 
 
 

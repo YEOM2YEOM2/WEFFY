@@ -5,8 +5,7 @@ const setting = createSlice({
   initialState: {
     micStatus: false,
     cameraStatus: false,
-    session: null,
-    nickname: "WEFFY",
+    participateName: "WEFFY",
     selectedMic: 0,
     selectedCam: 0,
   },
@@ -17,11 +16,8 @@ const setting = createSlice({
     toggleCameraStatus(state) {
       state.cameraStatus = !state.cameraStatus;
     },
-    setSession(state, action) {
-      state.session = action.payload;
-    },
-    setNickname(state, action) {
-      state.nickname = action.payload;
+    setParticipateName(state, action) {
+      state.participateName = action.payload;
     },
     setSelectedMic(state, action) {
       state.selectedMic = action.payload;
@@ -35,8 +31,7 @@ const setting = createSlice({
 export const {
   toggleMicStatus,
   toggleCameraStatus,
-  setSession,
-  setNickname,
+  setParticipateName,
   setSelectedMic,
   setSelectedCam,
 } = setting.actions;

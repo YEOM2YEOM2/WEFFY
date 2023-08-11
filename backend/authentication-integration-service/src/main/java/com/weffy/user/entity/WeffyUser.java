@@ -1,9 +1,15 @@
 package com.weffy.user.entity;
 
 import com.weffy.common.entity.TimeEntity;
+import com.weffy.mattermost.entity.Team;
+import com.weffy.mattermost.entity.WeffyUserChannel;
+import com.weffy.mattermost.entity.WeffyUserTeam;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,6 +34,12 @@ public class WeffyUser extends TimeEntity {
     @Column(name = "profile_img")
     private String profileImg;
 
+    @OneToMany(mappedBy = "weffyUser", cascade = CascadeType.REMOVE)
+    private List<WeffyUserTeam> teams = new ArrayList<>();
+
+    @OneToMany(mappedBy = "weffyUser", cascade = CascadeType.REMOVE)
+    private List<WeffyUserChannel> channels = new ArrayList<>();
+
     @Builder
     public WeffyUser(String identification, String email, String password, String name, String nickname, Role role, Boolean active, String profileImg) {
         this.identification = identification;
@@ -38,5 +50,13 @@ public class WeffyUser extends TimeEntity {
         this.role = role;
         this.active = active;
         this.profileImg = profileImg;
+    }
+
+    public void addTeam(WeffyUserTeam weffyUserTeam) {
+        this.teams.add(weffyUserTeam);
+    }
+
+    public void addChannel(WeffyUserChannel weffyUserChannel) {
+        this.channels.add(weffyUserChannel);
     }
 }
