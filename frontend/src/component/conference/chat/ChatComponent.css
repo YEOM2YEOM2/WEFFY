@@ -78,7 +78,8 @@
 
 .message {
   position: relative;
-  padding: 7px 0;
+  padding: 5px 0;
+  /* align-self: center !important; */
   /* background-color: red; */
   display: flex;
   margin-top: 2px !important;
@@ -87,6 +88,7 @@
 .message.left {
   display: flex;
   justify-content: flex-start;
+  margin-left: 12px;
 }
 
 .message.right {
@@ -110,7 +112,7 @@
 
 .msg-detail p {
   margin: 0;
-  margin-right: 10px;
+  margin: 0px 2px;
   font-size: 15px;
 }
 
@@ -153,7 +155,6 @@
   justify-content: start;
   align-items: center;
   padding: 5px;
-  /* margin: 5px; */
 }
 
 .message.right .msg-detail .msg-info {
@@ -232,7 +233,9 @@
 .timeStamp {
   font-size: 10px;
   bottom: 5px; /* 메시지 박스와의 거리 */
-  color: yellow;
+  margin-top: 10px !important;
+  color: whitesmoke;
+  font-family: "GmarketSans" !important;
 }
 
 .timeStamp.right {
@@ -263,6 +266,7 @@
 .timeStamp {
   font-size: 10px;
   margin-left: 8px; /* 메시지와의 간격 */
+  margin-right: 8px; /* 메시지와의 간격 */
 }
 
 .message.left .timeStamp {
@@ -272,4 +276,8 @@
 
 .message.right .timeStamp {
   margin-right: 10px;
+}
+
+.downloadText {
+  font-size: 15px !important;
 }
