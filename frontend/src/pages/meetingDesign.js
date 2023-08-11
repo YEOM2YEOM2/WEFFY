@@ -5,11 +5,12 @@ import styles from './meetingDesign.module.css';
 import axios from 'axios';
 import { OpenVidu } from 'openvidu-browser';
 import UserModel from '../models/userModel';
-import OpenViduLayout from '../layout/openvidu-layout.js';
+import OpenViduLayout from '../layout/customLayout.js';
 
 import ChatComponent from '../component/conference/chat/ChatComponent.js';
 import DialogExtensionComponent from '../component/conference/dialog-extension/DialogExtension.js';
 import StreamComponent from '../component/conference/stream/StreamComponent.js';
+import StreamOthers from '../component/conference/stream/StreamOthers.js'
 import BottomToolbar from '../component/conference/toolbar/BottomToolbar.js';
 
 // mui
@@ -41,6 +42,8 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Badge from '@mui/material/Badge';
 import ChatIcon from '@mui/icons-material/Chat';
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 
 const drawerWidth = 320;
@@ -472,7 +475,7 @@ class Conference extends Component {
                       videoSource: newVideoDevice[0].deviceId,
                       publishAudio: localUser.isAudioActive(),
                       publishVideo: localUser.isVideoActive(),
-                      mirror: false
+                      mirror: true
                   });
 
                   //newPublisher.once("accessAllowed", () => {
@@ -498,7 +501,7 @@ class Conference extends Component {
               videoSource: videoSource,
               publishAudio: localUser.isAudioActive(),
               publishVideo: localUser.isVideoActive(),
-              mirror: true,
+              mirror: false,
           },
           (error) => {
               if (error && error.name === 'SCREEN_EXTENSION_NOT_INSTALLED') {
@@ -648,11 +651,22 @@ class Conference extends Component {
                 </div>
               </Toolbar>
             </AppBar>
-            <Main open={this.state.open}  style={{ backgroundColor: '#10161F', color:'white'}}>
+            <Main open={this.state.open}  style={{ backgroundColor: '#10161F', color:'white', paddingBottom:'45px'}}>
               {/* Main Component 자리 */}
               {
                 defaultMode ? 
                 <div>
+                    {/* 다른 사용자 */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+                        <ArrowLeftIcon />
+                        { this.state.subscribers.map((sub, i) => (
+                            <div key={i} id="remoteUsers" style={{ paddingRight: '3px', paddingLeft: '3px' }} className="OT_root">
+                                <StreamOthers user={sub} streamId={sub.streamManager.stream.streamId} style={{ height: '180px' }} />
+                            </div>
+                        ))}
+                        <ArrowRightIcon />
+                    </div>
+                    {/* 나 */}
                     {localUser !== undefined && localUser.getStreamManager() !== undefined && (
                         <div className={ styles.videoMe } id="localUser">
                             <StreamComponent user={localUser} handleNickname={this.nicknameChanged} />
