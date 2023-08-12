@@ -1,6 +1,7 @@
 package openvidu.meeting.service.java.conference.streaming;
 
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
@@ -24,11 +25,14 @@ public class ZipFileDownloader{
 
     private final RestTemplate restTemplate;
 
-    private String openViduApiUsername = "OPENVIDUAPP";
+    @Value("${openvidu.api.username}")
+    private String openViduApiUsername;
 
-    private String openViduApiPassword = "MY_SECRET";
+    @Value("${openvidu.api.password}")
+    private String openViduApiPassword;
 
-    private String localRecordingPath = "C://recording/";
+    @Value("${local.recording.path}")
+    private String localRecordingPath;
 
     private String zipFileUrl;
 
@@ -39,7 +43,6 @@ public class ZipFileDownloader{
     private String recordingId;
 
     private String identification;
-
 
     public ZipFileDownloader(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
@@ -113,9 +116,7 @@ public class ZipFileDownloader{
             try{
                 VideoSender sv = new VideoSender();
                 sv.sendRequest(classId, title, identification);
-                System.out.println("come!!!!");
             }catch(Exception e){
-                System.out.println("Error : ");
                 e.printStackTrace();
             }
 
@@ -136,8 +137,6 @@ public class ZipFileDownloader{
 
     public void removeFolder(String classId){
 
-        System.out.println("come!!!!!!!!!!!!!!");
-
         File folder = new File(localRecordingPath+classId);
 
         if(folder.exists() && folder.isDirectory()){
@@ -153,8 +152,6 @@ public class ZipFileDownloader{
         folder.delete();
 
     }
-
-
 
 
 }
