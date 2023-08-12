@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weffy.exception.CustomException;
 import com.weffy.exception.ExceptionEnum;
 import com.weffy.mattermost.entity.Role;
-import com.weffy.mattermost.service.MattermostService;
 import com.weffy.user.dto.Request.UserSignInReqDto;
 import lombok.RequiredArgsConstructor;
 import net.bis5.mattermost.client4.ApiResponse;
@@ -51,7 +50,7 @@ public class MattermostHandler {
         if (response.getRawResponse().getStatus() == 200) {
             return response;
         } else {
-            throw new CustomException(ExceptionEnum.MATTERMOSTLOGINFAILED);
+            throw new CustomException(ExceptionEnum.MATTERMOST_LOGIN_FAILED);
         }
     }
 

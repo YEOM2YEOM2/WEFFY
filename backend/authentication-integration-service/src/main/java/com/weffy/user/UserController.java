@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -85,7 +84,7 @@ public class UserController {
             UserMainResDto userinfo = userService.mainUser(identification);
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, userinfo));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALIDUSER)));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALID_USER)));
     }
 
     @Operation(summary = "User 회원 조회", description = "회원 정보 조회 \n\n" )
@@ -103,7 +102,7 @@ public class UserController {
         if (weffyUser.isPresent() ) {
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, userService.getUser(weffyUser.get())));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALIDUSER)));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALID_USER)));
     }
 
     @Operation(summary = "User 회원 정보 수정", description = "profile image와 nickname 수정 \n\n" )
@@ -122,7 +121,7 @@ public class UserController {
             userService.setUser(weffyUser.get(), profileImg, nickName);
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "success"));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALIDUSER)));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALID_USER)));
     }
 
     @Operation(summary = "User 회원 탈퇴", description = "회원 탈퇴 \n\n" )
@@ -141,7 +140,7 @@ public class UserController {
             userService.deleteUser(weffyUser.get());
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "success"));
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALIDUSER)));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, new CustomException(ExceptionEnum.INVALID_USER)));
     }
 
 
