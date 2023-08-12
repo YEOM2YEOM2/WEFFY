@@ -49,7 +49,7 @@ public class MattermostController {
     }
 
     @PostMapping("/header")
-    public ResponseEntity<? extends BaseResponseBody> makeHeaderLink(@RequestPart(name = "channelId") String channelId) throws JSONException, IOException, InterruptedException {
+    public ResponseEntity<? extends BaseResponseBody> makeHeaderLink(@RequestPart(name = "channelId") String channelId) {
         String authorizedMember = SecurityUtil.getAuthorizedMember();
         WeffyUser weffyUser = userService.findByEmail(authorizedMember);
         if (mattermostService.makeHeaderLink(weffyUser, channelId) == 200) return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "SUCCESS"));
