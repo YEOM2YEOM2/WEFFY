@@ -1,6 +1,5 @@
 package com.weffy.quiz.dto.request;
 
-import com.weffy.quiz.entity.Quiz;
 import lombok.Getter;
 import lombok.Setter;
 

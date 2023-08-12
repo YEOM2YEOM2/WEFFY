@@ -33,6 +33,9 @@ dependencies {
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation 'mysql:mysql-connector-java:8.0.28'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    // https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.15'
+
 
     // kms
     implementation 'com.amazonaws:aws-java-sdk-core:1.11.1019'
