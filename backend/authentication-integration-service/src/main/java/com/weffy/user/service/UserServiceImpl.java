@@ -120,7 +120,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new CustomException(ExceptionEnum.USER_NOT_EXIST));
     }
 
-
     @Override
     public WeffyUser findByEmail(String email) {
         return userRepository.findByEmail(email)
