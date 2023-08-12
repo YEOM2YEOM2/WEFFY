@@ -1,5 +1,6 @@
 package openvidu.meeting.service.java.conference.streaming;
 
+import openvidu.meeting.service.java.OpenviduDB;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
@@ -14,17 +15,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class SendVideo {
+public class VideoSender {
     private String localRecordingPath = "C://recording/";
 
-    //"?type=lecture"
-    public void sendRequest(String classId, String fileName) throws IOException {
+    private String accessToken;
 
-        String accessToken = "토큰이름";
+    //"?type=lecture"
+    public void sendRequest(String classId, String fileName, String identification) throws IOException {
+
+        accessToken = OpenviduDB.getHostToken().get(identification);
 
         HttpClient httpClient = HttpClients.createDefault();
 
-        HttpPost postRequest = new HttpPost("http://i9d107.p.ssafy.io:8081/api/v1/files/" + classId );
+        HttpPost postRequest = new HttpPost("http://i9d107.p.ssafy.io:8081/api/v1/files/" + classId +"?type=lecture");
 
         postRequest.addHeader("Authorization", "Bearer " + accessToken);
 
