@@ -11,10 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.awt.desktop.QuitResponse;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -24,6 +21,7 @@ public class QuestionServiceImpl implements QuestionService{
     private final JpaQuestionRepository jpaQuestionRepository;
 
     @Override
+    @Transactional
     public QuestionResDto createQuestion(QuestionReqDto questionReqDto) {
         Question question = Question.builder()
                 .senderId(questionReqDto.getSenderId())
@@ -44,4 +42,16 @@ public class QuestionServiceImpl implements QuestionService{
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public void completeQuestion(Long questionId) {
+        Question question = findById(questionId);
+        question.setComplete(true);
+        jpaQuestionRepository.save(question);
+    }
+
+    private Question findById(Long questionId) {
+        return jpaQuestionRepository.findById(questionId)
+                .orElseThrow(() -> new CustomException(ExceptionEnum.QUESTION_NOT_FOUND));
+    }
 }
