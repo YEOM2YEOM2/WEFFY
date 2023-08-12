@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 public class QuizResDto {
     Long id;
     String senderId;
-    String conferenceId;
     String content;
     LocalDateTime sendAt;
     List<ChoiceOptionResDto> options;

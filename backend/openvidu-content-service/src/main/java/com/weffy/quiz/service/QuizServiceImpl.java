@@ -9,6 +9,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Transactional
 @Service("QuizService")
 @RequiredArgsConstructor
@@ -25,14 +28,24 @@ public class QuizServiceImpl implements QuizService {
                 .content(quizReqDto.getContent())
                 .build();
 
-        for (String content: quizReqDto.getOptions()) {
-            ChoiceOption option = new ChoiceOption(quiz, content);
-            quiz.getOptions().add(option);
+        if (quizReqDto.getOptions() != null) {
+            for (String content : quizReqDto.getOptions()) {
+                ChoiceOption option = new ChoiceOption(quiz, content);
+                quiz.getOptions().add(option);
+            }
         }
 
         jpaQuizRepository.save(quiz);
 
         new QuizResDto();
         return QuizResDto.of(quiz);
+    }
+
+    @Override
+    public List<QuizResDto> getQuiz(String conferenceId) {
+        List<Quiz> quizzes = jpaQuizRepository.findByConferenceId(conferenceId);
+        return quizzes.stream()
+                .map(QuizResDto::of)
+                .collect(Collectors.toList());
     }
 }
