@@ -28,11 +28,11 @@ public enum ExceptionEnum {
     // RECORDING
     RECORDING_CONTINUE(HttpStatus.BAD_REQUEST,4003,"녹화를 진행하고 있습니다."),
     RECORDING_NOT_ALLOWED(HttpStatus.BAD_REQUEST,4004,"녹화를 할 수 있는 권한이 없습니다."),
-    RECORDING_GENERATION_ERROR(HttpStatus.BAD_REQUEST,4005,"녹화를 생성하지 못했습니다."),
+    RECORDING_GENERATION_ERROR(HttpStatus.BAD_REQUEST,4005,"녹화를 시작할 수 없습니다."),
     RECORDING_STOP_FAILED(HttpStatus.BAD_REQUEST,4006,"녹화를 멈출 수 없습니다. 녹화를 시작하고 있는지 다시 확인하세요."),
-    RECORDING_DELETE_FAILED(HttpStatus.BAD_REQUEST,4007,"녹화를 삭제할 수 없습니다. 녹화 목록을 다시 확인하세요."),
-    RECORDING_VALIDATION_FAILED(HttpStatus.BAD_REQUEST,4008,"녹화를 확인할 수 없습니다."),
-    GENERIC_ERROR(HttpStatus.BAD_REQUEST,4009,"404 ERROR"),
+    CONFERENCE_HOST_OUT_FAILED(HttpStatus.BAD_REQUEST,4007,"호스트가 회의를 종료하지 못했습니다."),
+    CONFERENCE_USER_OUT_FAILED(HttpStatus.BAD_REQUEST,4008,"사용자가 회의를 종료하지 못했습니다."),
+    GENERIC_ERROR(HttpStatus.BAD_REQUEST,4009,"서버 오류(404 Error)"),
 
     ONLY_HOST_DELETE(HttpStatus.BAD_REQUEST, 4010, "방은 호스트만 삭제할 수 있습니다.");
 
@@ -46,6 +46,5 @@ public enum ExceptionEnum {
         this.status=status;
         this.description=description;
     }
-
 
 }
