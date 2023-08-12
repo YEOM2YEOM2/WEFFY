@@ -4,6 +4,10 @@ import com.weffy.quiz.entity.Quiz;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Getter
 @Setter
 public class QuizResDto {
@@ -11,13 +15,16 @@ public class QuizResDto {
     String senderId;
     String conferenceId;
     String content;
-    Long parent;
+    LocalDateTime sendAt;
+    List<ChoiceOptionResDto> options;
 
-    public QuizResDto(Quiz quiz) {
-        this.id = quiz.getId();
-        this.senderId = quiz.getSenderId();
-        this.conferenceId = quiz.getConferenceId();
-        this.content = quiz.getContent();
-        this.parent = quiz.getParent();
+    public static QuizResDto of(Quiz quiz) {
+        QuizResDto dto = new QuizResDto();
+        dto.id = quiz.getId();
+        dto.senderId = quiz.getSenderId();
+        dto.content = quiz.getContent();
+        dto.sendAt = quiz.getSendAt();
+        dto.options = quiz.getOptions().stream().map(ChoiceOptionResDto::of).collect(Collectors.toList());
+        return dto;
     }
 }
