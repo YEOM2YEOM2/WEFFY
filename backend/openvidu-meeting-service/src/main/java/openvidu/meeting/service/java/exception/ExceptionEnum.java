@@ -32,7 +32,9 @@ public enum ExceptionEnum {
     RECORDING_STOP_FAILED(HttpStatus.BAD_REQUEST,4006,"녹화를 멈출 수 없습니다. 녹화를 시작하고 있는지 다시 확인하세요."),
     RECORDING_DELETE_FAILED(HttpStatus.BAD_REQUEST,4007,"녹화를 삭제할 수 없습니다. 녹화 목록을 다시 확인하세요."),
     RECORDING_VALIDATION_FAILED(HttpStatus.BAD_REQUEST,4008,"녹화를 확인할 수 없습니다."),
-    GENERIC_ERROR(HttpStatus.BAD_REQUEST,4009,"404 ERROR"),;
+    GENERIC_ERROR(HttpStatus.BAD_REQUEST,4009,"404 ERROR"),
+
+    ONLY_HOST_DELETE(HttpStatus.BAD_REQUEST, 4010, "방은 호스트만 삭제할 수 있습니다.");
 
 
     private HttpStatus status;

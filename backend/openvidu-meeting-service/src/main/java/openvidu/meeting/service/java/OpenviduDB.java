@@ -21,6 +21,8 @@ public class OpenviduDB {
 
     private static Map<String, Map<String, UserRole>> mapSessionNamesTokens;
 
+    private static Map<String, String> hostToken;
+
    // private static Map<String, Boolean> sessionRecordings;
 
     //private static Map<String, String> mapIdentificationTokens;
@@ -37,6 +39,13 @@ public class OpenviduDB {
             mapSessionNamesTokens = new ConcurrentHashMap<>();
         }
         return mapSessionNamesTokens;
+    }
+
+    public static Map<String, String> getHostToken(){
+        if(hostToken == null){
+            hostToken = new ConcurrentHashMap<>();
+        }
+        return hostToken;
     }
 
 //    public static Map<String, Boolean> getSessionRecordings(){
