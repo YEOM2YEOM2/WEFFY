@@ -1,14 +1,17 @@
 package com.weffy.question.service;
 
+import com.weffy.common.dto.BaseResponseBody;
 import com.weffy.exception.CustomException;
 import com.weffy.exception.ExceptionEnum;
-import com.weffy.question.repository.JpaQuestionRepository;
+
 import com.weffy.question.dto.request.QuestionReqDto;
 import com.weffy.question.dto.response.QuestionResDto;
 import com.weffy.question.dto.response.QuestionStateResDto;
 import com.weffy.question.entity.Question;
+import com.weffy.question.repository.JpaQuestionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,7 +56,8 @@ public class QuestionServiceImpl implements QuestionService{
     @Transactional
     public void completeQuestion(Long questionId) {
         Question question = findById(questionId);
-        question.setComplete(true);
+        // 답변 미완료 <-> 답변 완료
+        question.setComplete(!question.isComplete());
         jpaQuestionRepository.save(question);
     }
 
