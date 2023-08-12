@@ -19,11 +19,11 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/question")
+@RequestMapping("/api/v1")
 public class QuestionController {
     private final QuestionService questionService;
 
-    @PostMapping("")
+    @PostMapping("/question")
     public ResponseEntity<? extends BaseResponseBody> createQuestion(@RequestBody QuestionReqDto questionReqDto) {
         try {
             QuestionResDto questionResDto = questionService.createQuestion(questionReqDto);
@@ -33,13 +33,13 @@ public class QuestionController {
         }
     }
 
-    @GetMapping("/{conference_id}")
+    @GetMapping("/conference/{conference_id}/questions")
     public ResponseEntity<? extends BaseResponseBody> getQuestionList(@PathVariable(name = "conference_id") String conferenceId) {
         List<QuestionStateResDto> questions = questionService.getQuestions(conferenceId);
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, questions));
     }
 
-    @GetMapping("/{question_id}")
+    @GetMapping("/question/{question_id}")
     public ResponseEntity<? extends BaseResponseBody> getQuestion(@PathVariable(name = "question_id") Long questionId) {
         try {
             QuestionStateResDto question = questionService.getQuestion(questionId);
@@ -49,7 +49,7 @@ public class QuestionController {
         }
     }
 
-    @PatchMapping("/{question_id}")
+    @PatchMapping("/question/{question_id}")
     public ResponseEntity<? extends BaseResponseBody> completeQuestion(@PathVariable(name = "question_id") Long questionId) {
         try {
             questionService.completeQuestion(questionId);

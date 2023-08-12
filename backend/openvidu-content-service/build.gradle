@@ -41,6 +41,10 @@ dependencies {
     // https://mvnrepository.com/artifact/software.amazon.awssdk/kms
     implementation 'software.amazon.awssdk:kms:2.20.115'
 
+    // AWS SDK
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+
     //test
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
     testAnnotationProcessor 'org.projectlombok:lombok'
