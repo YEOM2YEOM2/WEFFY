@@ -11,4 +11,6 @@ public interface QuestionService {
     QuestionResDto createQuestion(QuestionReqDto questionReqDto);
 
     List<QuestionStateResDto> getQuestions(String conferenceId);
+
+    void completeQuestion(Long questionId);
 }
