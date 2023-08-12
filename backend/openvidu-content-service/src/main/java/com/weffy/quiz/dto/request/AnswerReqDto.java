@@ -1,5 +1,6 @@
 package com.weffy.quiz.dto.request;
 
+import com.weffy.quiz.entity.Quiz;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class AnswerReqDto {
     String senderId;
-    String conferenceId;
     String content;
+    Long quizId;
 
 }

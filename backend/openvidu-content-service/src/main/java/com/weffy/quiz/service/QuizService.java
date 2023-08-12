@@ -8,5 +8,7 @@ import java.util.List;
 public interface QuizService {
     QuizResDto createQuiz(QuizReqDto quizReqDto);
 
-    List<QuizResDto> getQuiz(String conferenceId);
+    List<QuizResDto> getQuizzes(String conferenceId);
+
+    QuizResDto getQuiz(Long quizId);
 }
