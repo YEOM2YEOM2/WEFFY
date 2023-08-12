@@ -2,6 +2,7 @@ package com.weffy.quiz.service;
 
 import com.weffy.exception.CustomException;
 import com.weffy.exception.ExceptionEnum;
+import com.weffy.quiz.dto.response.QnAResDto;
 import com.weffy.quiz.repository.JpaAnswerRepository;
 import com.weffy.quiz.dto.request.AnswerReqDto;
 import com.weffy.quiz.dto.request.QuizReqDto;
@@ -81,5 +82,12 @@ public class QuizServiceImpl implements QuizService {
         jpaAnswerRepository.save(answer);
         new AnswerResDto();
         return AnswerResDto.of(answer);
+    }
+
+    @Override
+    public QnAResDto getQuizAnswers(Long quizId) {
+        Quiz quiz = findById(quizId);
+        new QnAResDto();
+        return QnAResDto.of(quiz);
     }
 }
