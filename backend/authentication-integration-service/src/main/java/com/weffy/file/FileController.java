@@ -32,8 +32,14 @@ public class FileController {
     private final MattermostService mattermostService;
 
     @PostMapping("/{conferenceId}")
-    public ResponseEntity<? extends BaseResponseBody> upload(@RequestPart MultipartFile file, @PathVariable(required = false) String conferenceId) {
-        String bucketName = (conferenceId == null) ? "weffy" : "weffy-conference";
+    public ResponseEntity<? extends BaseResponseBody> upload(@RequestPart MultipartFile file,
+                                                             @PathVariable(required = false) String conferenceId,
+                                                             @RequestParam(name = "type", required = false) String type) {
+        String bucketName = "weffy";
+        if(conferenceId != null) {
+            if (type.equals("lecture")) bucketName = "weffy-lecture" ;
+            else bucketName = "weffy-conference";
+        }
         FileResDto fileResDto = fileService.uploadFile(file, conferenceId, bucketName);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, fileResDto));
     }
