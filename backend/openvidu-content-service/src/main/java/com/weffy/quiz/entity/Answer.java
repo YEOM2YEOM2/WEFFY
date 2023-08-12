@@ -1,4 +1,4 @@
-package com.weffy.question.entity;
+package com.weffy.quiz.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,31 +12,28 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class Question {
+public class Answer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String senderId;
-    private String conferenceId;
 
     @Column(columnDefinition = "LONGTEXT")
     private String content;
 
-    private boolean isComplete;
-
-    private boolean isAnonymous;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quiz_id")
+    private Quiz quiz;
 
     @CreatedDate
     private LocalDateTime sendAt;
 
     @Builder
-    public Question(String senderId, String conferenceId, String content, boolean isComplete, boolean isAnonymous) {
+    public Answer(String senderId, String content, Quiz quiz) {
         this.senderId = senderId;
-        this.conferenceId = conferenceId;
         this.content = content;
-        this.isComplete = isComplete;
-        this.isAnonymous = isAnonymous;
+        this.quiz = quiz;
     }
 }
