@@ -6,7 +6,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ExceptionEnum {
 
-    QUESTIONNOTEXIST(HttpStatus.BAD_REQUEST,4000,"질문이 존재하지 않습니다.")
+    QUESTION_CREATION_FAILURE(HttpStatus.BAD_REQUEST,4000,"질문 생성에 실패하였습니다."),
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND,4001,"질문이 존재하지 않습니다."),
+    UPDATE_COMPLETION_FAILED(HttpStatus.BAD_REQUEST,4002,"질문 답변 실패"),
    ;
 
 
