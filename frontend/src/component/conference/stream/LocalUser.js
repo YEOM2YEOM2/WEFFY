@@ -53,14 +53,14 @@ export default class StreamComponent extends Component {
 
     render() {
         return (
-            <div className="OT_widget-container" style={{ width: '97%', maxHeight: '425px', borderRadius: '10px' }}>
+            <div className="OT_widget-container" style={{ width: '97%', maxHeight: '600px', borderRadius: '10px' }}>
                 <div className="pointer nickname">
                     {this.state.showForm ? (
-                        <FormControl id="nicknameForm">
+                        <FormControl id="nicknameForm" style={{  }}>
                             <IconButton color="inherit" id="closeButton" onClick={this.toggleNicknameForm}>
                                 <HighlightOffIcon />
                             </IconButton>
-                            <InputLabel htmlFor="name-simple" id="label">
+                            <InputLabel htmlFor="name-simple" id="label" style={{ top: '10px', left: '-3px' }}>
                                 Nickname 수정
                             </InputLabel>
                             <Input
