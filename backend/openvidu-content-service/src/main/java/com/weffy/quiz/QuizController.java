@@ -7,6 +7,7 @@ import com.weffy.question.dto.response.QuestionStateResDto;
 import com.weffy.quiz.dto.request.AnswerReqDto;
 import com.weffy.quiz.dto.request.QuizReqDto;
 import com.weffy.quiz.dto.response.AnswerResDto;
+import com.weffy.quiz.dto.response.QnAResDto;
 import com.weffy.quiz.dto.response.QuizResDto;
 import com.weffy.quiz.service.QuizService;
 import lombok.RequiredArgsConstructor;
@@ -59,5 +60,12 @@ public class QuizController {
         } catch (Exception e) {
             throw new CustomException(ExceptionEnum.QUIZ_CREATION_FAILURE);
         }
+    }
+
+    // quiz의 모든 답변 리스트 조회
+    @GetMapping("/quiz/{quiz_id}/answers")
+    public ResponseEntity<? extends BaseResponseBody> getQuizAnswerList(@PathVariable(name = "quiz_id") Long quizId) {
+        QnAResDto qnAResDto= quizService.getQuizAnswers(quizId);
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, qnAResDto));
     }
 }
