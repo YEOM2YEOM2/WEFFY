@@ -1,11 +1,9 @@
 package com.weffy.quiz.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Answer {
 
     @Id
@@ -30,4 +29,11 @@ public class Answer {
 
     @CreatedDate
     private LocalDateTime sendAt;
+
+    @Builder
+    public Answer(String senderId, String content, Quiz quiz) {
+        this.senderId = senderId;
+        this.content = content;
+        this.quiz = quiz;
+    }
 }

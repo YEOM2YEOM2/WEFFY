@@ -2,8 +2,12 @@ package com.weffy.quiz.service;
 
 import com.weffy.exception.CustomException;
 import com.weffy.exception.ExceptionEnum;
+import com.weffy.quiz.repository.JpaAnswerRepository;
+import com.weffy.quiz.dto.request.AnswerReqDto;
 import com.weffy.quiz.dto.request.QuizReqDto;
+import com.weffy.quiz.dto.response.AnswerResDto;
 import com.weffy.quiz.dto.response.QuizResDto;
+import com.weffy.quiz.entity.Answer;
 import com.weffy.quiz.entity.ChoiceOption;
 import com.weffy.quiz.entity.Quiz;
 import com.weffy.quiz.repository.JpaQuizRepository;
@@ -20,6 +24,7 @@ import java.util.stream.Collectors;
 public class QuizServiceImpl implements QuizService {
 
     private final JpaQuizRepository jpaQuizRepository;
+    private final JpaAnswerRepository jpaAnswerRepository;
 
     @Override
     @Transactional
@@ -61,5 +66,20 @@ public class QuizServiceImpl implements QuizService {
     private Quiz findById(Long quizId) {
         return jpaQuizRepository.findById(quizId)
                 .orElseThrow(() -> new CustomException(ExceptionEnum.QUIZ_NOT_FOUND));
+    }
+
+    @Override
+    @Transactional
+    public AnswerResDto createAnswer(Long quizId, AnswerReqDto answerReqDto) {
+        Quiz quiz = findById(quizId);
+        Answer answer = Answer.builder()
+                .senderId(answerReqDto.getSenderId())
+                .content(answerReqDto.getContent())
+                .quiz(quiz)
+                .build();
+
+        jpaAnswerRepository.save(answer);
+        new AnswerResDto();
+        return AnswerResDto.of(answer);
     }
 }
