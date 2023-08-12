@@ -13,7 +13,6 @@ import com.weffy.user.dto.Response.UserSignInResDto;
 import com.weffy.user.entity.Role;
 import com.weffy.user.entity.WeffyUser;
 import com.weffy.user.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.bis5.mattermost.client4.ApiResponse;
@@ -52,7 +51,7 @@ public class UserServiceImpl implements UserService {
         InputStream profileImg = mattermostHandler.image(mmClient.getId());
         BufferedImage bImageFromConvert = ImageIO.read(profileImg);
         String profileUrl = fileService.uploadInputStream(bImageFromConvert, mmClient.getId() + ".png", "weffy");
-
+        String nickName = mmClient.getNickname();
         Optional<WeffyUser> existUser = userRepository.findByIdentification(mmClient.getId());
         if (existUser.isEmpty()) {
             userRepository.save(
@@ -61,8 +60,8 @@ public class UserServiceImpl implements UserService {
                             .password(passwordEncoder.encode(signInInfo.getPassword()))
                             .email(mmClient.getEmail())
                             .name(mmClient.getLastName() + mmClient.getFirstName())
-                            .nickname(mmClient.getNickname())
-                            .role((role != null && role.equals("ADMIN"))? Role.ADMIN: Role.USER)
+                            .nickname(nickName)
+                            .role((role != null && role.equals("ADMIN"))? Role.ADMIN: getRole(nickName))
                             .active(true)
                             .profileImg(profileUrl)
                             .build()
@@ -72,6 +71,15 @@ public class UserServiceImpl implements UserService {
         }else {
             throw new CustomException(ExceptionEnum.USEREXIST);
         }
+    }
+
+    @Override
+    public Role getRole(String nickName) {
+        if (nickName.contains("코치")) return Role.COACH;
+        else if (nickName.contains("컨설턴트")) return Role.CONSULTANT;
+        else if (nickName.contains("프로")) return Role.PRO;
+        else if (nickName.contains("강사")) return Role.TEACHER;
+        else return Role.USER;
     }
 
     @Override
