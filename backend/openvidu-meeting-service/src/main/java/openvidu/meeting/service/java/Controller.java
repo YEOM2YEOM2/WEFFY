@@ -131,7 +131,6 @@ public class Controller {
 
 		ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
 
-
 		Connection connection = session.createConnection(properties);
 
 		System.out.println("ConnectionId : "+ connection.getConnectionId()+"/"+connection.getToken());
@@ -145,7 +144,7 @@ public class Controller {
 		System.out.println("---------------");
 
 		// 어디 방에 들어간 사람인지 구분하기 위함
-		mapSessionNamesTokens.get(classId).put(identification, UserRole.valueOf(role));
+		//mapSessionNamesTokens.get(classId).put(identification, UserRole.valueOf(role));
 
 		return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
 	}
