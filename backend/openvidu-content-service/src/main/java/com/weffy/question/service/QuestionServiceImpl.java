@@ -43,6 +43,13 @@ public class QuestionServiceImpl implements QuestionService{
     }
 
     @Override
+    public QuestionStateResDto getQuestion(Long questionId) {
+        Question question = findById(questionId);
+        new QuestionStateResDto();
+        return QuestionStateResDto.of(question);
+    }
+
+    @Override
     @Transactional
     public void completeQuestion(Long questionId) {
         Question question = findById(questionId);

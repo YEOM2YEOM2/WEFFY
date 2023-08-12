@@ -34,9 +34,19 @@ public class QuestionController {
     }
 
     @GetMapping("/{conference_id}")
-    public ResponseEntity<? extends BaseResponseBody> getQuestion(@PathVariable(name = "conference_id") String conferenceId) {
+    public ResponseEntity<? extends BaseResponseBody> getQuestionList(@PathVariable(name = "conference_id") String conferenceId) {
         List<QuestionStateResDto> questions = questionService.getQuestions(conferenceId);
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, questions));
+    }
+
+    @GetMapping("/{question_id}")
+    public ResponseEntity<? extends BaseResponseBody> getQuestion(@PathVariable(name = "question_id") Long questionId) {
+        try {
+            QuestionStateResDto question = questionService.getQuestion(questionId);
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, question));
+        } catch (Exception e) {
+            throw new CustomException(ExceptionEnum.QUESTION_NOT_FOUND);
+        }
     }
 
     @PatchMapping("/{question_id}")
