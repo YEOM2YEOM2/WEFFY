@@ -37,6 +37,12 @@ public class HistoryServiceImpl implements HistoryService{
         else if (active.equals("DELETE")){
             type = Active.DELETE;
         }
+        else if (active.equals("REC_START")){
+            type = Active.REC_START;
+        }
+        else if (active.equals("REC_END")){
+            type = Active.REC_END;
+        }
         historyRepository.save(
             Conference_History.builder()
                     .identification(dto.getIdentification())
