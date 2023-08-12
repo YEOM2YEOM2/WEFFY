@@ -2,7 +2,7 @@ package com.weffy.question.service;
 
 import com.weffy.exception.CustomException;
 import com.weffy.exception.ExceptionEnum;
-import com.weffy.question.Repository.JpaQuestionRepository;
+import com.weffy.question.repository.JpaQuestionRepository;
 import com.weffy.question.dto.request.QuestionReqDto;
 import com.weffy.question.dto.response.QuestionResDto;
 import com.weffy.question.dto.response.QuestionStateResDto;
