@@ -28,7 +28,7 @@ public class QuestionController {
             QuestionResDto questionResDto = questionService.createQuestion(questionReqDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, questionResDto));
         } catch (Exception e) {
-            throw new CustomException(ExceptionEnum.QUESTION_NOT_FOUND);
+            throw new CustomException(ExceptionEnum.QUESTION_CREATION_FAILURE);
         }
     }
 
