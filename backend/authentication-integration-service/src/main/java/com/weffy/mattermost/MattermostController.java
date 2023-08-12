@@ -1,6 +1,8 @@
 package com.weffy.mattermost;
 
 import com.weffy.common.dto.BaseResponseBody;
+import com.weffy.exception.CustomException;
+import com.weffy.exception.ExceptionEnum;
 import com.weffy.mattermost.dto.response.TeamChannelResDto;
 import com.weffy.mattermost.service.MattermostService;
 import com.weffy.token.util.SecurityUtil;
@@ -12,12 +14,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -44,6 +46,14 @@ public class MattermostController {
         WeffyUser weffyUser = userService.findByEmail(authorizedMember);
         List<TeamChannelResDto> teamChannelResDto = mattermostService.getTeamAndChannel(weffyUser);
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, teamChannelResDto));
+    }
+
+    @PostMapping("/header")
+    public ResponseEntity<? extends BaseResponseBody> makeHeaderLink(@RequestPart(name = "channelId") String channelId) throws JSONException, IOException, InterruptedException {
+        String authorizedMember = SecurityUtil.getAuthorizedMember();
+        WeffyUser weffyUser = userService.findByEmail(authorizedMember);
+        if (mattermostService.makeHeaderLink(weffyUser, channelId) == 200) return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "SUCCESS"));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(407, new CustomException(ExceptionEnum.HEADER_MODIFICATION_FAILED)));
     }
 
 

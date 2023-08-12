@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -161,6 +162,18 @@ public class MattermostServiceImpl implements MattermostService {
             teamChannelResDtoList.add(teamChannelResDto);
         }
         return teamChannelResDtoList;
+    }
+
+    @Override
+    @Transactional
+    public int makeHeaderLink(WeffyUser weffyUser, String channelId) throws JSONException, IOException, InterruptedException {
+        try {
+            String sessionToken = findByWeffyUser(weffyUser);
+            return mattermostHandler.putHeaderLink(channelId, sessionToken);
+        } catch (IOException | InterruptedException | JSONException e) {
+            throw new CustomException(ExceptionEnum.HEADER_MODIFICATION_FAILED);
+        }
+
     }
 
     @Override
