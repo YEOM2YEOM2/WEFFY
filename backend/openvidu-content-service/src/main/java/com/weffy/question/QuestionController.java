@@ -6,7 +6,6 @@ import com.weffy.exception.ExceptionEnum;
 import com.weffy.question.dto.request.QuestionReqDto;
 import com.weffy.question.dto.response.QuestionResDto;
 import com.weffy.question.dto.response.QuestionStateResDto;
-import com.weffy.question.entity.Question;
 import com.weffy.question.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
