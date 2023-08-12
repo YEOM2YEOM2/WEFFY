@@ -12,5 +12,7 @@ public interface QuestionService {
 
     List<QuestionStateResDto> getQuestions(String conferenceId);
 
+    QuestionStateResDto getQuestion(Long questionId);
+
     void completeQuestion(Long questionId);
 }
