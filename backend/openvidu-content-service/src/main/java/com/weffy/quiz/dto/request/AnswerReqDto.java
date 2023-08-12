@@ -9,6 +9,4 @@ import lombok.Setter;
 public class AnswerReqDto {
     String senderId;
     String content;
-    Long quizId;
-
 }

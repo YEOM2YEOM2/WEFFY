@@ -1,6 +1,8 @@
 package com.weffy.quiz.service;
 
+import com.weffy.quiz.dto.request.AnswerReqDto;
 import com.weffy.quiz.dto.request.QuizReqDto;
+import com.weffy.quiz.dto.response.AnswerResDto;
 import com.weffy.quiz.dto.response.QuizResDto;
 
 import java.util.List;
@@ -11,4 +13,6 @@ public interface QuizService {
     List<QuizResDto> getQuizzes(String conferenceId);
 
     QuizResDto getQuiz(Long quizId);
+
+    AnswerResDto createAnswer(Long quizId, AnswerReqDto answerReqDto);
 }
