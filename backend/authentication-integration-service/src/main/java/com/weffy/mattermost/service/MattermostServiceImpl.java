@@ -11,8 +11,6 @@ import com.weffy.user.entity.WeffyUser;
 import com.weffy.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 
@@ -63,7 +61,7 @@ public class MattermostServiceImpl implements MattermostService {
 
     private WeffyUser findWeffyUserByIdentification(String identification) {
         return userRepository.findByIdentification(identification)
-                .orElseThrow(() ->  new CustomException(ExceptionEnum.USERNOTEXIST));
+                .orElseThrow(() ->  new CustomException(ExceptionEnum.USER_NOT_EXIST));
     }
 
 
@@ -173,7 +171,7 @@ public class MattermostServiceImpl implements MattermostService {
                 String sessionToken = findByWeffyUser(weffyUser);
                 return mattermostHandler.putHeaderLink(channelId, sessionToken);
             } else {
-                throw new CustomException(ExceptionEnum.CANNOTCREATEROOM);
+                throw new CustomException(ExceptionEnum.CANNOT_CREATE_ROOM);
             }
         } catch (IOException | InterruptedException | JSONException e) {
             throw new CustomException(ExceptionEnum.HEADER_MODIFICATION_FAILED);
@@ -184,12 +182,12 @@ public class MattermostServiceImpl implements MattermostService {
     private Role findByChannelAndWeffyUser(Channel channel, WeffyUser weffyUser) {
         return jpaUserChannelRepository.findByChannelAndWeffyUser(channel, weffyUser)
                 .map(WeffyUserChannel::getRole)
-                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST));
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USER_NOT_EXIST));
     }
 
     private Channel findById(String channelId) {
         return jpaChannelRepository.findByIdentification(channelId)
-                .orElseThrow(() -> new CustomException(ExceptionEnum.CHANNELNOTFOUND));
+                .orElseThrow(() -> new CustomException(ExceptionEnum.CHANNEL_NOT_FOUND));
     }
 
 
@@ -197,7 +195,7 @@ public class MattermostServiceImpl implements MattermostService {
     public String findByWeffyUser(WeffyUser weffyUser) {
         return jpaSessionRepository.findByWeffyUser(weffyUser)
                 .map(Session::getToken)
-                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST));
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USER_NOT_EXIST));
     }
 
 }
