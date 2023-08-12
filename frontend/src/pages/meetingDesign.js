@@ -11,6 +11,7 @@ import ChatComponent from '../component/conference/chat/ChatComponent.js';
 import DialogExtensionComponent from '../component/conference/dialog-extension/DialogExtension.js';
 import StreamComponent from '../component/conference/stream/StreamComponent.js';
 import StreamOthers from '../component/conference/stream/StreamOthers.js'
+import LocalUser from '../component/conference/stream/LocalUser.js'
 import BottomToolbar from '../component/conference/toolbar/BottomToolbar.js';
 
 // mui
@@ -111,6 +112,9 @@ class Conference extends Component {
           session: undefined,
           localUser: undefined,
           subscribers: [],
+          subscribers8: [],
+          subIdx4: 0,
+          subIdx8: 0,
           chatDisplay: 'none',
           currentVideoDevice: undefined,
 
@@ -120,6 +124,9 @@ class Conference extends Component {
 
           // default & Grid Mode toggle 변수
           defaultMode: true,
+
+          // default Mode localuser
+          singleMode: false
       };
 
       this.joinSession = this.joinSession.bind(this);
@@ -146,7 +153,14 @@ class Conference extends Component {
       // default & Grid Mode toggle 함수
       this.handleDefaultMode = this.handleDefaultMode.bind(this);
       this.handleGridMode = this.handleGridMode.bind(this);
+      this.increaseSubIdx4 = this.increaseSubIdx4.bind(this);
+      this.decreaseSubIdx4 = this.decreaseSubIdx4.bind(this);
+      this.increaseSubIdx8 = this.increaseSubIdx8.bind(this);
+      this.decreaseSubIdx8 = this.decreaseSubIdx8.bind(this);
 
+      // single Mode
+      this.openSingleMode = this.openSingleMode.bind(this);
+      this.closeSingleMode = this.closeSingleMode.bind(this);
   }
 
   componentDidMount() {
@@ -612,6 +626,39 @@ class Conference extends Component {
     this.setState({ defaultMode: false})
   }
 
+  openSingleMode () {
+    this.setState({ singleMode: true })
+  }
+
+  closeSingleMode () {
+    this.setState({ singleMode: false })
+  }
+
+  increaseSubIdx4 () {
+    const { subIdx4, subscribers } = this.state;
+    const maxIndex = subscribers.length - 4;
+
+    if (subIdx4 < maxIndex) {
+        this.setState({ subIdx4: subIdx4 + 1 });
+    }
+  }
+
+  decreaseSubIdx4() {
+    const { subIdx4 } = this.state;
+
+    if (subIdx4 > 0) {
+        this.setState({ subIdx4: subIdx4 - 1 });
+    }
+  }
+
+  increaseSubIdx8() {
+    this.setState({ subIdx: this.subIdx8+8})
+  }
+
+  decreaseSubIdx8() {
+    this.setState({ subIdx: this.subIdx8-8})
+  }
+
   render() {
       const mySessionId = this.state.mySessionId;
       const localUser = this.state.localUser;
@@ -652,27 +699,41 @@ class Conference extends Component {
               </Toolbar>
             </AppBar>
             <Main open={this.state.open}  style={{ backgroundColor: '#10161F', color:'white', paddingBottom:'45px'}}>
-              {/* Main Component 자리 */}
               {
                 defaultMode ? 
+                // default Mode
                 <div>
                     {/* 다른 사용자 */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                        <ArrowLeftIcon />
-                        { this.state.subscribers.map((sub, i) => (
+                        <ArrowLeftIcon onClick={this.decreaseSubIdx4} style={{ cursor: "pointer" }} />
+                        {this.state.subscribers.slice(this.state.subIdx4, this.state.subIdx4 + 4).map((sub, i) => (
                             <div key={i} id="remoteUsers" style={{ paddingRight: '3px', paddingLeft: '3px' }} className="OT_root">
                                 <StreamOthers user={sub} streamId={sub.streamManager.stream.streamId} style={{ height: '180px' }} />
                             </div>
                         ))}
-                        <ArrowRightIcon />
+                        <ArrowRightIcon onClick={this.increaseSubIdx4} style={{ cursor: "pointer", zIndex: "99999" }} />
                     </div>
                     {/* 나 */}
                     {localUser !== undefined && localUser.getStreamManager() !== undefined && (
-                        <div className={ styles.videoMe } id="localUser">
-                            <StreamComponent user={localUser} handleNickname={this.nicknameChanged} />
+                        <div className={ styles.videoMe } id="localUser" style={{ display: 'flex', justifyContent: 'center' }}>
+                            <LocalUser user={localUser} handleNickname={this.nicknameChanged} style={{ width: '95%' }}/>
                         </div>
                     )}
-                </div> : <div></div>
+                </div>:
+                // Grid Mode
+                <div>
+                    <ArrowLeftIcon onClick={this.decreaseSubIdx4} style={{ cursor: "pointer" }} />
+                    <div>
+                        {/* 나 */}
+                        {localUser !== undefined && localUser.getStreamManager() !== undefined && (
+                            <div className={ styles.videoMe } id="localUser">
+                                <StreamComponent user={localUser} handleNickname={this.nicknameChanged} />
+                            </div>
+                        )}
+                        {/* 다른 사용자 */}
+                    </div>
+                    <ArrowRightIcon onClick={this.increaseSubIdx4} style={{ cursor: "pointer", zIndex: "99999" }} />
+                </div>
               }
               <div className={styles.openDrawer}>
                 <IconButton
