@@ -1,4 +1,4 @@
-package com.weffy.question.Repository;
+package com.weffy.question.repository;
 
 import com.weffy.question.entity.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
