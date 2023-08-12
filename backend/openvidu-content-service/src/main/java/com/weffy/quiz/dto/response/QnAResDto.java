@@ -4,20 +4,20 @@ import com.weffy.quiz.entity.Quiz;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
-public class QuizResDto {
+public class QnAResDto {
     Long id;
     String senderId;
-    String conferenceId;
     String content;
-    Long parent;
+    List<AnswerResDto> answers;
 
-    public QuizResDto(Quiz quiz) {
+    public QnAResDto(Quiz quiz, List<AnswerResDto> answers) {
         this.id = quiz.getId();
         this.senderId = quiz.getSenderId();
-        this.conferenceId = quiz.getConferenceId();
         this.content = quiz.getContent();
-        this.parent = quiz.getParent();
+        this.answers = answers;
     }
 }
