@@ -34,10 +34,17 @@ public class QuizController {
         }
     }
 
-    // quiz 질문 조회
+    // conference의 모든 quiz 질문 리스트 조회
     @GetMapping("/conference/{conference_id}/quizzes")
     public ResponseEntity<? extends BaseResponseBody> getQuestionList(@PathVariable(name = "conference_id") String conferenceId) {
-        List<QuizResDto> quizzes= quizService.getQuiz(conferenceId);
+        List<QuizResDto> quizzes= quizService.getQuizzes(conferenceId);
         return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, quizzes));
+    }
+
+    // quiz 질문 조회
+    @GetMapping("/quiz/{quiz_id}")
+    public ResponseEntity<? extends BaseResponseBody> getQuestion(@PathVariable(name = "quiz_id") Long quizId) {
+        QuizResDto quiz= quizService.getQuiz(quizId);
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, quiz));
     }
 }

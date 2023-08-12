@@ -1,5 +1,7 @@
 package com.weffy.quiz.service;
 
+import com.weffy.exception.CustomException;
+import com.weffy.exception.ExceptionEnum;
 import com.weffy.quiz.dto.request.QuizReqDto;
 import com.weffy.quiz.dto.response.QuizResDto;
 import com.weffy.quiz.entity.ChoiceOption;
@@ -42,10 +44,22 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public List<QuizResDto> getQuiz(String conferenceId) {
+    public List<QuizResDto> getQuizzes(String conferenceId) {
         List<Quiz> quizzes = jpaQuizRepository.findByConferenceId(conferenceId);
         return quizzes.stream()
                 .map(QuizResDto::of)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public QuizResDto getQuiz(Long quizId) {
+        Quiz quiz = findById(quizId);
+        new QuizResDto();
+        return QuizResDto.of(quiz);
+    }
+
+    private Quiz findById(Long quizId) {
+        return jpaQuizRepository.findById(quizId)
+                .orElseThrow(() -> new CustomException(ExceptionEnum.QUIZ_NOT_FOUND));
     }
 }
