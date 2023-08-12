@@ -12,6 +12,8 @@ import net.bis5.mattermost.client4.ApiResponse;
 import net.bis5.mattermost.client4.MattermostClient;
 import net.bis5.mattermost.model.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import okhttp3.*;
@@ -66,8 +68,8 @@ public class MattermostHandler {
         return in;
     }
 
+    // Mattermost 팀 정보 가져오기
     HttpClient teamClient = HttpClient.newHttpClient();
-    // MattermostHandler
     public JsonNode getTeam(String identification, String sessionToken) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://meeting.ssafy.com/api/v4/users/" + identification + "/teams"))
@@ -85,6 +87,8 @@ public class MattermostHandler {
     }
 
 
+
+    // Mattermost 채널 정보 가져오기
     HttpClient channelClient = HttpClient.newHttpClient();
     public JsonNode getChannel(String identification, String teamId, String sessionToken) throws IOException, InterruptedException {
 
@@ -103,6 +107,7 @@ public class MattermostHandler {
        return objectMapper.readTree(channelInfo.body());
     }
 
+    // Mattermost 채널 권한 가져오기
     HttpClient roleClient = HttpClient.newHttpClient();
     public Role getChannelRole(String identification, String channelId, String sessionToken) throws IOException, InterruptedException {
 
@@ -112,14 +117,60 @@ public class MattermostHandler {
                 .GET()
                 .build();
 
-        HttpResponse<String> channelInfo = channelClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> rolelInfo = roleClient.send(request, HttpResponse.BodyHandlers.ofString());
 
         // Jackson ObjectMapper 생성
         ObjectMapper objectMapper = new ObjectMapper();
 
         // HttpResponse의 body를 JSON으로 파싱
-        String role = objectMapper.readTree(channelInfo.body()).get("roles").asText();
+        String role = objectMapper.readTree(rolelInfo.body()).get("roles").asText();
         role = role.equals("channel_user channel_admin") ? "channel_admin" : role;
         return Role.valueOf(role);
+    }
+
+    // Mattermost 채널 헤더에 conference 링크 달기
+    HttpClient beforeClient = HttpClient.newHttpClient();
+    HttpClient putClient = HttpClient.newHttpClient();
+    public int putHeaderLink(String channelId, String sessionToken) throws IOException, InterruptedException, JSONException {
+        // 이전 channel의 정보를 가져오기
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("https://meeting.ssafy.com/api/v4/channels/" + channelId))
+                .header("Authorization", "Bearer " + sessionToken)
+                .GET()
+                .build();
+
+        HttpResponse<String> channelInfo = beforeClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        // Jackson ObjectMapper 생성
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // HttpResponse의 body를 JSON으로 파싱
+        String name = objectMapper.readTree(channelInfo.body()).get("name").asText();
+        String display_name = objectMapper.readTree(channelInfo.body()).get("display_name").asText();
+        String purpose = objectMapper.readTree(channelInfo.body()).get("purpose").asText();
+        String header = objectMapper.readTree(channelInfo.body()).get("header").asText();
+
+        // 헤더에 weffy 링크 넣기
+        try {
+            // 헤더에 weffy 링크 넣어서 JSON으로 다시 묶기
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", channelId);
+            jsonObject.put("name", name);
+            jsonObject.put("display_name", display_name);
+            jsonObject.put("purpose", purpose);
+            jsonObject.put("header", header + "|[ :weffy_logo:  Start WEFFY](https://i9d107.p.ssafy.io/meeting/" + channelId + ")");
+
+            String requestBodyData = jsonObject.toString();
+
+            HttpRequest putHeader = HttpRequest.newBuilder()
+                    .uri(URI.create("https://meeting.ssafy.com/api/v4/channels/" + channelId))
+                    .header("Authorization", "Bearer " + sessionToken)
+                    .PUT(HttpRequest.BodyPublishers.ofString(requestBodyData))
+                    .build();
+
+            return putClient.send(putHeader, HttpResponse.BodyHandlers.ofString()).statusCode();
+        } catch (IOException | InterruptedException | JSONException e) {
+            throw new CustomException(ExceptionEnum.HEADER_MODIFICATION_FAILED);
+        }
     }
 }

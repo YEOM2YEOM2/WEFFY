@@ -12,7 +12,8 @@ public enum ExceptionEnum {
     INVALIDUSER(HttpStatus.BAD_REQUEST,4003,"올바르지 않은 사용자의 접근입니다."),
     MATTERMOSTLOGINFAILED(HttpStatus.BAD_REQUEST,4004,"mattermost 로그인 실패"),
     IMAGENOTFOUND(HttpStatus.BAD_REQUEST,4005,"mattermost 이미지가 존재하지 않습니다."),
-    FILENOTFOUND(HttpStatus.BAD_REQUEST,4006,"파일이 존재하지 않습니다."),;
+    FILENOTFOUND(HttpStatus.BAD_REQUEST,4006,"파일이 존재하지 않습니다."),
+    HEADER_MODIFICATION_FAILED(HttpStatus.BAD_REQUEST,4007,"헤더 변경을 실패하였습니다."),;
 
 
     private HttpStatus status;
