@@ -1,5 +1,6 @@
 package openvidu.meeting.service.java.conference.streaming;
 
+import openvidu.meeting.service.java.OpenviduDB;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
@@ -14,13 +15,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class SendVideo {
+public class VideoSender {
     private String localRecordingPath = "C://recording/";
 
-    //"?type=lecture"
-    public void sendRequest(String classId, String fileName) throws IOException {
+    private String accessToken;
 
-        String accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJrYXRoeWxlZXNoN0BnbWFpbC5jb20iLCJpYXQiOjE2OTE3MzIzODksImV4cCI6MTY5MTczNTk4OSwic3ViIjoicHNpMTkwOEBuYXZlci5jb20iLCJpZGVudGlmaWNhdGlvbiI6InFra3U5OWUxa3BmanVqOGRlOGhya3o0aGFoIn0.MGiE4sDAcBNFjavW-7gjQkObIIN6_CrRk8TCJ1abLGE";
+    //"?type=lecture"
+    public void sendRequest(String classId, String fileName, String identification) throws IOException {
+
+        accessToken = OpenviduDB.getHostToken().get(identification);
 
         HttpClient httpClient = HttpClients.createDefault();
 

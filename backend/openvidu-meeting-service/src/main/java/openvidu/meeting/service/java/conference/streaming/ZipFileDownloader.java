@@ -38,6 +38,9 @@ public class ZipFileDownloader{
 
     private String recordingId;
 
+    private String identification;
+
+
     public ZipFileDownloader(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
     }
@@ -106,9 +109,11 @@ public class ZipFileDownloader{
             // 기존에 저장한 폴더에서 지정한 로컬 경로로 파일을 옮긴다.
             Files.move(extractedMp4Path, targetPath, StandardCopyOption.REPLACE_EXISTING);
 
+            // 생성한 mp4 파일을 s3에 저장할 수 있도록 header에 담아서 보낸다.
             try{
-                SendVideo sv = new SendVideo();
-                sv.sendRequest(classId, title);
+                VideoSender sv = new VideoSender();
+                sv.sendRequest(classId, title, identification);
+                System.out.println("come!!!!");
             }catch(Exception e){
                 System.out.println("Error : ");
                 e.printStackTrace();

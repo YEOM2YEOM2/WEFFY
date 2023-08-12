@@ -1,9 +1,9 @@
 package openvidu.meeting.service.java.conference.streaming;
 
 import io.openvidu.java.client.*;
-import jdk.javadoc.internal.tool.Start;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import openvidu.meeting.service.java.OpenviduDB;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 
@@ -12,67 +12,64 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
-class StopThread extends Thread{
-
-    @Override
-    public void run(){
-        try {
-            Thread.sleep(100000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-}
-
-
 @Getter
 @Setter
 class SharedResource{
-    public boolean status;
-    public boolean status1;
-    public boolean status2;
-
     public OpenVidu openvidu;
     public String classId;
-    public String accessToken;
+    public String identification;
     public String recordingId; // 녹화한 파일 이름 Ex) SessionA, SessionA~1, SessionA~2
     public ZipFileDownloader zipFileDownloader; // 녹화한 url
     public int index; // 파일(classId)식별자  Ex) SessionA.mp4, SessionA1.mp4, SessionA2.mp4
 
+    public boolean status;
+    public boolean status1;
+    public boolean status2;
+
     public List<String> urlList = new ArrayList<>();
 
-    public SharedResource(String classId, String accessToken){
+    public SharedResource(String classId, String identification){
         openvidu = OpenviduDB.getOpenvidu();
         this.classId = classId;
-        this.accessToken = accessToken;
+        this.identification = identification;
         this.zipFileDownloader = new ZipFileDownloader(new RestTemplateBuilder());
         this.index = 0;
-
         this.status = true;
         this.status1 = true;
         this.status2 = true;
     }
-
     public void addUrl(String url){
         urlList.add(url);
     }
 }
 
+class StopThread extends Thread{
+    @Override
+    public void run(){
+        try {
+            Thread.sleep(20000); // 테스트 : 10초
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+@Slf4j
+// 녹화 시작&정지 스레드(thread1)
 class StartAndStopRecording extends Thread{
     private SharedResource sharedResource;
-
     public StartAndStopRecording(SharedResource sharedResource){
         this.sharedResource = sharedResource;
     }
-
 
     @Override
     public void run(){
         while(sharedResource.status1){
             System.out.println("===================================StartAndStopRecording===================================");
             try{
+
+
                 // 녹화 설정
                 RecordingProperties properties = new RecordingProperties.Builder()
                         .outputMode(io.openvidu.java.client.Recording.OutputMode.INDIVIDUAL)
@@ -128,6 +125,7 @@ class StartAndStopRecording extends Thread{
     }
 }
 
+// 파일 다운로드 스레드(thread2)
 class FileDownload extends Thread{
 
     private SharedResource sharedResource;
@@ -139,19 +137,26 @@ class FileDownload extends Thread{
     @Override
     public void run(){
         while(sharedResource.status2){
+            System.out.println("===================================FileDownload===================================");
+
             if(sharedResource.urlList.isEmpty() && !sharedResource.status && !sharedResource.status1){
                 sharedResource.status2 = false;
                 System.out.println("thread-2 stop");
             }
 
             if(!sharedResource.urlList.isEmpty()){
-                System.out.println("===================================FileDownload===================================");
+
 
 
                 String url = sharedResource.urlList.get(0);
 
                 // url 설정
                 sharedResource.zipFileDownloader.setZipFileUrl(url);
+
+                // identification 설정
+                sharedResource.setIdentification(sharedResource.identification);
+
+                // identification 설정
 
                 // 파일명 설정
                 if(sharedResource.index == 0){
@@ -186,29 +191,27 @@ class FileDownload extends Thread{
     }
 }
 
-public class MediaRecording {
+// 메인 스레드
+public class VideoRecorder {
     private SharedResource sharedResource;
-
     public Thread thread1, thread2;
-
-    public MediaRecording(String classId, String accessToken) {
+    public VideoRecorder(String classId, String accessToken) {
         sharedResource = new SharedResource(classId, accessToken);
     }
 
+    // Host가 녹화를 중지했을 때
     public void recordingStop(){
         System.out.println("정지");
         sharedResource.status = false;
+        sharedResource.status1 = false;
+        sharedResource.status2 = false;
     }
 
 
-
-    // 처음에 시작하는 메소드
-    public void recordingStartMethod() {
+    // 처음 스레드를 정의하는 메소드
+    public void recordingMethod() {
         thread1 = new Thread(new StartAndStopRecording(sharedResource));
         thread2 = new Thread(new FileDownload(sharedResource));
-
-        thread1.setPriority(10);
-        thread2.setPriority(1);
 
         thread1.start();
         thread2.start();
