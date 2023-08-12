@@ -166,15 +166,32 @@ public class MattermostServiceImpl implements MattermostService {
 
     @Override
     @Transactional
-    public int makeHeaderLink(WeffyUser weffyUser, String channelId) throws JSONException, IOException, InterruptedException {
+    public int makeHeaderLink(WeffyUser weffyUser, String channelId)  {
         try {
-            String sessionToken = findByWeffyUser(weffyUser);
-            return mattermostHandler.putHeaderLink(channelId, sessionToken);
+            Channel channel = findById(channelId);
+            if (!weffyUser.getRole().equals(com.weffy.user.entity.Role.USER) || findByChannelAndWeffyUser(channel, weffyUser).equals(Role.channel_admin)) {
+                String sessionToken = findByWeffyUser(weffyUser);
+                return mattermostHandler.putHeaderLink(channelId, sessionToken);
+            } else {
+                throw new CustomException(ExceptionEnum.CANNOTCREATEROOM);
+            }
         } catch (IOException | InterruptedException | JSONException e) {
             throw new CustomException(ExceptionEnum.HEADER_MODIFICATION_FAILED);
         }
 
     }
+
+    private Role findByChannelAndWeffyUser(Channel channel, WeffyUser weffyUser) {
+        return jpaUserChannelRepository.findByChannelAndWeffyUser(channel, weffyUser)
+                .map(WeffyUserChannel::getRole)
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST));
+    }
+
+    private Channel findById(String channelId) {
+        return jpaChannelRepository.findByIdentification(channelId)
+                .orElseThrow(() -> new CustomException(ExceptionEnum.CHANNELNOTFOUND));
+    }
+
 
     @Override
     public String findByWeffyUser(WeffyUser weffyUser) {
