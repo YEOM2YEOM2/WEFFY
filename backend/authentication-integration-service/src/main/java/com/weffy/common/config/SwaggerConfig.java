@@ -13,10 +13,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         final String securitySchemeName = "bearerAuth";
-        final String securitySchemeName2 = "csrfToken";
         return new OpenAPI()
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName2))
                 .components(
                         new Components()
                                 .addSecuritySchemes(securitySchemeName,
@@ -25,12 +23,6 @@ public class SwaggerConfig {
                                                 .type(SecurityScheme.Type.HTTP)
                                                 .scheme("bearer")
                                                 .bearerFormat("JWT"))
-                                .addSecuritySchemes(securitySchemeName2,
-                                        new SecurityScheme()
-                                                .name("CSRF")
-                                                .type(SecurityScheme.Type.APIKEY)
-                                                .in(SecurityScheme.In.HEADER)
-                                                .name("X-CSRF-TOKEN"))
                 )
                 .info(new Info()
                         .title("WEFFY")     /* 서비스 제목 */
