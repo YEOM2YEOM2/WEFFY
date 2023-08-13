@@ -1,7 +1,6 @@
 package com.weffy.user.entity;
 
 import com.weffy.common.entity.TimeEntity;
-import com.weffy.mattermost.entity.Team;
 import com.weffy.mattermost.entity.WeffyUserChannel;
 import com.weffy.mattermost.entity.WeffyUserTeam;
 import jakarta.persistence.*;

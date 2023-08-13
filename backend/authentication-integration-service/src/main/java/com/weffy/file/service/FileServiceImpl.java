@@ -1,5 +1,7 @@
 package com.weffy.file.service;
 
+import com.weffy.exception.CustomException;
+import com.weffy.exception.ExceptionEnum;
 import com.weffy.file.entity.Files;
 import com.weffy.file.dto.request.FileReqDto;
 import com.weffy.file.dto.response.FileResDto;
@@ -57,7 +59,7 @@ public class FileServiceImpl implements FileService {
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
         } catch (IOException e) {
-            throw new IllegalStateException("파일 업로드 실패", e);
+            throw new CustomException(ExceptionEnum.CANNOT_UPLOAD_FILE);
         }
 
         String url = String.format("https://%s.s3.ap-northeast-2.amazonaws.com/%s", bucketName, encodedFileName);
