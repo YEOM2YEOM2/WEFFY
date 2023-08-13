@@ -6,12 +6,14 @@ import MicOffIcon from '@mui/icons-material/MicOff';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import InfoIcon from '@mui/icons-material/Info';
 import FormControl from '@mui/material/FormControl';
 import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import FormHelperText from '@mui/material/FormHelperText';
+import Tooltip from '@mui/material/Tooltip';
 
 export default class StreamComponent extends Component {
     constructor(props) {
@@ -57,11 +59,11 @@ export default class StreamComponent extends Component {
                 <div className="pointer nickname">
                     {this.state.showForm ? (
                         <FormControl id="nicknameForm" style={{  }}>
-                            <IconButton color="inherit" id="closeButton" onClick={this.toggleNicknameForm}>
+                            <IconButton color="inherit" id="closeButton" onClick={this.toggleNicknameForm} style={{postion: 'absolute', top: '-7px'}}>
                                 <HighlightOffIcon />
                             </IconButton>
-                            <InputLabel htmlFor="name-simple" id="label" style={{ top: '10px', left: '-3px' }}>
-                                Nickname 수정
+                            <InputLabel htmlFor="name-simple" id="label" style={{ fontFamily: 'GmarketSans' ,top: '10px', left: '-3px' }}>
+                                참가자명 수정
                             </InputLabel>
                             <Input
                                 id="input"
@@ -69,18 +71,21 @@ export default class StreamComponent extends Component {
                                 onChange={this.handleChange}
                                 onKeyPress={this.handlePressKey}
                                 required
+                                style={{ fontFamily: 'GmarketSans' }}
                             />
                             {!this.state.isFormValid && this.state.nickname.length <= 3 && (
-                                <FormHelperText id="name-error-text">4 ~ 20자로 작성해주세요.</FormHelperText>
+                                <FormHelperText id="name-error-text" style={{ fontFamily: 'GmarketSans' }}>4 ~ 20자로 작성해주세요.</FormHelperText>
                             )}
                             {!this.state.isFormValid && this.state.nickname.length >= 21 && (
-                                <FormHelperText id="name-error-text">4 ~ 20자로 작성해주세요.</FormHelperText>
+                                <FormHelperText id="name-error-text" style={{ fontFamily: 'GmarketSans' }}>4 ~ 20자로 작성해주세요.</FormHelperText>
                             )}
                         </FormControl>
                     ) : (
                         <div onClick={this.toggleNicknameForm}>
-                            <span id="nickname">{this.props.user.getNickname()}</span>
-                            {this.props.user.isLocal() && <span id=""> (edit)</span>}
+                            <Tooltip title="참가자명 변경" placement='right'>
+                                <span id="nickname">{this.props.user.getNickname()}</span>
+                                {this.props.user.isLocal() && <span id=""><InfoIcon fontSize='small' style={{ marginLeft: '3px' }} /></span>}
+                            </Tooltip>
                         </div>
                     )}
                 </div>
