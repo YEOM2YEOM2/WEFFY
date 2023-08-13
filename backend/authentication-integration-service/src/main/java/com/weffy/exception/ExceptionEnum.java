@@ -13,9 +13,11 @@ public enum ExceptionEnum {
     MATTERMOST_LOGIN_FAILED(HttpStatus.BAD_REQUEST,4004,"mattermost 로그인 실패"),
     IMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST,4005,"mattermost 이미지가 존재하지 않습니다."),
     FILE_NOT_FOUND(HttpStatus.BAD_REQUEST,4006,"파일이 존재하지 않습니다."),
-    HEADER_MODIFICATION_FAILED(HttpStatus.BAD_REQUEST,4007,"헤더 변경을 실패하였습니다."),
-    CHANNEL_NOT_FOUND(HttpStatus.BAD_REQUEST,4008,"채널이 존재하지 않습니다."),
-    CANNOT_CREATE_ROOM(HttpStatus.UNAUTHORIZED,4009,"해당 채널에서 weffy를 생성할 권한이 없습니다."),;
+    CANNOT_UPLOAD_FILE(HttpStatus.BAD_REQUEST,4007,"파일 업로드에 실패하였습니다."),
+    CANNOT_DOWNLOAD_FILE(HttpStatus.BAD_REQUEST,4008,"파일 다운로드 실패하였습니다."),
+    HEADER_MODIFICATION_FAILED(HttpStatus.BAD_REQUEST,4009,"헤더 변경을 실패하였습니다."),
+    CHANNEL_NOT_FOUND(HttpStatus.BAD_REQUEST,4010,"채널이 존재하지 않습니다."),
+    CANNOT_CREATE_ROOM(HttpStatus.UNAUTHORIZED,4011,"해당 채널에서 weffy를 생성할 권한이 없습니다."),;
 
 
     private HttpStatus status;

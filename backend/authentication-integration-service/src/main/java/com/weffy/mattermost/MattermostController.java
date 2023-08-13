@@ -43,9 +43,9 @@ public class MattermostController {
                             "    \"status\": 200,\n" +
                             "    \"data\": \"success\"\n" +
                             "}"))),
-            @ApiResponse(responseCode = "4007", description =  "HEADER_MODIFICATION_FAILED", content = @Content(examples = @ExampleObject(value = "{\"status\": 4007, \"data\": \"헤더 변경을 실패하였습니다.\"}"))),
-            @ApiResponse(responseCode = "4008", description =  "CHANNEL_NOT_FOUND", content = @Content(examples = @ExampleObject(value = "{\"status\": 4008, \"data\": \"채널이 존재하지 않습니다.\"}"))),
-            @ApiResponse(responseCode = "4009", description =  "CANNOT_CREATE_ROOM", content = @Content(examples = @ExampleObject(value = "{\"status\": 4009, \"data\": \"해당 채널에서 weffy를 생성할 권한이 없습니다.\"}"))),
+            @ApiResponse(responseCode = "4009", description =  "HEADER_MODIFICATION_FAILED", content = @Content(examples = @ExampleObject(value = "{\"status\": 4009, \"data\": \"헤더 변경을 실패하였습니다.\"}"))),
+            @ApiResponse(responseCode = "4010", description =  "CHANNEL_NOT_FOUND", content = @Content(examples = @ExampleObject(value = "{\"status\": 4010, \"data\": \"채널이 존재하지 않습니다.\"}"))),
+            @ApiResponse(responseCode = "4011", description =  "CANNOT_CREATE_ROOM", content = @Content(examples = @ExampleObject(value = "{\"status\": 4011, \"data\": \"해당 채널에서 weffy를 생성할 권한이 없습니다.\"}"))),
     })
     @PostMapping("/header")
     public ResponseEntity<? extends BaseResponseBody> makeHeaderLink(@RequestPart(name = "channelId") String channelId) {
@@ -64,45 +64,27 @@ public class MattermostController {
                             "    \"data\": [\n" +
                             "        {\n" +
                             "            \"id\": 1,\n" +
-                            "            \"identification\": \"bq3kpm86jfgk3dx8uxoc577r5c\",\n" +
-                            "            \"name\": \"9기 공통 구미1반\",\n" +
+                            "            \"identification\": \"identification\",\n" +
+                            "            \"name\": \"name\",\n" +
                             "            \"channels\": [\n" +
                             "                {\n" +
                             "                    \"id\": 1,\n" +
-                            "                    \"identification\": \"1gd7utcti3bwbki1f8d4n6ws8a\",\n" +
-                            "                    \"name\": \"D107\",\n" +
+                            "                    \"identification\": \"identification\",\n" +
+                            "                    \"name\": \"name\",\n" +
                             "                    \"admin\": false\n" +
                             "                },\n" +
                             "                {\n" +
                             "                    \"id\": 2,\n" +
-                            "                    \"identification\": \"xezputbgu3rmdyckjssqpn8jwc\",\n" +
-                            "                    \"name\": \"D107_BOT\",\n" +
-                            "                    \"admin\": false\n" +
-                            "                },\n" +
-                            "                {\n" +
-                            "                    \"id\": 3,\n" +
-                            "                    \"identification\": \"r7ammn95k7gzj8fekdspzk1t1r\",\n" +
-                            "                    \"name\": \"UCC담당자\",\n" +
-                            "                    \"admin\": false\n" +
-                            "                },\n" +
-                            "                {\n" +
-                            "                    \"id\": 4,\n" +
-                            "                    \"identification\": \"9kj6a3s7rjyi9p8f93ydezcuth\",\n" +
-                            "                    \"name\": \"공지사항\",\n" +
-                            "                    \"admin\": false\n" +
-                            "                },\n" +
-                            "                {\n" +
-                            "                    \"id\": 5,\n" +
-                            "                    \"identification\": \"cufyzsupftyj8jojg9ijsugbfo\",\n" +
-                            "                    \"name\": \"잡담\",\n" +
+                            "                    \"identification\": \"identification\",\n" +
+                            "                    \"name\": \"name\",\n" +
                             "                    \"admin\": false\n" +
                             "                }\n" +
                             "            ]\n" +
                             "        }\n" +
                             "    ]\n" +
                             "}"))),
-            @ApiResponse(responseCode = "4008", description =  "CHANNEL_NOT_FOUND", content = @Content(examples = @ExampleObject(value = "{\"status\": 4008, \"data\": \"채널이 존재하지 않습니다.\"}"))),
-            @ApiResponse(responseCode = "4009", description =  "CANNOT_CREATE_ROOM", content = @Content(examples = @ExampleObject(value = "{\"status\": 4009, \"data\": \"해당 채널에서 weffy를 생성할 권한이 없습니다.\"}"))),
+            @ApiResponse(responseCode = "4010", description =  "CHANNEL_NOT_FOUND", content = @Content(examples = @ExampleObject(value = "{\"status\": 4010, \"data\": \"채널이 존재하지 않습니다.\"}"))),
+            @ApiResponse(responseCode = "4011", description =  "CANNOT_CREATE_ROOM", content = @Content(examples = @ExampleObject(value = "{\"status\": 4011, \"data\": \"해당 채널에서 weffy를 생성할 권한이 없습니다.\"}"))),
     })
     @GetMapping("")
     public ResponseEntity<? extends BaseResponseBody> teamChannel() {
