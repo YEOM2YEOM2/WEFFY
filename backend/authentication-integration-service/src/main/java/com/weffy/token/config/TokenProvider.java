@@ -1,6 +1,5 @@
 package com.weffy.token.config;
 
-import com.weffy.token.entity.RefreshToken;
 import com.weffy.token.repository.RefreshTokenRepository;
 import com.weffy.user.entity.WeffyUser;
 import io.jsonwebtoken.Claims;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor
