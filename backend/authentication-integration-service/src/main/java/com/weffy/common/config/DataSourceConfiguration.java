@@ -14,11 +14,6 @@ public class DataSourceConfiguration {
     @Autowired
     private KmsService kmsService;
 
-//    public DataSourceConfiguration(KmsService kmsService) {
-//        this.kmsService = kmsService;
-//    }
-
-
     @Value("${spring.datasource.url}")
     private String url;
     @Value("${spring.datasource.username}")
@@ -36,7 +31,6 @@ public class DataSourceConfiguration {
                 .url(decryptedDatabaseUrl)
                 .username(decryptedDatabaseUsername)
                 .password(decryptedDatabasePassword)
-                // .driverClassName("com.mysql.cj.jdbc.Driver")
                 .build();
     }
 }

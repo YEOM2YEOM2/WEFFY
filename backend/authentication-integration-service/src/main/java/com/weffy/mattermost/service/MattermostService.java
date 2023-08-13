@@ -17,4 +17,6 @@ public interface MattermostService {
     List<TeamChannelResDto> getTeamAndChannel(WeffyUser weffyUser);
 
     String findByWeffyUser(WeffyUser weffyUser);
+
+    int makeHeaderLink(WeffyUser weffyUser, String channelId);
 }
