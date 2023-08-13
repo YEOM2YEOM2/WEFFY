@@ -13,9 +13,10 @@ import StreamOthers from '../component/conference/stream/StreamOthers.js'
 import GridStream from '../component/conference/stream/GridStream.js'
 import LocalUser from '../component/conference/stream/LocalUser.js'
 import BottomToolbar from '../component/conference/toolbar/BottomToolbar.js';
+import Participant from '../component/conference/participant/participant.js';
 
 // mui
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import MuiAppBar from '@mui/material/AppBar';
@@ -27,17 +28,9 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import SquareRoundedIcon from '@mui/icons-material/SquareRounded';
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import RadioButtonCheckedOutlinedIcon from '@mui/icons-material/RadioButtonCheckedOutlined';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -48,6 +41,8 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Grid from '@mui/material/Grid';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
+import QuizIcon from '@mui/icons-material/Quiz';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const drawerWidth = 320;
 
@@ -104,7 +99,7 @@ class Conference extends Component {
       super(props);
       this.hasBeenUpdated = false;
       this.layout = new OpenViduLayout();
-      let sessionName = this.props.sessionName ? this.props.sessionName : 'SessionD';
+      let sessionName = this.props.sessionName ? this.props.sessionName : 'SessionA';
       let userName = this.props.user ? this.props.user : 'WEFFY_User' + Math.floor(Math.random() * 100);
       this.remotes = [];
       this.localUserAccessAllowed = false;
@@ -122,7 +117,7 @@ class Conference extends Component {
 
           // mui 사용을 위한 변수
           open : true,
-          partChatToggle: 'part',
+          partChatToggle: 'participant',
 
           // default & Grid Mode toggle 변수
           defaultMode: true,
@@ -325,7 +320,7 @@ class Conference extends Component {
           session: undefined,
           subscribers: [],
           subscribers8: [],
-          mySessionId: 'SessionD',
+          mySessionId: 'SessionA',
           myUserName: 'WEEFY_User' + Math.floor(Math.random() * 100),
           localUser: undefined,
       });
@@ -715,7 +710,7 @@ class Conference extends Component {
                 defaultMode ? 
                 // default Mode
                 <div>
-                    {/* 다른 사용자자 */}
+                    {/* 다른 사용자 */}
                     {this.state.singleMode ? null : 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
                         {this.state.subscribers.length > 0 ? <ArrowLeftIcon onClick={this.decreaseSubIdx4} style={{ cursor: "pointer" }} />: null}
@@ -786,35 +781,35 @@ class Conference extends Component {
               </div>
               <DrawerHeader style={{ backgroundColor: '#374151' }}>
                 <div>
-                <ToggleButtonGroup
-                  value={this.state.partChatToggle}
-                  exclusive
-                  onChange={this.handlePartChatToggle}
-                  aria-label="text alignment"
-                >
-                  <ToggleButton value="part" aria-label="left aligned">
-                    <AccountCircleIcon />
-                  </ToggleButton>
-                  <ToggleButton value="chat" aria-label="centered">
-                    <Badge badgeContent={4} color="secondary">
-                      <ChatIcon color="action"/>
-                    </Badge>
-                  </ToggleButton>
-                </ToggleButtonGroup>
+                    <ToggleButtonGroup
+                    value={this.state.partChatToggle}
+                    exclusive
+                    onChange={this.handlePartChatToggle}
+                    aria-label="text alignment"
+                    style={{ background: "white", borderRadius: "15px", width: "288px", display: "flex", justifyContent: "center" }}
+                    >
+                        <ToggleButton value="participant" aria-label="left aligned" style={{ width: "99px" }}>
+                            <AccountCircleIcon />
+                        </ToggleButton>
+                        <ToggleButton value="generalChat" aria-label="centered" style={{ width: "96px" }}>
+                            <Badge badgeContent={4} color="primary">
+                            <ChatIcon/>
+                            </Badge>
+                        </ToggleButton>
+                        <ToggleButton value="questionChat" aria-label="centered" style={{ width: "99px" }}>
+                            <Badge badgeContent={4} color="primary">
+                            <QuizIcon/>
+                            </Badge>
+                        </ToggleButton>
+                    </ToggleButtonGroup>
                 </div>
+                <MoreVertIcon style={{ color: "white", cursor: "pointer" }}/>
               </DrawerHeader>
               <Divider />
               <List style={{ backgroundColor: '#17202E' }}>
-                {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                  <ListItem key={text} disablePadding>
-                    <ListItemButton>
-                      <ListItemIcon>
-                        {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                      </ListItemIcon>
-                      <ListItemText primary={text} />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
+                { this.state.partChatToggle === "participant" ? <Participant participants={this.state.subscribers8} handleNickname={this.nicknameChanged} /> : null }
+                {/* { this.state.partChatToggle === "participant" ? <Participant /> : null } */}
+                {/* { this.state.partChatToggle === "participant" ? <Participant /> : null } */}
               </List>
               <Divider />
               </Drawer>
@@ -832,7 +827,7 @@ class Conference extends Component {
             switchCamera={this.switchCamera}
             leaveSession={this.leaveSession}
             toggleChat={this.toggleChat}
-        />
+          />
       </div>
       );
   }
@@ -856,5 +851,4 @@ class Conference extends Component {
       return response.data; // The token
   }
 }
-
 export default Conference;
