@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ToolbarComponent.css';
 
-import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 
 // mui
@@ -11,17 +11,13 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
-import SwitchCameraIcon from '@mui/icons-material/SwitchCamera';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import Tooltip from '@mui/material/Tooltip';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import IconButton from '@mui/material/IconButton';
 
-
-const logo = require('./../../../assets/images/WEFFY_logo.png');
 
 export default class ToolbarComponent extends Component {
     constructor(props) {
@@ -65,6 +61,7 @@ export default class ToolbarComponent extends Component {
 
     leaveSession() {
         this.props.leaveSession();
+        
     }
 
     toggleChat() {
@@ -72,7 +69,6 @@ export default class ToolbarComponent extends Component {
     }
 
     render() {
-        const mySessionId = this.props.sessionId;
         const localUser = this.props.user;
         return (
               <Toolbar className="toolbar" 
@@ -92,28 +88,46 @@ export default class ToolbarComponent extends Component {
                       </IconButton>
 
                       <IconButton color="inherit" className="navButton" onClick={this.screenShare}>
-                          {localUser !== undefined && localUser.isScreenShareActive() ? <PictureInPictureIcon /> : <ScreenShareIcon />}
+                        
+                          {localUser !== undefined && localUser.isScreenShareActive() ? 
+                          <Tooltip title="화면 공유창 선택" placement="top"><PictureInPictureIcon /></Tooltip> : <Tooltip title="화면 공유" placement="top"><ScreenShareIcon /></Tooltip>}
                       </IconButton>
 
                       {localUser !== undefined &&
                           localUser.isScreenShareActive() && (
+                            <Tooltip title="화면 공유 정지" placement="top">
                               <IconButton onClick={this.stopScreenShare} id="navScreenButton">
                                   <StopScreenShareIcon style={{ color: "red" }} />
                               </IconButton>
+                            </Tooltip>
                           )}
                       <IconButton color="inherit" className="navButton" onClick={this.toggleFullscreen}>
-                          {localUser !== undefined && this.state.fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+                          {localUser !== undefined && this.state.fullscreen ? 
+                          <Tooltip title="전체화면 종료" placement='top'><FullscreenExitIcon /></Tooltip> 
+                          : <Tooltip title="전체 화면" placement='top'><FullscreenIcon /></Tooltip>}
                       </IconButton>
                       
-                        <IconButton id="navChatButton">
-                            <Tooltip title="회의 나가기" placement="top">
-                                <IconButton onClick={this.leaveSession} id="navLeaveButton" style={{ color: "white",  backgroundColor: "red", borderRadius: '5px', top: '-2px' }}>
-                                    <ExitToAppIcon fontSize='small'/>
-                                </IconButton>
-                            </Tooltip>
+                      <IconButton id="navChatButton" onClick={this.leaveSession}>
+                        <ExitBtn /> 
                       </IconButton>
                   </div>
               </Toolbar>
         );
     }
+}
+
+function ExitBtn() {
+    let navigate = useNavigate();
+
+    const handleExit = () => {
+        navigate("/im")
+    }
+
+    return (
+        <Tooltip title="회의 나가기" placement="top">
+            <IconButton onClick={handleExit} id="navLeaveButton" style={{ color: "white",  backgroundColor: "red", borderRadius: '5px', top: '-2px' }}>
+                <ExitToAppIcon fontSize='small'/>
+            </IconButton>
+        </Tooltip>
+    )
 }
