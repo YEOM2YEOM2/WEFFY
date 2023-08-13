@@ -61,8 +61,15 @@ public class FileController {
             @ApiResponse(responseCode = "4009", description =  "CANNOT_CREATE_ROOM", content = @Content(examples = @ExampleObject(value = "{\"status\": 4009, \"data\": \"해당 채널에서 weffy를 생성할 권한이 없습니다.\"}"))),
     })
     @PostMapping("/{conference_id}")
-    public ResponseEntity<? extends BaseResponseBody> upload(@RequestPart MultipartFile file, @PathVariable(name = "conference_id", required = false) String conferenceId) {
-        String bucketName = (conferenceId == null) ? "weffy" : "weffy-conference";
+    public ResponseEntity<? extends BaseResponseBody> upload(@RequestPart MultipartFile file,
+                                                             @PathVariable(name = "conference_id", required = false) String conferenceId,
+                                                             @RequestParam(name = "type", required = false) String type) {
+        String bucketName = "weffy";
+        if(conferenceId != null) {
+            if (type.equals("lecture")) bucketName = "weffy-lecture" ;
+            else bucketName = "weffy-conference";
+        }
+
         FileResDto fileResDto = fileService.uploadFile(file, conferenceId, bucketName);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, fileResDto));
     }

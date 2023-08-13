@@ -28,7 +28,7 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
   const [groupData, setGroupData] = useState([]);
 
   const accessToken = useSelector((state) => state.user.accessToken);
-  const inintMMList = async () => {
+  const inintMMList = () => {
     axios({
       method: "get",
       url: "http://i9d107.p.ssafy.io:8081/api/v1/mattermost",
@@ -38,6 +38,8 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
       },
     })
       .then((res) => {
+        const tempGroupData = [];
+
         res.data.data.map((val) => {
           let temp = { name: "", channels: [] };
           temp.name = val.name;
@@ -48,13 +50,13 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
             tmp.admin = value.admin;
             temp.channels.push(tmp);
           });
-          groupData.push(temp);
+          tempGroupData.push(temp);
         });
-
-        console.log(groupData);
+        setGroupData(tempGroupData);
       })
       .catch((err) => {
         // Handle the error here.
+        console.log(err);
       });
   };
 
@@ -105,24 +107,25 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
             </Typography>
             <List className={styles["textFieldInput"]}>
               <List className={styles["textFieldInput"]}>
-                {groupData.map((group, idx) => (
-                  <ListItem
-                    key={idx}
-                    button
-                    onClick={() => handleGroupChange(group.name)}
-                  >
-                    <ListItemText
-                      primary={
-                        <Typography sx={{ fontFamily: "GmarketSans" }}>
-                          {group.name}
-                        </Typography>
-                      }
-                    />
-                    <NavigateNextIcon
-                      style={{ color: "red", margin: "0 10px" }}
-                    />
-                  </ListItem>
-                ))}
+                {groupData.length > 0 &&
+                  groupData.map((group, idx) => (
+                    <ListItem
+                      key={idx}
+                      button
+                      onClick={() => handleGroupChange(group.name)}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography sx={{ fontFamily: "GmarketSans" }}>
+                            {group.name}
+                          </Typography>
+                        }
+                      />
+                      <NavigateNextIcon
+                        style={{ color: "red", margin: "0 10px" }}
+                      />
+                    </ListItem>
+                  ))}
               </List>
             </List>
           </Grid>
