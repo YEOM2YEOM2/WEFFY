@@ -17,11 +17,15 @@ const APPLICATION_SERVER_URL =
 class VideoRoomComponent extends Component {
   constructor(props) {
     super(props);
+    const pathArray = window.location.pathname.split("/");
+    const sessionIdFromUrl = pathArray[pathArray.length - 1];
     this.hasBeenUpdated = false;
     this.layout = new OpenViduLayout();
-    let sessionName = this.props.sessionName
-      ? this.props.sessionId
-      : "SessionA";
+    let sessionName = sessionIdFromUrl;
+
+    console.log(sessionName);
+
+    console.log(sessionName);
     let userName = this.props.user
       ? this.props.user
       : "WEFFY_User" + Math.floor(Math.random() * 100);
@@ -240,7 +244,7 @@ class VideoRoomComponent extends Component {
     this.setState({
       session: undefined,
       subscribers: [],
-      mySessionId: "SessionA",
+      mySessionId: this.mySessionId,
       myUserName: "WEEFY_User" + Math.floor(Math.random() * 100),
       localUser: undefined,
     });
