@@ -23,22 +23,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-// // If you need to dispatch actions to Redux, use this
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     // For example:
-//     // setIdentification: (id) => dispatch(setIdentification(id))
-//   };
-// };
-
 class ChatComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
       messageList: [],
       message: "",
-      // : "",
-      // authorization: "",
     };
     this.chatScroll = React.createRef();
 
@@ -91,8 +81,26 @@ class ChatComponent extends Component {
     }
   }
 
-  fileDownload() {
+  fileDownload(key, title) {
     console.log("다운로드 시도!");
+    console.log("Key:", key);
+    console.log("Title :", title);
+
+    axios({
+      method: "get",
+      url: `http://i9d107.p.ssafy.io:8081/api/v1/files/download?objectKey=${key}&title=${title}`,
+      headers: {
+        accept: "application/json",
+        // "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${this.props.accessToken}`,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
   }
 
   sendMessage() {
@@ -118,7 +126,7 @@ class ChatComponent extends Component {
       if (this.props.user) {
         const data = {
           message: {
-            url: this.state.message.url,
+            objectKey: this.state.message.objectKey,
             title: this.state.message.title,
           },
           nickname: this.props.user.getNickname(),
@@ -131,6 +139,7 @@ class ChatComponent extends Component {
         });
       }
     }
+    this.setState({ message: "" });
   }
 
   addFile(event) {
@@ -152,10 +161,10 @@ class ChatComponent extends Component {
         data: formData,
       })
         .then((res) => {
-          // console.log(res.data.data);
+          console.log(res.data.data);
 
           const fileInfo = {
-            url: res.data.data.url,
+            objectKey: res.data.data.objectKey,
             title: res.data.data.title,
           };
 
@@ -231,7 +240,12 @@ class ChatComponent extends Component {
                           {data.message && typeof data.message === "object" ? (
                             <IconButton
                               className="downloadText"
-                              onClick={this.fileDownload}
+                              onClick={() =>
+                                this.fileDownload(
+                                  data.message.objectKey,
+                                  data.message.title
+                                )
+                              }
                             >
                               <SimCardDownloadIcon
                                 style={{
@@ -239,14 +253,6 @@ class ChatComponent extends Component {
                                 }}
                               />
                               {data.message.title}
-
-                              {/* <DownloadIcon
-                                style={{
-                                  backgroundColor: "black",
-                                  color: "white",
-                                  borderRadius: "3px",
-                                }}
-                              /> */}
                             </IconButton>
                           ) : (
                             data.message || ""
