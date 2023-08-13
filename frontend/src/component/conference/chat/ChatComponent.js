@@ -1,17 +1,13 @@
 import React, { Component } from "react";
 import IconButton from "@mui/material/IconButton";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
-import ForwardToInboxOutlinedIcon from "@mui/icons-material/ForwardToInboxOutlined";
-import DownloadIcon from "@mui/icons-material/Download";
 import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
 
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { connect } from "react-redux";
 
 import "./ChatComponent.css";
 import Tooltip from "@mui/material/Tooltip";
-import { yellow } from "@mui/material/colors";
 import SendIcon from "@mui/icons-material/Send";
 
 import axios from "axios";
@@ -86,12 +82,15 @@ class ChatComponent extends Component {
     console.log("Key:", key);
     console.log("Title :", title);
 
+    const fileKey = encodeURIComponent(key);
+    const fileTitle = encodeURIComponent(title);
+
     axios({
       method: "get",
-      url: `http://i9d107.p.ssafy.io:8081/api/v1/files/download?objectKey=${key}&title=${title}`,
+      url: `http://i9d107.p.ssafy.io:8081/api/v1/files/download?objectKey=${fileKey}&title=${fileTitle}`,
       headers: {
         accept: "application/json",
-        // "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${this.props.accessToken}`,
       },
     })
