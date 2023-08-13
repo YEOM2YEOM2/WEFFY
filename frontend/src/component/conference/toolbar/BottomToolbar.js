@@ -4,6 +4,7 @@ import './ToolbarComponent.css';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 
+// mui
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import VideocamIcon from '@mui/icons-material/Videocam';
@@ -17,8 +18,8 @@ import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
 import Tooltip from '@mui/material/Tooltip';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-
 import IconButton from '@mui/material/IconButton';
+
 
 const logo = require('./../../../assets/images/WEFFY_logo.png');
 
@@ -105,9 +106,11 @@ export default class ToolbarComponent extends Component {
                       </IconButton>
                       
                         <IconButton id="navChatButton">
-                        <IconButton onClick={this.leaveSession} id="navLeaveButton" style={{ color: "white",  backgroundColor: "red" }}>
-                            <ExitToAppIcon />
-                        </IconButton>
+                            <Tooltip title="회의 나가기" placement="top">
+                                <IconButton onClick={this.leaveSession} id="navLeaveButton" style={{ color: "white",  backgroundColor: "red", borderRadius: '5px', top: '-2px' }}>
+                                    <ExitToAppIcon fontSize='small'/>
+                                </IconButton>
+                            </Tooltip>
                       </IconButton>
                   </div>
               </Toolbar>

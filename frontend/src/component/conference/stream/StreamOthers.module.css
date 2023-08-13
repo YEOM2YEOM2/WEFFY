@@ -91,7 +91,7 @@ video {
 }
 /* Contains the video element, used to fix video letter-boxing */
 .container {
-    width: 100%;
+    max-width: 320px;
     height: 180px;
     border-radius: 10px;
     margin: 8px 0px;
