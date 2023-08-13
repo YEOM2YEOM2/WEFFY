@@ -2,9 +2,6 @@ package com.weffy.user.dto.Response;
 
 import com.weffy.user.entity.Role;
 import com.weffy.user.entity.WeffyUser;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 
