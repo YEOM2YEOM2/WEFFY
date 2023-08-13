@@ -9,8 +9,8 @@ import OpenViduLayout from '../layout/customLayout.js';
 
 import ChatComponent from '../component/conference/chat/ChatComponent.js';
 import DialogExtensionComponent from '../component/conference/dialog-extension/DialogExtension.js';
-import StreamComponent from '../component/conference/stream/StreamComponent.js';
 import StreamOthers from '../component/conference/stream/StreamOthers.js'
+import GridStream from '../component/conference/stream/GridStream.js'
 import LocalUser from '../component/conference/stream/LocalUser.js'
 import BottomToolbar from '../component/conference/toolbar/BottomToolbar.js';
 
@@ -45,7 +45,9 @@ import Badge from '@mui/material/Badge';
 import ChatIcon from '@mui/icons-material/Chat';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-
+import Grid from '@mui/material/Grid';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
 
 const drawerWidth = 320;
 
@@ -102,7 +104,7 @@ class Conference extends Component {
       super(props);
       this.hasBeenUpdated = false;
       this.layout = new OpenViduLayout();
-      let sessionName = this.props.sessionName ? this.props.sessionName : 'SessionA';
+      let sessionName = this.props.sessionName ? this.props.sessionName : 'SessionD';
       let userName = this.props.user ? this.props.user : 'WEFFY_User' + Math.floor(Math.random() * 100);
       this.remotes = [];
       this.localUserAccessAllowed = false;
@@ -159,8 +161,7 @@ class Conference extends Component {
       this.decreaseSubIdx8 = this.decreaseSubIdx8.bind(this);
 
       // single Mode
-      this.openSingleMode = this.openSingleMode.bind(this);
-      this.closeSingleMode = this.closeSingleMode.bind(this);
+      this.toggleSingleMode = this.toggleSingleMode.bind(this);
   }
 
   componentDidMount() {
@@ -295,6 +296,7 @@ class Conference extends Component {
       this.setState(
           {
               subscribers: subscribers,
+              subscribers8: [this.state.localUser, ...subscribers]
           },
           () => {
               if (this.state.localUser) {
@@ -322,7 +324,8 @@ class Conference extends Component {
       this.setState({
           session: undefined,
           subscribers: [],
-          mySessionId: 'SessionA',
+          subscribers8: [],
+          mySessionId: 'SessionD',
           myUserName: 'WEEFY_User' + Math.floor(Math.random() * 100),
           localUser: undefined,
       });
@@ -359,6 +362,7 @@ class Conference extends Component {
           remoteUsers.splice(index, 1);
           this.setState({
               subscribers: remoteUsers,
+              subscribers8: [this.state.localUser, ...remoteUsers]
           });
       }
   }
@@ -421,6 +425,7 @@ class Conference extends Component {
           this.setState(
               {
                   subscribers: remoteUsers,
+                  subscribers8: [this.state.localUser, ...remoteUsers]
               },
               () => this.checkSomeoneShareScreen(),
           );
@@ -626,13 +631,11 @@ class Conference extends Component {
     this.setState({ defaultMode: false})
   }
 
-  openSingleMode () {
-    this.setState({ singleMode: true })
+  toggleSingleMode () {
+    const { singleMode } = this.state
+    this.setState({ singleMode: !singleMode })
   }
 
-  closeSingleMode () {
-    this.setState({ singleMode: false })
-  }
 
   increaseSubIdx4 () {
     const { subIdx4, subscribers } = this.state;
@@ -652,11 +655,20 @@ class Conference extends Component {
   }
 
   increaseSubIdx8() {
-    this.setState({ subIdx: this.subIdx8+8})
+    const { subIdx8, subscribers8 } = this.state;
+    const maxIdx = subscribers8.length - 8;
+
+    if (subIdx8 < maxIdx) {
+        this.setState({ subIdx8: subIdx8+8})
+    }
   }
 
   decreaseSubIdx8() {
-    this.setState({ subIdx: this.subIdx8-8})
+    const { subIdx8 } = this.state;
+
+    if (subIdx8 >= 8) {
+        this.setState({ subIdx8: subIdx8-8})
+    }
   }
 
   render() {
@@ -703,16 +715,19 @@ class Conference extends Component {
                 defaultMode ? 
                 // default Mode
                 <div>
-                    {/* 다른 사용자 */}
+                    {/* 다른 사용자자 */}
+                    {this.state.singleMode ? null : 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                        <ArrowLeftIcon onClick={this.decreaseSubIdx4} style={{ cursor: "pointer" }} />
+                        {this.state.subscribers.length > 0 ? <ArrowLeftIcon onClick={this.decreaseSubIdx4} style={{ cursor: "pointer" }} />: null}
                         {this.state.subscribers.slice(this.state.subIdx4, this.state.subIdx4 + 4).map((sub, i) => (
                             <div key={i} id="remoteUsers" style={{ paddingRight: '3px', paddingLeft: '3px' }} className="OT_root">
                                 <StreamOthers user={sub} streamId={sub.streamManager.stream.streamId} style={{ height: '180px' }} />
                             </div>
                         ))}
-                        <ArrowRightIcon onClick={this.increaseSubIdx4} style={{ cursor: "pointer", zIndex: "99999" }} />
+                        {this.state.subscribers.length > 0 ? <ArrowRightIcon onClick={this.increaseSubIdx4} style={{ cursor: "pointer", zIndex:'99999' }} />: null}
                     </div>
+                    }
+                    <div><DragHandleIcon onClick={this.toggleSingleMode}  style={{ position: 'relative', bottom: '7px', cursor: 'pointer' }}/></div>
                     {/* 나 */}
                     {localUser !== undefined && localUser.getStreamManager() !== undefined && (
                         <div className={ styles.videoMe } id="localUser" style={{ display: 'flex', justifyContent: 'center' }}>
@@ -721,18 +736,23 @@ class Conference extends Component {
                     )}
                 </div>:
                 // Grid Mode
-                <div>
-                    <ArrowLeftIcon onClick={this.decreaseSubIdx4} style={{ cursor: "pointer" }} />
-                    <div>
-                        {/* 나 */}
-                        {localUser !== undefined && localUser.getStreamManager() !== undefined && (
-                            <div className={ styles.videoMe } id="localUser">
-                                <StreamComponent user={localUser} handleNickname={this.nicknameChanged} />
-                            </div>
-                        )}
-                        {/* 다른 사용자 */}
+                <div style={{ margin: 'auto 0px auto 5px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '600px' }}>
+                        <Grid container>
+                            {this.state.subscribers8.slice(this.state.subIdx8, this.state.subIdx8 + 8).map((sub, i) => (
+                                <Grid key={i} item xs={3}>
+                                    <div id="remoteUsers" style={{ padding: '2px', boxSizing: 'border-box' }} className="OT_root">
+                                        <GridStream user={sub} streamId={sub.streamManager.stream.streamId} />
+                                    </div>
+                                </Grid>
+                            ))}
+                        </Grid>
                     </div>
-                    <ArrowRightIcon onClick={this.increaseSubIdx4} style={{ cursor: "pointer", zIndex: "99999" }} />
+                    <div>
+                        <ArrowLeftIcon onClick={this.decreaseSubIdx8} style={{ cursor: "pointer" }} />
+                        <MoreHorizIcon fontSize='large'/>
+                        <ArrowRightIcon onClick={this.increaseSubIdx8} style={{ cursor: "pointer" }} />
+                    </div>
                 </div>
               }
               <div className={styles.openDrawer}>
