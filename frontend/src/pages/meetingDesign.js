@@ -9,8 +9,9 @@ import OpenViduLayout from '../layout/customLayout.js';
 
 import ChatComponent from '../component/conference/chat/ChatComponent.js';
 import DialogExtensionComponent from '../component/conference/dialog-extension/DialogExtension.js';
-import StreamComponent from '../component/conference/stream/StreamComponent.js';
 import StreamOthers from '../component/conference/stream/StreamOthers.js'
+import GridStream from '../component/conference/stream/GridStream.js'
+import LocalUser from '../component/conference/stream/LocalUser.js'
 import BottomToolbar from '../component/conference/toolbar/BottomToolbar.js';
 
 // mui
@@ -44,7 +45,9 @@ import Badge from '@mui/material/Badge';
 import ChatIcon from '@mui/icons-material/Chat';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-
+import Grid from '@mui/material/Grid';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
 
 const drawerWidth = 320;
 
@@ -101,7 +104,7 @@ class Conference extends Component {
       super(props);
       this.hasBeenUpdated = false;
       this.layout = new OpenViduLayout();
-      let sessionName = this.props.sessionName ? this.props.sessionName : 'SessionA';
+      let sessionName = this.props.sessionName ? this.props.sessionName : 'SessionD';
       let userName = this.props.user ? this.props.user : 'WEFFY_User' + Math.floor(Math.random() * 100);
       this.remotes = [];
       this.localUserAccessAllowed = false;
@@ -111,6 +114,9 @@ class Conference extends Component {
           session: undefined,
           localUser: undefined,
           subscribers: [],
+          subscribers8: [],
+          subIdx4: 0,
+          subIdx8: 0,
           chatDisplay: 'none',
           currentVideoDevice: undefined,
 
@@ -120,6 +126,9 @@ class Conference extends Component {
 
           // default & Grid Mode toggle 변수
           defaultMode: true,
+
+          // default Mode localuser
+          singleMode: false
       };
 
       this.joinSession = this.joinSession.bind(this);
@@ -146,7 +155,13 @@ class Conference extends Component {
       // default & Grid Mode toggle 함수
       this.handleDefaultMode = this.handleDefaultMode.bind(this);
       this.handleGridMode = this.handleGridMode.bind(this);
+      this.increaseSubIdx4 = this.increaseSubIdx4.bind(this);
+      this.decreaseSubIdx4 = this.decreaseSubIdx4.bind(this);
+      this.increaseSubIdx8 = this.increaseSubIdx8.bind(this);
+      this.decreaseSubIdx8 = this.decreaseSubIdx8.bind(this);
 
+      // single Mode
+      this.toggleSingleMode = this.toggleSingleMode.bind(this);
   }
 
   componentDidMount() {
@@ -281,6 +296,7 @@ class Conference extends Component {
       this.setState(
           {
               subscribers: subscribers,
+              subscribers8: [this.state.localUser, ...subscribers]
           },
           () => {
               if (this.state.localUser) {
@@ -308,7 +324,8 @@ class Conference extends Component {
       this.setState({
           session: undefined,
           subscribers: [],
-          mySessionId: 'SessionA',
+          subscribers8: [],
+          mySessionId: 'SessionD',
           myUserName: 'WEEFY_User' + Math.floor(Math.random() * 100),
           localUser: undefined,
       });
@@ -345,6 +362,7 @@ class Conference extends Component {
           remoteUsers.splice(index, 1);
           this.setState({
               subscribers: remoteUsers,
+              subscribers8: [this.state.localUser, ...remoteUsers]
           });
       }
   }
@@ -407,6 +425,7 @@ class Conference extends Component {
           this.setState(
               {
                   subscribers: remoteUsers,
+                  subscribers8: [this.state.localUser, ...remoteUsers]
               },
               () => this.checkSomeoneShareScreen(),
           );
@@ -612,6 +631,46 @@ class Conference extends Component {
     this.setState({ defaultMode: false})
   }
 
+  toggleSingleMode () {
+    const { singleMode } = this.state
+    this.setState({ singleMode: !singleMode })
+  }
+
+
+  increaseSubIdx4 () {
+    const { subIdx4, subscribers } = this.state;
+    const maxIndex = subscribers.length - 4;
+
+    if (subIdx4 < maxIndex) {
+        this.setState({ subIdx4: subIdx4 + 1 });
+    }
+  }
+
+  decreaseSubIdx4() {
+    const { subIdx4 } = this.state;
+
+    if (subIdx4 > 0) {
+        this.setState({ subIdx4: subIdx4 - 1 });
+    }
+  }
+
+  increaseSubIdx8() {
+    const { subIdx8, subscribers8 } = this.state;
+    const maxIdx = subscribers8.length - 8;
+
+    if (subIdx8 < maxIdx) {
+        this.setState({ subIdx8: subIdx8+8})
+    }
+  }
+
+  decreaseSubIdx8() {
+    const { subIdx8 } = this.state;
+
+    if (subIdx8 >= 8) {
+        this.setState({ subIdx8: subIdx8-8})
+    }
+  }
+
   render() {
       const mySessionId = this.state.mySessionId;
       const localUser = this.state.localUser;
@@ -652,27 +711,49 @@ class Conference extends Component {
               </Toolbar>
             </AppBar>
             <Main open={this.state.open}  style={{ backgroundColor: '#10161F', color:'white', paddingBottom:'45px'}}>
-              {/* Main Component 자리 */}
               {
                 defaultMode ? 
+                // default Mode
                 <div>
-                    {/* 다른 사용자 */}
+                    {/* 다른 사용자자 */}
+                    {this.state.singleMode ? null : 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                        <ArrowLeftIcon />
-                        { this.state.subscribers.map((sub, i) => (
+                        {this.state.subscribers.length > 0 ? <ArrowLeftIcon onClick={this.decreaseSubIdx4} style={{ cursor: "pointer" }} />: null}
+                        {this.state.subscribers.slice(this.state.subIdx4, this.state.subIdx4 + 4).map((sub, i) => (
                             <div key={i} id="remoteUsers" style={{ paddingRight: '3px', paddingLeft: '3px' }} className="OT_root">
                                 <StreamOthers user={sub} streamId={sub.streamManager.stream.streamId} style={{ height: '180px' }} />
                             </div>
                         ))}
-                        <ArrowRightIcon />
+                        {this.state.subscribers.length > 0 ? <ArrowRightIcon onClick={this.increaseSubIdx4} style={{ cursor: "pointer", zIndex:'99999' }} />: null}
                     </div>
+                    }
+                    <div><DragHandleIcon onClick={this.toggleSingleMode}  style={{ position: 'relative', bottom: '7px', cursor: 'pointer' }}/></div>
                     {/* 나 */}
                     {localUser !== undefined && localUser.getStreamManager() !== undefined && (
-                        <div className={ styles.videoMe } id="localUser">
-                            <StreamComponent user={localUser} handleNickname={this.nicknameChanged} />
+                        <div className={ styles.videoMe } id="localUser" style={{ display: 'flex', justifyContent: 'center' }}>
+                            <LocalUser user={localUser} handleNickname={this.nicknameChanged} style={{ width: '95%' }}/>
                         </div>
                     )}
-                </div> : <div></div>
+                </div>:
+                // Grid Mode
+                <div style={{ margin: 'auto 0px auto 5px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '600px' }}>
+                        <Grid container>
+                            {this.state.subscribers8.slice(this.state.subIdx8, this.state.subIdx8 + 8).map((sub, i) => (
+                                <Grid key={i} item xs={3}>
+                                    <div id="remoteUsers" style={{ padding: '2px', boxSizing: 'border-box' }} className="OT_root">
+                                        <GridStream user={sub} streamId={sub.streamManager.stream.streamId} />
+                                    </div>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </div>
+                    <div>
+                        <ArrowLeftIcon onClick={this.decreaseSubIdx8} style={{ cursor: "pointer" }} />
+                        <MoreHorizIcon fontSize='large'/>
+                        <ArrowRightIcon onClick={this.increaseSubIdx8} style={{ cursor: "pointer" }} />
+                    </div>
+                </div>
               }
               <div className={styles.openDrawer}>
                 <IconButton
