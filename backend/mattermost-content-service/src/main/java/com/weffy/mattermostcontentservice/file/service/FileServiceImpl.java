@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +18,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -28,14 +28,17 @@ import java.util.List;
 @Transactional
 @Service("fileService")
 @RequiredArgsConstructor
-
 public class FileServiceImpl implements FileService{
     private final Logger logger = (Logger) LoggerFactory.getLogger(FileServiceImpl.class);
 
-    private static final String MATTERMOST_URL = "https://meeting.ssafy.com/api/v4";
+    @Value("${mattermost_url}")
+    private String MATTERMOST_URL;
 
-    //최대 9개 한번에 전송가능
-    private static final int MAX_BATCH_SIZE = 9;
+    @Value("${max_batch_size}")
+    private int MAX_BATCH_SIZE;
+
+    @Value("${max_file_size")
+    private long maxFileSize;
 
     @Override
     public void uploadFilesMM(String sessionToken, String classId, List<FileDto> lists) throws IOException, URISyntaxException {
@@ -51,7 +54,7 @@ public class FileServiceImpl implements FileService{
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         headers.setBearerAuth(sessionToken);
 
-        //최대 9개씩 묶어서 전송한다.
+        //최대 MAX_BATCH_SIZE 개씩 묶어서 전송한다.
         for(int i=0; i<multipartFiles.size(); i+=MAX_BATCH_SIZE){
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             List<String> fileIds = new ArrayList<>();
@@ -60,6 +63,10 @@ public class FileServiceImpl implements FileService{
             for(int j=i; j < i + MAX_BATCH_SIZE && j < multipartFiles.size(); j++){
                 MultipartFile file = multipartFiles.get(j);
 
+                //파일크기제한
+                if(file.getSize()>=maxFileSize){
+                    continue;
+                }
                 body.add("files", new ByteArrayResource(file.getBytes()) {
                     @Override
                     public String getFilename() {

@@ -1,5 +1,6 @@
 package com.weffy.mattermostcontentservice.file;
 
+import com.weffy.mattermostcontentservice.common.dto.BaseResponseBody;
 import com.weffy.mattermostcontentservice.file.dto.FileDto;
 import com.weffy.mattermostcontentservice.file.dto.GetFileReqDto;
 import com.weffy.mattermostcontentservice.file.service.FileService;
@@ -20,7 +21,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v4/files")
 @CrossOrigin("*")
-//@Tag(name = "File Operations", description = "APIs related to file operations")
+@Tag(name = "File Operations", description = "APIs related to file operations")
 public class FileController {
     private final FileService fileService;
 
@@ -28,13 +29,13 @@ public class FileController {
 
 
     @PostMapping("/uploadFilesToMattermost")
-//    @Operation(summary = "Upload files to Mattermost",
-//            description = "Accepts a session token, class ID and a list of files to upload to Mattermost.")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Files successfully sent to Mattermost"),
-//            @ApiResponse(responseCode = "400", description = "Failed to send files")
-//    })
-    public ResponseEntity<String> uploadFiles(@RequestBody GetFileReqDto getFileDto) {
+    @Operation(summary = "mm채널로 파일보내기",
+            description = "선택한 파일들의 s3URL 링크를 받아 다운로드하고 MM해당 채널로 업로드")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "파일 전송 실패")
+    })
+    public ResponseEntity<? extends BaseResponseBody> uploadFiles(@RequestBody GetFileReqDto getFileDto) {
         try {
             String sessionToken = getFileDto.getSessionToken();
             String classId = getFileDto.getClassId();
@@ -42,9 +43,9 @@ public class FileController {
 
             fileService.uploadFilesMM(sessionToken,classId,files);
 
-            return ResponseEntity.ok("Files sent to Mattermost");
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, sessionToken));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(BaseResponseBody.of(400, "서버 오류"));
         }
     }
 
