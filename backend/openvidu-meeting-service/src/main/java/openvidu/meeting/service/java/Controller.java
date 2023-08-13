@@ -69,59 +69,14 @@ public class Controller {
 		}
 	}
 
-	// 방 생성하기
-//	@PostMapping("/api/sessions")
-//	public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
-//			throws OpenViduJavaClientException, OpenViduHttpException {
-//
-//		SessionProperties properties = SessionProperties.fromJson(params).build(); // customSessionId : "sessionId"
-//
-//		// 해당 세션이 이미 만들어진 경우
-//		if(openvidu.getActiveSession(properties.customSessionId()) != null){
-//			System.out.println(properties.customSessionId()+"===============>");
-//			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//		}
-//
-//		Session session = openvidu.createSession(properties);
-//
-//		// 토큰 관리 저장소 생성
-//		mapSessionNamesTokens.put(session.getSessionId(), new HashMap<String, UserRole>());
-//
-//		return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
-//	}
 
 
-
-
-	// 방(세션)을 생성한다.
-//	@PostMapping("/api/sessions")
-//	public ResponseEntity<String> createConference(@RequestBody(required = false) Map<String, Object> params)
-//			throws OpenViduJavaClientException, OpenViduHttpException {
-//		System.out.println("---------------------createConference------------------");
-//		SessionProperties properties = SessionProperties.fromJson(params).build();
-//
-//		// 방이 이미 만들어진 경우
-//		if(properties.customSessionId() != null){
-//			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//		}
-//
-//		// 방을 생성함(세션을 생성한다)
-//		Session session = openvidu.createSession(properties);
-//
-//		// 방에 들어온 사람(토큰)을 저장할 저장소
-//		mapSessionNamesTokens.put(session.getSessionId(), new HashMap<String, OpenViduRole>());
-//
-//		return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
-//	}
-
-
-	@PostMapping("/api/sessions/{class_id}/{identification}/{role}/connections")
+	@PostMapping("/api/sessions/{class_id}/{identification}/connections")
 	public ResponseEntity<String> createConnection(@PathVariable("class_id") String classId,
-												   @PathVariable("identification") String identification, @PathVariable("role") String role,
+												   @PathVariable("identification") String identification,
 												   @RequestBody(required = false) Map<String, Object> params)
 			throws OpenViduJavaClientException, OpenViduHttpException {
 
-		System.out.println(classId+"/"+identification+"/"+role);
 
 		Session session = openvidu.getActiveSession(classId);
 
