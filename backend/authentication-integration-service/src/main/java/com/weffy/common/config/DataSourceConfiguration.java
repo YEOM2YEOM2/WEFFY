@@ -2,7 +2,6 @@ package com.weffy.common.config;
 
 import com.weffy.common.kms.KmsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -11,28 +10,52 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 
 @Configuration
-@RequiredArgsConstructor
 public class DataSourceConfiguration {
+
     private final KmsService kmsService;
+    private final String url;
+    private final String username;
+    private final String password;
+    private final String driverClassName;
 
-    @Value("${spring.datasource.url}")
-    private String url;
-    @Value("${spring.datasource.username}")
-    private String username;
-    @Value("${spring.datasource.password}")
-    private String password;
+    public DataSourceConfiguration(KmsService kmsService,
+                                   @Value("${spring.datasource.url}") String url,
+                                   @Value("${spring.datasource.username}") String username,
+                                   @Value("${spring.datasource.password}") String password,
+                                   @Value("${spring.datasource.driver-class-name:}") String driverClassName) {
+        this.kmsService = kmsService;
+        this.url = url;
+        this.username = username;
+        this.password = password;
+        this.driverClassName = driverClassName;
+    }
 
-    @Bean // dataSource를 빈으로 등록
+    @Bean
     public DataSource dataSource() {
-        String decryptedDatabaseUrl = kmsService.decryptData(url);
-        String decryptedDatabaseUsername = kmsService.decryptData(username);
-        String decryptedDatabasePassword = kmsService.decryptData(password);
+        if (url == null || username == null || password == null) {
+            throw new IllegalArgumentException("Database configuration properties cannot be null.");
+        }
 
-        return DataSourceBuilder.create()
+        String decryptedDatabaseUrl;
+        String decryptedDatabaseUsername;
+        String decryptedDatabasePassword;
+        try {
+            decryptedDatabaseUrl = kmsService.decryptData(url);
+            decryptedDatabaseUsername = kmsService.decryptData(username);
+            decryptedDatabasePassword = kmsService.decryptData(password);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to decrypt database credentials using KMS.", e);
+        }
+
+        DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create()
                 .url(decryptedDatabaseUrl)
                 .username(decryptedDatabaseUsername)
-                .password(decryptedDatabasePassword)
-                .build();
+                .password(decryptedDatabasePassword);
+
+        if (driverClassName != null && !driverClassName.trim().isEmpty()) {
+            dataSourceBuilder.driverClassName(driverClassName);
+        }
+
+        return dataSourceBuilder.build();
     }
 }
-
