@@ -20,8 +20,9 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 
-@Transactional
+
 @Service("RefreshTokenService")
+@Transactional
 @RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService{
     private final RefreshTokenRepository refreshTokenRepository;
