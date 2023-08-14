@@ -6,6 +6,7 @@ import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import UserModel from "../models/userModel";
 import OpenViduLayout from "../layout/customLayout.js";
+import FileList from "../component/conference/util/fileList.js";
 
 import ChatComponent from "../component/conference/chat/ChatComponent.js";
 import DialogExtensionComponent from "../component/conference/dialog-extension/DialogExtension.js";
@@ -45,7 +46,7 @@ import QuizIcon from "@mui/icons-material/Quiz";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 // bootstrap
-import Dropdown from 'react-bootstrap/Dropdown';
+import Dropdown from "react-bootstrap/Dropdown";
 
 const drawerWidth = 320;
 
@@ -132,6 +133,9 @@ class Conference extends Component {
 
       // default Mode localuser
       singleMode: false,
+
+      //file 모달창
+      isFileListVisible: false,
     };
 
     this.joinSession = this.joinSession.bind(this);
@@ -166,6 +170,14 @@ class Conference extends Component {
     // single Mode
     this.toggleSingleMode = this.toggleSingleMode.bind(this);
   }
+
+  showFileList = () => {
+    this.setState({ isFileListVisible: true });
+  };
+
+  hideFileList = () => {
+    this.setState({ isFileListVisible: false });
+  };
 
   componentDidMount() {
     const openViduLayoutOptions = {
@@ -953,7 +965,7 @@ class Conference extends Component {
                       width: "288px",
                       display: "flex",
                       justifyContent: "center",
-                      zIndex: '99999'
+                      zIndex: "99999",
                     }}
                   >
                     <ToggleButton
@@ -983,22 +995,41 @@ class Conference extends Component {
                     </ToggleButton>
                   </ToggleButtonGroup>
                 </div>
-                <Dropdown>
-                    <Dropdown.Toggle id="dropdown-basic" style={{ backgroundColor: "transparent", border: '0', position: 'relative', right: '10px' }}>
-                      <MoreVertIcon style={{ color: "white", cursor: "pointer" }} />          
+                <div>
+                  <Dropdown>
+                    <Dropdown.Toggle
+                      id="dropdown-basic"
+                      style={{
+                        backgroundColor: "transparent",
+                        border: "0",
+                        position: "relative",
+                        right: "10px",
+                      }}
+                    >
+                      <MoreVertIcon
+                        style={{ color: "white", cursor: "pointer" }}
+                      />
                     </Dropdown.Toggle>
 
-                    <Dropdown.Menu style={{ marginTop: '6px' }}>
-                        <Dropdown.Item href="#/action-1">파일 목록</Dropdown.Item>
-                        <Dropdown.Item href="#/action-2">동영상 목록</Dropdown.Item>
+                    <Dropdown.Menu style={{ marginTop: "6px" }}>
+                      <Dropdown.Item onClick={this.showFileList}>
+                        파일 목록
+                      </Dropdown.Item>
+                      <Dropdown.Item href="#/action-2">
+                        동영상 목록
+                      </Dropdown.Item>
                     </Dropdown.Menu>
-                </Dropdown>
+                  </Dropdown>
+                  {this.state.isFileListVisible && (
+                    <FileList onClose={this.hideFileList} />
+                  )}
+                </div>
               </DrawerHeader>
               <Divider />
               <List style={{ backgroundColor: "#17202E" }}>
                 {this.state.partChatToggle === "participant" ? (
                   <Participant
-                    user = {localUser}
+                    user={localUser}
                     participants={this.state.subscribers}
                     handleNickname={this.nicknameChanged}
                   />
