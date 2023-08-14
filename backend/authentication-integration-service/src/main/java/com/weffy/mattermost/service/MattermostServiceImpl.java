@@ -182,7 +182,7 @@ public class MattermostServiceImpl implements MattermostService {
 
     @Override
     @Transactional
-    public int makeHeaderLink(WeffyUser weffyUser, String channelId) throws IOException, InterruptedException {
+    public int makeHeaderLink(WeffyUser weffyUser, String channelId) throws IOException, InterruptedException, JSONException {
         Channel channel = findById(channelId);
         if (!weffyUser.getRole().equals(com.weffy.user.entity.Role.USER) || findByChannelAndWeffyUser(channel, weffyUser).equals(Role.channel_admin)) {
             String sessionToken = findByWeffyUser(weffyUser);
