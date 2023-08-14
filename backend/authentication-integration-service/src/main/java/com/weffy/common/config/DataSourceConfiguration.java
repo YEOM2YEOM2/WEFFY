@@ -16,18 +16,15 @@ public class DataSourceConfiguration {
     private final String url;
     private final String username;
     private final String password;
-    private final String driverClassName;
 
     public DataSourceConfiguration(KmsService kmsService,
                                    @Value("${spring.datasource.url}") String url,
                                    @Value("${spring.datasource.username}") String username,
-                                   @Value("${spring.datasource.password}") String password,
-                                   @Value("${spring.datasource.driver-class-name:}") String driverClassName) {
+                                   @Value("${spring.datasource.password}") String password) {
         this.kmsService = kmsService;
         this.url = url;
         this.username = username;
         this.password = password;
-        this.driverClassName = driverClassName;
     }
 
     @Bean
@@ -41,8 +38,11 @@ public class DataSourceConfiguration {
         String decryptedDatabasePassword;
         try {
             decryptedDatabaseUrl = kmsService.decryptData(url);
+            System.out.println(decryptedDatabaseUrl);
             decryptedDatabaseUsername = kmsService.decryptData(username);
+            System.out.println(decryptedDatabaseUsername);
             decryptedDatabasePassword = kmsService.decryptData(password);
+            System.out.println(decryptedDatabasePassword);
         } catch (Exception e) {
             throw new RuntimeException("Failed to decrypt database credentials using KMS.", e);
         }
@@ -50,11 +50,8 @@ public class DataSourceConfiguration {
         DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create()
                 .url(decryptedDatabaseUrl)
                 .username(decryptedDatabaseUsername)
-                .password(decryptedDatabasePassword);
-
-        if (driverClassName != null && !driverClassName.trim().isEmpty()) {
-            dataSourceBuilder.driverClassName(driverClassName);
-        }
+                .password(decryptedDatabasePassword)
+                .driverClassName("com.mysql.cj.jdbc.Driver");
 
         return dataSourceBuilder.build();
     }
