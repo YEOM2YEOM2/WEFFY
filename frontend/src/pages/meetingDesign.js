@@ -1026,7 +1026,7 @@ class Conference extends Component {
                 </div>
               </DrawerHeader>
               <Divider />
-              <List style={{ backgroundColor: "#17202E" }}>
+              <List style={{ backgroundColor: "#17202E", height: "calc(100% - 93.5px)" }}>
                 {this.state.partChatToggle === "participant" ? (
                   <Participant
                     user={localUser}
