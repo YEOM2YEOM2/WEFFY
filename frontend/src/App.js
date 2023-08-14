@@ -27,6 +27,7 @@ function App() {
         </Route>
         <Route path="/conference/:sessionId" element={<VideoRoomComponent />} />
         <Route path="/meeting/:sessionId" element={<Meeting />} />
+
         <Route path="*" element={<NotFount404 />} />
       </Routes>
     </div>
