@@ -1,7 +1,18 @@
 pipeline {
     agent none
     options { skipDefaultCheckout(true) }
-    stages {
+    	stage('Cleanup Workspace') {
+    steps {
+        sh 'rm -rf *'
+    }
+}
+stage('Clone Repository') {
+    steps {
+        checkout scm
+    }
+}
+
+	stages {
         stage('Prepare credentials') {
             agent any
             steps {
@@ -22,7 +33,7 @@ pipeline {
             }
             options { skipDefaultCheckout(false) }
             steps {
-                sh 'cd backend/authentication-integration-service && ./gradlew build -x test'
+                sh 'cd backend/authentication-integration-service && ./gradlew clean build -x test'
             }
         }
         stage('Docker build') {
