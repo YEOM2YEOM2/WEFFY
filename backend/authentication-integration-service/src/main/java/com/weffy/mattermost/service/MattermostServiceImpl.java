@@ -166,19 +166,14 @@ public class MattermostServiceImpl implements MattermostService {
 
     @Override
     @Transactional
-    public int makeHeaderLink(WeffyUser weffyUser, String channelId)  {
-        try {
-            Channel channel = findById(channelId);
-            if (!weffyUser.getRole().equals(com.weffy.user.entity.Role.USER) || findByChannelAndWeffyUser(channel, weffyUser).equals(Role.channel_admin)) {
-                String sessionToken = findByWeffyUser(weffyUser);
-                return mattermostHandler.putHeaderLink(channelId, sessionToken);
-            } else {
-                throw new CustomException(ExceptionEnum.CANNOT_CREATE_ROOM);
-            }
-        } catch (IOException | InterruptedException | JSONException e) {
-            throw new CustomException(ExceptionEnum.HEADER_MODIFICATION_FAILED);
+    public int makeHeaderLink(WeffyUser weffyUser, String channelId) throws IOException, InterruptedException {
+        Channel channel = findById(channelId);
+        if (!weffyUser.getRole().equals(com.weffy.user.entity.Role.USER) || findByChannelAndWeffyUser(channel, weffyUser).equals(Role.channel_admin)) {
+            String sessionToken = findByWeffyUser(weffyUser);
+            return mattermostHandler.putHeaderLink(channelId, sessionToken);
+        } else {
+            throw new CustomException(ExceptionEnum.CANNOT_CREATE_ROOM);
         }
-
     }
 
     private Role findByChannelAndWeffyUser(Channel channel, WeffyUser weffyUser) {

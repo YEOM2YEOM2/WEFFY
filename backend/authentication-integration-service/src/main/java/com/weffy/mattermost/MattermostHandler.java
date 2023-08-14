@@ -130,7 +130,7 @@ public class MattermostHandler {
     // Mattermost 채널 헤더에 conference 링크 달기
     HttpClient beforeClient = HttpClient.newHttpClient();
     HttpClient putClient = HttpClient.newHttpClient();
-    public int putHeaderLink(String channelId, String sessionToken) throws IOException, InterruptedException, JSONException {
+    public int putHeaderLink(String channelId, String sessionToken) throws IOException, InterruptedException {
         // 이전 channel의 정보를 가져오기
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://meeting.ssafy.com/api/v4/channels/" + channelId))
