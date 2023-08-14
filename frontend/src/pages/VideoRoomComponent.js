@@ -49,6 +49,7 @@ class VideoRoomComponent extends Component {
       localUser: undefined,
       subscribers: [],
       chatDisplay: "none",
+      QuestionDisplay: "none",
       currentVideoDevice: undefined,
     };
 
@@ -65,7 +66,9 @@ class VideoRoomComponent extends Component {
     this.stopScreenShare = this.stopScreenShare.bind(this);
     this.closeDialogExtension = this.closeDialogExtension.bind(this);
     this.toggleChat = this.toggleChat.bind(this);
+    this.toggleQuestion = this.toggleQuestion.bind(this);
     this.checkNotification = this.checkNotification.bind(this);
+    this.checkQuestionNotification = this.checkQuestionNotification.bind(this);
     this.checkSize = this.checkSize.bind(this);
   }
 
@@ -541,9 +544,30 @@ class VideoRoomComponent extends Component {
     this.updateLayout();
   }
 
+  toggleQuestion(property) {
+    let display = property;
+
+    if (display === undefined) {
+      display = this.state.QuestionDisplay === "none" ? "block" : "none";
+    }
+    if (display === "block") {
+      this.setState({ QuestionDisplay: display, QuestionReceived: false });
+    } else {
+      console.log("Question", display);
+      this.setState({ QuestionDisplay: display });
+    }
+    this.updateLayout();
+  }
+
   checkNotification(event) {
     this.setState({
       messageReceived: this.state.chatDisplay === "none",
+    });
+  }
+
+  checkQuestionNotification(event) {
+    this.setState({
+      QuestionReceived: this.state.QuestionDisplay === "none",
     });
   }
   checkSize() {
@@ -552,6 +576,7 @@ class VideoRoomComponent extends Component {
       !this.hasBeenUpdated
     ) {
       this.toggleChat("none");
+      this.toggleQuestion("none");
       this.hasBeenUpdated = true;
     }
     if (
@@ -565,7 +590,8 @@ class VideoRoomComponent extends Component {
   render() {
     const mySessionId = this.state.mySessionId;
     const localUser = this.state.localUser;
-    var chatDisplay = { display: this.state.chatDisplay };
+    let chatDisplay = { display: this.state.chatDisplay };
+    let QuestionDisplay = { display: this.state.QuestionDisplay };
 
     return (
       <div className="container" id="container">
@@ -604,11 +630,25 @@ class VideoRoomComponent extends Component {
                 className="OT_root OT_publisher custom-class"
                 style={chatDisplay}
               >
-                <QuestionChat
+                <ChatComponent 
                   user={localUser}
                   chatDisplay={this.state.chatDisplay}
                   close={this.toggleChat}
-                  messageReceived={this.checkNotification}
+                  QuestionReceived={this.checkNotification}
+                />
+              </div>
+            )}
+            {localUser !== undefined &&
+            localUser.getStreamManager() !== undefined && (
+              <div
+                className="OT_root OT_publisher custom-class"
+                style={QuestionDisplay}
+              >
+                <QuestionChat
+                  user={localUser}
+                  QuestionDisplay={this.state.QuestionDisplay}
+                  close={this.toggleQuestion}
+                  messageReceived={this.checkQuestionNotification}
                 />
               </div>
             )}
@@ -618,6 +658,7 @@ class VideoRoomComponent extends Component {
           sessionId={mySessionId}
           user={localUser}
           showNotification={this.state.messageReceived}
+          showQuestion={this.state.QuestionReceived}
           camStatusChanged={this.camStatusChanged}
           micStatusChanged={this.micStatusChanged}
           screenShare={this.screenShare}
@@ -626,6 +667,7 @@ class VideoRoomComponent extends Component {
           switchCamera={this.switchCamera}
           leaveSession={this.leaveSession}
           toggleChat={this.toggleChat}
+          toggleQuestion={this.toggleQuestion}
         />
       </div>
     );
