@@ -20,8 +20,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Transactional
+
 @Service("MattermostService")
+@Transactional
 @RequiredArgsConstructor
 public class MattermostServiceImpl implements MattermostService {
     private final JpaSessionRepository jpaSessionRepository;

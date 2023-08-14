@@ -11,8 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
-@Transactional
+
 @Service("TokenService")
+@Transactional
 @RequiredArgsConstructor
 public class TokenServiceImpl implements TokenService{
     private final TokenProvider tokenProvider;

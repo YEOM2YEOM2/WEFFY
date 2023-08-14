@@ -30,8 +30,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@Transactional
+
 @Service("FileService")
+@Transactional
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
     private final JpaFileRepository jpaFileRepository;
