@@ -1,7 +1,10 @@
 package openvidu.meeting.service.java.conference.streaming;
 
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
+import openvidu.meeting.service.java.OpenviduDB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
@@ -20,19 +23,19 @@ import java.util.Base64;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@Slf4j
 @Setter
 public class ZipFileDownloader{
 
+    private Logger logger = LoggerFactory.getLogger(ZipFileDownloader.class);
+
     private final RestTemplate restTemplate;
 
-    @Value("${openvidu.api.username}")
-    private String openViduApiUsername;
+    private String openViduApiUsername = "OPENVIDUAPP";
 
-    @Value("${openvidu.api.password}")
-    private String openViduApiPassword;
+    private String openViduApiPassword = "MY_SECRET";
 
-    @Value("${local.recording.path}")
-    private String localRecordingPath;
+    private String localRecordingPath = "C://recording/";
 
     private String zipFileUrl;
 
@@ -44,8 +47,10 @@ public class ZipFileDownloader{
 
     private String identification;
 
+
     public ZipFileDownloader(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
+        this.identification = "jenny";
     }
 
     @Bean
@@ -74,10 +79,10 @@ public class ZipFileDownloader{
             Path recordingFolderPath = Paths.get(localRecordingPath+this.classId);
             try {
                 Files.createDirectories(recordingFolderPath);
-                System.out.println("Folder created :" + recordingFolderPath);
+                logger.info("Folder created :" + recordingFolderPath);
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("Failed to create folder: " + recordingFolderPath);
+                logger.info("Failed to create folder: " + recordingFolderPath);
             }
 
             // 다운로드한 zip 파일을 임시 파일로 저장한다.
@@ -116,8 +121,10 @@ public class ZipFileDownloader{
             try{
                 VideoSender sv = new VideoSender();
                 sv.sendRequest(classId, title, identification);
+                logger.info("Success : ");
             }catch(Exception e){
                 e.printStackTrace();
+                logger.info("Error : ");
             }
 
             // 로컬에 다운받은 임시 파일을 지운다.
@@ -137,6 +144,8 @@ public class ZipFileDownloader{
 
     public void removeFolder(String classId){
 
+        logger.info("removeFolder를 호출함");
+
         File folder = new File(localRecordingPath+classId);
 
         if(folder.exists() && folder.isDirectory()){
@@ -144,7 +153,7 @@ public class ZipFileDownloader{
             if(files != null){
                 for(File f : files){
                     f.delete();
-                    System.out.println(f.getName()+"삭제 완료");
+                    logger.info(f.getName()+"삭제 완료");
                 }
             }
         }
@@ -152,6 +161,8 @@ public class ZipFileDownloader{
         folder.delete();
 
     }
+
+
 
 
 }
