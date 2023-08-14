@@ -24,9 +24,9 @@ function Participant(props) {
     <div style={{ color: "white" }}>
       {/* 나 */}
       <div>
-        <span>{ user.getNickname() }</span>
-        { user.videoActive ? <VideocamIcon fontSize='small' />: <VideocamOffIcon fontSize='small' style={{ color: "red" }} /> }
-            { user.audioActive ? <MicIcon fontSize='small' />: <MicOffIcon fontSize='small' style={{ color: "red" }} /> }
+        {/* <span>{ user.getNickname() }</span> */}
+        {/* { user.videoActive ? <VideocamIcon fontSize='small' />: <VideocamOffIcon fontSize='small' style={{ color: "red" }} /> }
+        { user.audioActive ? <MicIcon fontSize='small' />: <MicOffIcon fontSize='small' style={{ color: "red" }} /> } */}
       </div>
       {/* 다른 사용자 */}
       { participants.map((person, idx) => (
