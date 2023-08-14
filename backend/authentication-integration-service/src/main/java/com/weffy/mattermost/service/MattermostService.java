@@ -21,5 +21,5 @@ public interface MattermostService {
 
     String findByWeffyUser(WeffyUser weffyUser);
 
-    int makeHeaderLink(WeffyUser weffyUser, String channelId) throws IOException, InterruptedException, JSONException;
+    int makeHeaderLink(WeffyUser weffyUser, String channelId) throws IOException, InterruptedException;
 }
