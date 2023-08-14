@@ -21,11 +21,6 @@
   right: 0;
   min-width: 400px;
 }
-#navChatButton {
-  position: absolute;
-  right: 10px;
-  top: 0;
-}
 
 #titleContent{
   max-width: 150px;

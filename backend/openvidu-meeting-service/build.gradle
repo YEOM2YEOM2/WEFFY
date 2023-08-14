@@ -8,7 +8,7 @@
 //}
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.7.14'
+    id 'org.springframework.boot' version '2.7.0'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
@@ -27,7 +27,7 @@ dependencies {
     implementation 'io.openvidu:openvidu-java-client:2.28.0'
     runtimeOnly 'mysql:mysql-connector-java:8.0.28'
 
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.7.0'
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test:2.7.0'
@@ -47,7 +47,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.32'
 
     implementation 'javax.persistence:javax.persistence-api:2.2'
-  //  implementation 'org.hibernate:hibernate-core:5.5.6.Final'
+    //  implementation 'org.hibernate:hibernate-core:5.5.6.Final'
 
     // Logback (Logging Implementation)
     // implementation 'ch.qos.logback:logback-classic:1.2.6'
@@ -55,6 +55,11 @@ dependencies {
     // implementation 'net.bramp.ffmpeg:ffmpeg:0.7.0'
 
     implementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13' // 최신 버전 사용
+
+    //swagger
+    // https://mvnrepository.com/artifact/io.springfox/springfox-swagger2
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 
 
 

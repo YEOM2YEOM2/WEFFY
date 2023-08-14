@@ -12,7 +12,8 @@ import java.util.List;
 public interface ConferenceRepository extends JpaRepository<Conference, Long> {
 
     // DB에서 전체 세션 다 가져오기(owner_id에 해당하는)
-    List<Conference> findAllByIdentification(String identification);
+    List<Conference> findAllByIdentificationAndActiveTrue(String identification);
+
 
     // 해당 세션이 존재하는지 & DB에서 하나의 특정 세션 한 개만 가져오기
     Conference findByClassId(String classId);
