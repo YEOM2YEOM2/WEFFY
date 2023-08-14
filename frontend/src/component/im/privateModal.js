@@ -64,7 +64,7 @@ const PrivateModal = ({ handleClose }) => {
   };
 
   useEffect(() => {
-    dispatch(setActiveSessionId("SessionA"));
+    dispatch(setActiveSessionId(sessionId));
 
     console.log();
 
@@ -118,9 +118,12 @@ const PrivateModal = ({ handleClose }) => {
 
   const navigate = useNavigate();
   const startPrivateMeeting = () => {
+    dispatch(setActiveSessionId(sessionId));
     dispatch(setParticipateName(localNickname));
+
     console.log("start Meeting!");
-    navigate(`/conference/${sessionId}`);
+    let ecodedSessionId = decodeURIComponent(sessionId);
+    navigate(`/conference/${ecodedSessionId}`);
   };
 
   const handleSelectCamera = (event) => {
