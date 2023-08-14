@@ -15,14 +15,6 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 
-// //dump 값
-// const Group = [
-//   { group: "구미 5반", names: [1, 2, 3] },
-//   { group: "구미 1반", names: [4, 5, 6] },
-//   { group: "구미 2반", names: [7, 8, 9] },
-//   { group: "구미 4반", names: [10, 11, 12] },
-// ];
-
 const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
   // const [groupData, setGroupData] = useState([]);
   const [groupData, setGroupData] = useState([]);

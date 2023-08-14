@@ -3,7 +3,6 @@ import './StreamComponent.css';
 import OvVideoComponent from './OvVideo';
 
 import MicOffIcon from '@mui/icons-material/MicOff';
-import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import InfoIcon from '@mui/icons-material/Info';
