@@ -1,17 +1,13 @@
 import React, { Component } from "react";
 import IconButton from "@mui/material/IconButton";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
-import ForwardToInboxOutlinedIcon from "@mui/icons-material/ForwardToInboxOutlined";
-import DownloadIcon from "@mui/icons-material/Download";
 import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
 
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { connect } from "react-redux";
 
 import "./ChatComponent.css";
 import Tooltip from "@mui/material/Tooltip";
-import { yellow } from "@mui/material/colors";
 import SendIcon from "@mui/icons-material/Send";
 
 import axios from "axios";
@@ -23,22 +19,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-// // If you need to dispatch actions to Redux, use this
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     // For example:
-//     // setIdentification: (id) => dispatch(setIdentification(id))
-//   };
-// };
-
 class ChatComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
       messageList: [],
       message: "",
-      // : "",
-      // authorization: "",
     };
     this.chatScroll = React.createRef();
 
@@ -91,8 +77,29 @@ class ChatComponent extends Component {
     }
   }
 
-  fileDownload() {
+  fileDownload(key, title) {
     console.log("다운로드 시도!");
+    console.log("Key:", key);
+    console.log("Title :", title);
+
+    const fileKey = encodeURIComponent(key);
+    const fileTitle = encodeURIComponent(title);
+
+    axios({
+      method: "get",
+      url: `http://i9d107.p.ssafy.io:8081/api/v1/files/download?objectKey=${fileKey}&title=${fileTitle}`,
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.props.accessToken}`,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
   }
 
   sendMessage() {
@@ -118,7 +125,7 @@ class ChatComponent extends Component {
       if (this.props.user) {
         const data = {
           message: {
-            url: this.state.message.url,
+            objectKey: this.state.message.objectKey,
             title: this.state.message.title,
           },
           nickname: this.props.user.getNickname(),
@@ -131,6 +138,7 @@ class ChatComponent extends Component {
         });
       }
     }
+    this.setState({ message: "" });
   }
 
   addFile(event) {
@@ -152,10 +160,10 @@ class ChatComponent extends Component {
         data: formData,
       })
         .then((res) => {
-          // console.log(res.data.data);
+          console.log(res.data.data);
 
           const fileInfo = {
-            url: res.data.data.url,
+            objectKey: res.data.data.objectKey,
             title: res.data.data.title,
           };
 
@@ -231,7 +239,12 @@ class ChatComponent extends Component {
                           {data.message && typeof data.message === "object" ? (
                             <IconButton
                               className="downloadText"
-                              onClick={this.fileDownload}
+                              onClick={() =>
+                                this.fileDownload(
+                                  data.message.objectKey,
+                                  data.message.title
+                                )
+                              }
                             >
                               <SimCardDownloadIcon
                                 style={{
@@ -239,14 +252,6 @@ class ChatComponent extends Component {
                                 }}
                               />
                               {data.message.title}
-
-                              {/* <DownloadIcon
-                                style={{
-                                  backgroundColor: "black",
-                                  color: "white",
-                                  borderRadius: "3px",
-                                }}
-                              /> */}
                             </IconButton>
                           ) : (
                             data.message || ""

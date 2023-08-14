@@ -13,7 +13,6 @@ import com.weffy.user.dto.Response.UserSignInResDto;
 import com.weffy.user.entity.Role;
 import com.weffy.user.entity.WeffyUser;
 import com.weffy.user.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.bis5.mattermost.client4.ApiResponse;
@@ -52,7 +51,7 @@ public class UserServiceImpl implements UserService {
         InputStream profileImg = mattermostHandler.image(mmClient.getId());
         BufferedImage bImageFromConvert = ImageIO.read(profileImg);
         String profileUrl = fileService.uploadInputStream(bImageFromConvert, mmClient.getId() + ".png", "weffy");
-
+        String nickName = mmClient.getNickname();
         Optional<WeffyUser> existUser = userRepository.findByIdentification(mmClient.getId());
         if (existUser.isEmpty()) {
             userRepository.save(
@@ -61,17 +60,26 @@ public class UserServiceImpl implements UserService {
                             .password(passwordEncoder.encode(signInInfo.getPassword()))
                             .email(mmClient.getEmail())
                             .name(mmClient.getLastName() + mmClient.getFirstName())
-                            .nickname(mmClient.getNickname())
-                            .role((role != null && role.equals("ADMIN"))? Role.ADMIN: Role.USER)
+                            .nickname(nickName)
+                            .role((role != null && role.equals("ADMIN"))? Role.ADMIN: getRole(nickName))
                             .active(true)
                             .profileImg(profileUrl)
                             .build()
             );
         } else if (!existUser.get().getActive()){
-            throw new CustomException(ExceptionEnum.USERWITHDRAW);
+            throw new CustomException(ExceptionEnum.USER_WITHDRAW);
         }else {
-            throw new CustomException(ExceptionEnum.USEREXIST);
+            throw new CustomException(ExceptionEnum.USER_EXIST);
         }
+    }
+
+    @Override
+    public Role getRole(String nickName) {
+        if (nickName.contains("코치")) return Role.COACH;
+        else if (nickName.contains("컨설턴트")) return Role.CONSULTANT;
+        else if (nickName.contains("프로")) return Role.PRO;
+        else if (nickName.contains("강사")) return Role.TEACHER;
+        else return Role.USER;
     }
 
     @Override
@@ -83,7 +91,7 @@ public class UserServiceImpl implements UserService {
         WeffyUser weffyUser;
         Optional<WeffyUser> existingUser = userRepository.findByIdentification(mmClient.getId());
         if (existingUser.isEmpty()) {
-            throw new CustomException(ExceptionEnum.USERNOTEXIST);
+            throw new CustomException(ExceptionEnum.USER_NOT_EXIST);
         } else if (existingUser.get().getActive()){
             weffyUser = existingUser.get();
             // mattermost 로그인이 성공되었지만 mattermost의 비밀번호가 저장된 비밀번호가 다를 때 weffy 내의 비밀번호 수정
@@ -91,7 +99,7 @@ public class UserServiceImpl implements UserService {
                 setPassword(weffyUser, signInInfo.getPassword());
             }
         } else {
-            throw new CustomException(ExceptionEnum.USERWITHDRAW);
+            throw new CustomException(ExceptionEnum.USER_WITHDRAW);
         }
 
         CreateTokenResDto createTokenResDto = tokenService.createUserToken(userInfo, weffyUser);
@@ -102,21 +110,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserMainResDto mainUser(String identification) {
         Optional<WeffyUser> user = Optional.ofNullable(userRepository.findByIdentification(identification)
-                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST)));
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USER_NOT_EXIST)));
         UserMainResDto userMainResDto = new UserMainResDto().of(user.get());
         return userMainResDto;
     }
     @Override
     public WeffyUser findById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST));
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USER_NOT_EXIST));
     }
-
 
     @Override
     public WeffyUser findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ExceptionEnum.USERNOTEXIST));
+                .orElseThrow(() -> new CustomException(ExceptionEnum.USER_NOT_EXIST));
     }
 
     @Override

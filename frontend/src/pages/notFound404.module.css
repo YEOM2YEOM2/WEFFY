@@ -54,8 +54,8 @@
 }
 
 .headerContent{
-  top: 40px;
   font-family: "GmarketSans";
+  margin-top: 40px;
 }
 
 @keyframes animate {
@@ -78,7 +78,6 @@
 
 .content h4{
   font-size: 1.5em;
-  margin-bottom: 30px;
   text-transform: uppercase;
   color: #000;
   font-size: 2em;
@@ -98,7 +97,7 @@
 }
 
 .content p{
-  margin: 50px 0px 0px 0px;
+  margin: 0px;
   font-size: 1.2em;
   font-family: "GmarketSans";
   color: #0d0d0d;
@@ -109,11 +108,12 @@
   display: inline-flex;
 }
 
-.content .btns a{
+.content .btns button{
   display: inline-block;
   margin: 0 10px;
   text-decoration: none;
   border: 2px solid #69a6ce;
+  background: #fff;
   color: #69a6ce;
   font-family: "GmarketSans";
   font-weight: 500;
@@ -123,7 +123,7 @@
   transition: all 0.3s ease;
 }
 
-.content .btns a:hover{
+.content .btns button:hover{
   background: #69a6ce;
   color: #fff;
 }
