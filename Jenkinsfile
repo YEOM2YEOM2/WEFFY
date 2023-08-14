@@ -52,6 +52,15 @@ pipeline {
         //     }
         // }
 
+        stage('Login to Docker Hub') {
+            agent any
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')]) {
+                    sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                }
+            }
+        }
+
         stage('Docker build for authentication-integration-service') {
             agent any
             steps {
