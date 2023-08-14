@@ -28,8 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-@Transactional
+
 @Service("userService")
+@Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
