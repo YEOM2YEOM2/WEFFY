@@ -8,7 +8,9 @@ public enum Active {
     CONNECTION("CONNECTION"),
     EXIT("EXIT"),
     LEAVE("LEAVE"),
-    DELETE("DELETE");
+    DELETE("DELETE"),
+    REC_START("REC_START"),
+    REC_END("REC_END");
     private String active;
 
     Active(String active){

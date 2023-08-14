@@ -1,6 +1,10 @@
 package openvidu.meeting.service.java.conference.streaming;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import openvidu.meeting.service.java.OpenviduDB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
@@ -19,8 +23,11 @@ import java.util.Base64;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@Slf4j
 @Setter
-public class ZipFileDownloader {
+public class ZipFileDownloader{
+
+    private Logger logger = LoggerFactory.getLogger(ZipFileDownloader.class);
 
     private final RestTemplate restTemplate;
 
@@ -38,8 +45,12 @@ public class ZipFileDownloader {
 
     private String recordingId;
 
+    private String identification;
+
+
     public ZipFileDownloader(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
+        this.identification = "jenny";
     }
 
     @Bean
@@ -68,10 +79,10 @@ public class ZipFileDownloader {
             Path recordingFolderPath = Paths.get(localRecordingPath+this.classId);
             try {
                 Files.createDirectories(recordingFolderPath);
-                System.out.println("Folder created :" + recordingFolderPath);
+                logger.info("Folder created :" + recordingFolderPath);
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("Failed to create folder: " + recordingFolderPath);
+                logger.info("Failed to create folder: " + recordingFolderPath);
             }
 
             // 다운로드한 zip 파일을 임시 파일로 저장한다.
@@ -106,12 +117,14 @@ public class ZipFileDownloader {
             // 기존에 저장한 폴더에서 지정한 로컬 경로로 파일을 옮긴다.
             Files.move(extractedMp4Path, targetPath, StandardCopyOption.REPLACE_EXISTING);
 
+            // 생성한 mp4 파일을 s3에 저장할 수 있도록 header에 담아서 보낸다.
             try{
-                SendVideo sv = new SendVideo();
-                sv.sendRequest(classId, title);
+                VideoSender sv = new VideoSender();
+                sv.sendRequest(classId, title, identification);
+                logger.info("Success : ");
             }catch(Exception e){
-                System.out.println("Error : ");
                 e.printStackTrace();
+                logger.info("Error : ");
             }
 
             // 로컬에 다운받은 임시 파일을 지운다.
@@ -131,7 +144,7 @@ public class ZipFileDownloader {
 
     public void removeFolder(String classId){
 
-        System.out.println("come!!!!!!!!!!!!!!");
+        logger.info("removeFolder를 호출함");
 
         File folder = new File(localRecordingPath+classId);
 
@@ -140,7 +153,7 @@ public class ZipFileDownloader {
             if(files != null){
                 for(File f : files){
                     f.delete();
-                    System.out.println(f.getName()+"삭제 완료");
+                    logger.info(f.getName()+"삭제 완료");
                 }
             }
         }

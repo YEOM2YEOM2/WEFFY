@@ -16,25 +16,25 @@ public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String sender_id;
-    String conference_id;
+    private String senderId;
+    private String conferenceId;
 
     @Column(columnDefinition = "LONGTEXT")
-    String content;
+    private String content;
 
-    boolean isComplete;
+    private boolean isComplete;
 
-    boolean isAnonymous;
+    private boolean isAnonymous;
 
     @CreatedDate
     private LocalDateTime sendAt;
 
     @Builder
-    public Question(String sender_id, String conference_id, String content, boolean isComplete, boolean isAnonymous) {
-        this.sender_id = sender_id;
-        this.conference_id = conference_id;
+    public Question(String senderId, String conferenceId, String content, boolean isComplete, boolean isAnonymous) {
+        this.senderId = senderId;
+        this.conferenceId = conferenceId;
         this.content = content;
         this.isComplete = isComplete;
         this.isAnonymous = isAnonymous;
