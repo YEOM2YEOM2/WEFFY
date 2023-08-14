@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-@Service("MattermostService")
+@Service("mattermostService")
 @Transactional
 @RequiredArgsConstructor
 public class MattermostServiceImpl implements MattermostService {

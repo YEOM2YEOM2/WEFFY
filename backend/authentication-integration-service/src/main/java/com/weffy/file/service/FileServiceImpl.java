@@ -31,7 +31,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 
-@Service("FileService")
+@Service("fileService")
 @Transactional
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
