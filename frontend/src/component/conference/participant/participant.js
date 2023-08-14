@@ -7,19 +7,33 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 
 function Participant(props) {
-  let { participants, handleNickname } = props;
+  let {user, participants, handleNickname } = props;
 
-  participants.map((val) => {
-    console.log(val)
-  })
+  console.log('me : ', user)
+
+  // participants.map((person) => {
+  //   console.log(person)
+  //   if (person.isLocal()) {
+  //     console.log("왜 undefined!!!!!!!")
+  // }
+  // })
+
+
 
   return (
     <div style={{ color: "white" }}>
+      {/* 나 */}
+      <div>
+        <span>{ user.getNickname() }</span>
+        { user.videoActive ? <VideocamIcon fontSize='small' />: <VideocamOffIcon fontSize='small' style={{ color: "red" }} /> }
+            { user.audioActive ? <MicIcon fontSize='small' />: <MicOffIcon fontSize='small' style={{ color: "red" }} /> }
+      </div>
+      {/* 다른 사용자 */}
       { participants.map((person, idx) => (
           <div key={idx}>
             <span>{ person.getNickname() }</span>
-            { person.videoActive ? <VideocamIcon />: <VideocamOffIcon /> }
-            { person.audioActive ? <MicIcon />: <MicOffIcon /> }
+            { person.videoActive ? <VideocamIcon fontSize='small' />: <VideocamOffIcon fontSize='small' style={{ color: "red" }} /> }
+            { person.audioActive ? <MicIcon fontSize='small' />: <MicOffIcon fontSize='small' style={{ color: "red" }} /> }
           </div>
       ))}
     </div>
