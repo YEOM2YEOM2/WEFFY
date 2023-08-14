@@ -120,7 +120,8 @@ const PrivateModal = ({ handleClose }) => {
   const startPrivateMeeting = () => {
     dispatch(setParticipateName(localNickname));
     console.log("start Meeting!");
-    navigate(`/conference/${sessionId}`);
+    let ecodedSessionId = decodeURIComponent(sessionId);
+    navigate(`/conference/${ecodedSessionId}`);
   };
 
   const handleSelectCamera = (event) => {
