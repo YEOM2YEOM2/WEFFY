@@ -6,8 +6,8 @@ const setting = createSlice({
     micStatus: false,
     cameraStatus: false,
     participateName: "WEFFY",
-    selectedMic: 0,
-    selectedCam: 0,
+    selectedMic: 1,
+    selectedCam: 1,
   },
   reducers: {
     toggleMicStatus(state) {
