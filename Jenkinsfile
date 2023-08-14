@@ -2,16 +2,6 @@ pipeline {
     agent none
     options { skipDefaultCheckout(true) }
 	stages {
-        stage('Cleanup Workspace') {
-            steps {
-                sh 'rm -rf *'
-            }
-        }
-        stage('Clone Repository') {
-            steps {
-                checkout scm
-            }
-        }
         stage('Prepare credentials') {
             agent any
             steps {
