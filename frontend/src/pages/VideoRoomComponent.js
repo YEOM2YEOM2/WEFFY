@@ -23,9 +23,6 @@ class VideoRoomComponent extends Component {
     this.layout = new OpenViduLayout();
     let sessionName = sessionIdFromUrl;
 
-    console.log(sessionName);
-
-    console.log(sessionName);
     let userName = this.props.user
       ? this.props.user
       : "WEFFY_User" + Math.floor(Math.random() * 100);
