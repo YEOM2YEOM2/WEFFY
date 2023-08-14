@@ -18,6 +18,7 @@ import openvidu.meeting.service.java.conference.streaming.ZipFileDownloader;
 import openvidu.meeting.service.java.exception.ExceptionEnum;
 import openvidu.meeting.service.java.history.dto.request.HistoryReqDto;
 import openvidu.meeting.service.java.history.service.HistoryService;
+import org.aspectj.apache.bcel.classfile.Module;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class ConferenceController {
 
     @Value("${spring.connection.path}")
     private String root;
-    private Map<String, String> hostToken; // <identification, accessToken>
+    // private Map<String, String> hostToken; // <identification, accessToken>
     private Map<String, Map<String, String>> sessionConnectionList; // classId, <identification, connectionId>
     private Map<String, List<String>> sessionParticipantList; // <classId, [participant Name1, Name2, ... ]>
     private Map<String, String> sessionHostList; // <classId, identification>
@@ -83,7 +85,7 @@ public class ConferenceController {
         zipFileDownloader = new ZipFileDownloader(new RestTemplateBuilder());
 
         // 각 방의 호스트가 가지고 있는 세션을 저장한다.
-        hostToken = OpenviduDB.getHostToken();
+        //hostToken = OpenviduDB.getHostToken();
 
         conferenceSetting();
     }
@@ -188,23 +190,27 @@ public class ConferenceController {
             @ApiResponse(code = 4001, message = "회의 존재X"),
             @ApiResponse(code = 4009, message = "서버 오류")
     })
+
+    // HttpServletResponse response,
+
     @PostMapping("/connection/{class_id}/{identification}")
-    public ResponseEntity<? extends BaseResponseBody> connectionConference(HttpServletResponse response,
-                                                                           @ApiParam(value = "연결할 컨퍼런스의 ID", required = true)
-                                                                           @PathVariable("class_id") String classId,
+    public ResponseEntity<String> connectionConference(
+            HttpServletRequest request,
+            @ApiParam(value = "연결할 컨퍼런스의 ID", required = true)
+            @PathVariable("class_id") String classId,
 
-                                                                           @ApiParam(value = "사용자 identification", required = true)
-                                                                           @PathVariable("identification") String identification,
+            @ApiParam(value = "사용자 identification", required = true)
+            @PathVariable("identification") String identification,
 
-                                                                           @ApiParam(value = "빈 map", required = false)
-                                                                           @RequestBody(required = false) Map<String, Object> info) throws OpenViduJavaClientException, OpenViduHttpException
+            @ApiParam(value = "빈 map", required = false)
+            @RequestBody(required = false) Map<String, Object> info) throws OpenViduJavaClientException, OpenViduHttpException
     {
 
         Session session = openvidu.getActiveSession(classId);
 
         // 존재하지 않는 방인 경우
         if (session == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_NOT_EXIST));
+            return new ResponseEntity<>("방이 없음", HttpStatus.NOT_FOUND);
         }
 
 
@@ -213,11 +219,13 @@ public class ConferenceController {
             // 방에 처음 들어오는 사람이 host가 아닌 경우
             if(!identification.equals(sessionHostList.get(classId))){
                 System.out.println(identification+","+sessionHostList.get(classId));
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, "아직 host가 방을 활성화하지 않았습니다. 기다려주세요."));
+                return new ResponseEntity<>("아직 host가 방을 활성화하지 않았습니다. 기다려주세요.", HttpStatus.NOT_FOUND);
             }
             firstCome = true;
         }
 
+
+        //return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, connection.getConnectionId()));
 
         try {
             // 연결 설정
@@ -233,8 +241,9 @@ public class ConferenceController {
                 sessionConnectionList.put(classId, new HashMap<>());
 
                 // accessToken을 받아서 저장한다.
-                String accessToken = response.getHeader("Authorization");
-                hostToken.put(identification, accessToken);
+                String accessToken = request.getHeader("Authorization");
+                //hostToken.put(identification, accessToken);
+                OpenviduDB.getHostToken().put(identification, accessToken);
 
                 // 녹화를 시작한다.
                 currentRecordingList.put(classId, new VideoRecorder(classId, identification));
@@ -257,9 +266,9 @@ public class ConferenceController {
             dto.setIdentification(identification);
             historyService.createHistory(dto, "CONNECTION");
 
-            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, connection.getConnectionId()));
+            return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
+            return new ResponseEntity<>("404 ERROR", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -291,7 +300,7 @@ public class ConferenceController {
                 sessionParticipantList.get(classId).clear();
 
                 // 호스트 토큰 삭제
-                hostToken.remove(classId);
+                OpenviduDB.getHostToken().remove(classId);
 
                 // openvidu에서 session과 연결되어있는 connection을 모두 삭제함
                 Session session = openvidu.getActiveSession(classId);
@@ -498,6 +507,9 @@ public class ConferenceController {
 
         // 로컬의 녹화 파일들 삭제하기
         zipFileDownloader.removeFolder(classId);
+
+
+        // 230813 파일을 다운 받으면서 로컬에 파일이 남았을 경우 - 다시 확인하기
 
         //history REC_END
         HistoryReqDto dto = new HistoryReqDto();

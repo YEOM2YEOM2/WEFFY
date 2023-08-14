@@ -1,5 +1,6 @@
 package openvidu.meeting.service.java.conference.streaming;
 
+import lombok.extern.slf4j.Slf4j;
 import openvidu.meeting.service.java.OpenviduDB;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -9,20 +10,24 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Slf4j
 public class VideoSender {
-
-    @Value("${local.recording.path}")
-    private String localRecordingPath;
+    private Logger logger = LoggerFactory.getLogger(VideoSender.class);
+    private String localRecordingPath = "C://recording/";
     private String accessToken;
 
+    //"?type=lecture"
     public void sendRequest(String classId, String fileName, String identification) throws IOException {
+
+        logger.info("sendRequest 호출");
 
         accessToken = OpenviduDB.getHostToken().get(identification);
 
@@ -36,7 +41,10 @@ public class VideoSender {
 
         Path file = Paths.get(localRecordingPath + classId + "/" + fileName + ".mp4");
 
+       // System.out.println("문장 : "+ file.toString());
         builder.addBinaryBody("file", Files.newInputStream(file), ContentType.APPLICATION_OCTET_STREAM, file.getFileName().toString());
+
+       // System.out.println("file Path : "+ file.toString());
 
         HttpEntity multipartEntity = builder.build();
         postRequest.setEntity(multipartEntity);
@@ -47,5 +55,6 @@ public class VideoSender {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }
