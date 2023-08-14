@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 
-@Service("RefreshTokenService")
+@Service("refreshTokenService")
 @Transactional
 @RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService{

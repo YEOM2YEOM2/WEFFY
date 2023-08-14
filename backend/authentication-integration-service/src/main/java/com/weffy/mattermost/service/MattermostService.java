@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 
-@Service
+
 public interface MattermostService {
 
     void saveSession(WeffyUser weffyUser, String token);
