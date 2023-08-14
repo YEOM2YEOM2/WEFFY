@@ -1,6 +1,7 @@
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import ChatComponent from "./../component/conference/chat/ChatComponent.js";
 import QuestionChat from "./../component/conference/chat/QuestionChat.js";
 
@@ -16,6 +17,15 @@ var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
   process.env.NODE_ENV === "production" ? "" : "http://localhost:8080/";
 
+const mapStateToProps = (state) => {
+  console.log(state.setting.selectedMic);
+  console.log(state.setting.participateName);
+  return {
+    selectedMic: state.setting.selectedMic,
+    selectedCam: state.setting.selectedCam,
+  };
+};
+
 class VideoRoomComponent extends Component {
   constructor(props) {
     super(props);
@@ -25,10 +35,11 @@ class VideoRoomComponent extends Component {
     this.layout = new OpenViduLayout();
     let sessionName = decodeURIComponent(sessionIdFromUrl);
     console.log(sessionName);
-
+    console.log(this.props.selectedMic);
     let userName = this.props.user
       ? this.props.user
       : "WEFFY_User" + Math.floor(Math.random() * 100);
+
     this.remotes = [];
     this.localUserAccessAllowed = false;
     this.state = {
@@ -166,11 +177,12 @@ class VideoRoomComponent extends Component {
     });
     var devices = await this.OV.getDevices();
     var videoDevices = devices.filter((device) => device.kind === "videoinput");
+    var audioDevice = devices.filter((device) => device.kind === "audioinput");
 
     let publisher = this.OV.initPublisher(undefined, {
       // audioSource, videoSource 넘어온 설정 값으로 변경할 때 사용해야함.
-      audioSource: undefined,
-      videoSource: videoDevices[0].deviceId,
+      audioSource: audioDevice[this.props.selectedMic].deviceId,
+      videoSource: videoDevices[this.props.selectedCam].deviceId,
       publishAudio: localUser.isAudioActive(),
       publishVideo: localUser.isVideoActive(),
       resolution: "640x480",
@@ -204,12 +216,13 @@ class VideoRoomComponent extends Component {
       () => {
         this.state.localUser.getStreamManager().on("streamPlaying", (e) => {
           this.updateLayout();
-          publisher.videos[0].video.parentElement.classList.remove(
-            "custom-class"
-          );
+          publisher.videos[
+            this.props.selectedCam
+          ].video.parentElement.classList.remove("custom-class");
         });
       }
     );
+    console.log(this.props.selectedMic);
   }
 
   updateSubscribers() {
@@ -557,6 +570,7 @@ class VideoRoomComponent extends Component {
     return (
       <div className="container" id="container">
         {/* 브라우저 화면 공유를 위한 Chrome 확장 프로그램 설치 유도 및 설치 후 브라우저 새로고침 기능 제공 */}
+
         <DialogExtensionComponent
           showDialog={this.state.showExtensionDialog}
           cancelClicked={this.closeDialogExtension}
@@ -660,4 +674,4 @@ class VideoRoomComponent extends Component {
     return response.data; // The token
   }
 }
-export default VideoRoomComponent;
+export default connect(mapStateToProps)(VideoRoomComponent);
