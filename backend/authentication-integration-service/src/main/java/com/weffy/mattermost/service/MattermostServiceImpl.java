@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service("MattermostService")
 @RequiredArgsConstructor
 public class MattermostServiceImpl implements MattermostService {

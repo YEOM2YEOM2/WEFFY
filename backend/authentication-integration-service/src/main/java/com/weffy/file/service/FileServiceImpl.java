@@ -6,6 +6,7 @@ import com.weffy.file.entity.Files;
 import com.weffy.file.dto.request.FileReqDto;
 import com.weffy.file.dto.response.FileResDto;
 import com.weffy.file.dto.response.GetFileDto;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import com.weffy.file.repository.JpaFileRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
+@Transactional
 @Service("FileService")
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {

@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 
+@Transactional
 @Service("RefreshTokenService")
 @RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService{
