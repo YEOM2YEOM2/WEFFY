@@ -630,7 +630,7 @@ class VideoRoomComponent extends Component {
                 className="OT_root OT_publisher custom-class"
                 style={chatDisplay}
               >
-                <ChatComponent 
+                <ChatComponent
                   user={localUser}
                   chatDisplay={this.state.chatDisplay}
                   close={this.toggleChat}
@@ -638,7 +638,7 @@ class VideoRoomComponent extends Component {
                 />
               </div>
             )}
-            {localUser !== undefined &&
+          {localUser !== undefined &&
             localUser.getStreamManager() !== undefined && (
               <div
                 className="OT_root OT_publisher custom-class"
