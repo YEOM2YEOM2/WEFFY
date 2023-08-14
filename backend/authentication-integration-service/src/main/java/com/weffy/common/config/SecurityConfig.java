@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -52,43 +51,12 @@ public class SecurityConfig {
                 .addFilterBefore(new TokenAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(formLogin -> formLogin
                         .disable())
-//                        .loginPage("/signin")
-//                        .defaultSuccessUrl("/")
-//                        .failureUrl("/signin")
-//                        .usernameParameter("email")
-//                        .passwordParameter("password")
-//                        .loginProcessingUrl("/signin")
-//                        .permitAll())
                 .logout(logout -> logout
                                 .logoutSuccessUrl("/signin")
                                 .permitAll()
-//                .rememberMe(rememberMe -> rememberMe
-//                                .key("rememberMe")
-//                                .rememberMeParameter("remember")
-//                                .tokenValiditySeconds(3600)
-//                                .alwaysRemember(true)
-//                        .tokenRepository(persistentTokenRepository())
-//                        .rememberMeServices(rememberMeServices(persistentTokenRepository()))
-//                        .userDetailsService(new UserDetailsServiceImpl(memberRepository)))
                 );
         return http.build();
     }
-
-//    @Bean
-//    public PersistentTokenRepository persistentTokenRepository() {
-//        JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
-//        repo.setDataSource(dataSource);
-//        return repo;
-//    }
-
-//    @Bean
-//    public PersistentTokenBasedRememberMeServices rememberMeServices(PersistentTokenRepository tokenRepository) {
-//        PersistentTokenBasedRememberMeServices rememberMeServices = new
-//                PersistentTokenBasedRememberMeServices("rememberMeKey", new UserDetailsServiceImpl(memberRepository), tokenRepository);
-//        rememberMeServices.setParameter("remember-me");
-//        rememberMeServices.setAlwaysRemember(true);
-//        return rememberMeServices;
-//    }
 
     // password encoder로 사용할 빈 등록
     @Bean

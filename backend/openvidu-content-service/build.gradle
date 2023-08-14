@@ -33,6 +33,9 @@ dependencies {
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     implementation 'mysql:mysql-connector-java:8.0.28'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    // https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations
+    implementation 'io.swagger.core.v3:swagger-annotations:2.2.15'
+
 
     // kms
     implementation 'com.amazonaws:aws-java-sdk-core:1.11.1019'
@@ -40,6 +43,10 @@ dependencies {
     implementation 'com.amazonaws:jmespath-java:1.11.1019'
     // https://mvnrepository.com/artifact/software.amazon.awssdk/kms
     implementation 'software.amazon.awssdk:kms:2.20.115'
+
+    // AWS SDK
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
 
     //test
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'

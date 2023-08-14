@@ -1,5 +1,7 @@
 package openvidu.meeting.service.java.conference.streaming;
 
+import lombok.extern.slf4j.Slf4j;
+import openvidu.meeting.service.java.OpenviduDB;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
@@ -8,23 +10,30 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class SendVideo {
+@Slf4j
+public class VideoSender {
+    private Logger logger = LoggerFactory.getLogger(VideoSender.class);
     private String localRecordingPath = "C://recording/";
+    private String accessToken;
 
     //"?type=lecture"
-    public void sendRequest(String classId, String fileName) throws IOException {
+    public void sendRequest(String classId, String fileName, String identification) throws IOException {
 
-        String accessToken = "토큰이름";
+        logger.info("sendRequest 호출");
+
+        accessToken = OpenviduDB.getHostToken().get(identification);
 
         HttpClient httpClient = HttpClients.createDefault();
 
-        HttpPost postRequest = new HttpPost("http://i9d107.p.ssafy.io:8081/api/v1/files/" + classId );
+        HttpPost postRequest = new HttpPost("http://i9d107.p.ssafy.io:8081/api/v1/files/" + classId +"?type=lecture");
 
         postRequest.addHeader("Authorization", "Bearer " + accessToken);
 
