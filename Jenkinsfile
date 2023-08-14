@@ -105,20 +105,35 @@ pipeline {
             }
         }
         stage('Docker run for openvidu-content-service') {
-        agent any
-        steps {
-            script {
-                sh 'docker ps -f name=openvidu-content-service -q \
-                    | xargs --no-run-if-empty docker container stop'
-                sh 'docker container ls -a -f name=openvidu-content-service -q \
-                    | xargs -r docker container rm'
-                sh 'docker images -f "dangling=true" -q \
-                    | xargs -r docker rmi'
+            agent any
+            steps {
+                script {
+                    try {
+                        sh 'docker ps -f name=openvidu-content-service -q \
+                            | xargs --no-run-if-empty docker container stop'
+                    } catch (Exception e) {
+                        echo "Error stopping container: ${e}"
+                    }
+
+                    try {
+                        sh 'docker container ls -a -f name=openvidu-content-service -q \
+                            | xargs -r docker container rm'
+                    } catch (Exception e) {
+                        echo "Error removing container: ${e}"
+                    }
+
+                    try {
+                        sh 'docker images -f "dangling=true" -q \
+                            | xargs -r docker rmi'
+                    } catch (Exception e) {
+                        echo "Error removing dangling images: ${e}"
+                    }
+                }
+
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
+                    sh 'docker run -d -p 8083:8083 --name openvidu-content-service -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY openvidu-content-service:latest'
+                }
             }
-            withCredentials([$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id-for-openvidu']) {
-                sh 'docker run -d -p 8083:8083 --name openvidu-content-service -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY openvidu-content-service:latest'
-            }
-        }
         }
     }
 }
