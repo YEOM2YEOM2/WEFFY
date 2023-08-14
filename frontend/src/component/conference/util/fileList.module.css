@@ -52,6 +52,22 @@
   border: 2px dotted gray;
 }
 
+.hidden-input {
+  display: none;
+}
+
+.custom-file-label {
+  padding: 10px 15px;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.custom-file-label:hover {
+  background-color: #45a049;
+}
+
 /* .divider {
   border-bottom: 1px solid black;
   margin-bottom: 10px;
