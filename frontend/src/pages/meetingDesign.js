@@ -44,6 +44,9 @@ import DragHandleIcon from "@mui/icons-material/DragHandle";
 import QuizIcon from "@mui/icons-material/Quiz";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
+// bootstrap
+import Dropdown from 'react-bootstrap/Dropdown';
+
 const drawerWidth = 320;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -950,6 +953,7 @@ class Conference extends Component {
                       width: "288px",
                       display: "flex",
                       justifyContent: "center",
+                      zIndex: '99999'
                     }}
                   >
                     <ToggleButton
@@ -979,7 +983,16 @@ class Conference extends Component {
                     </ToggleButton>
                   </ToggleButtonGroup>
                 </div>
-                <MoreVertIcon style={{ color: "white", cursor: "pointer" }} />
+                <Dropdown>
+                    <Dropdown.Toggle id="dropdown-basic" style={{ backgroundColor: "transparent", border: '0', position: 'relative', right: '10px' }}>
+                      <MoreVertIcon style={{ color: "white", cursor: "pointer" }} />          
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu style={{ marginTop: '6px' }}>
+                        <Dropdown.Item href="#/action-1">파일 목록</Dropdown.Item>
+                        <Dropdown.Item href="#/action-2">동영상 목록</Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
               </DrawerHeader>
               <Divider />
               <List style={{ backgroundColor: "#17202E" }}>
