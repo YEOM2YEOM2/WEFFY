@@ -11,8 +11,8 @@ import net.bis5.mattermost.client4.ApiResponse;
 import net.bis5.mattermost.client4.MattermostClient;
 import net.bis5.mattermost.model.User;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Component;
 
 import okhttp3.*;
@@ -103,7 +103,7 @@ public class MattermostHandler {
         ObjectMapper objectMapper = new ObjectMapper();
 
         // HttpResponse의 body를 JSON으로 파싱
-       return objectMapper.readTree(channelInfo.body());
+        return objectMapper.readTree(channelInfo.body());
     }
 
     // Mattermost 채널 권한 가져오기
@@ -130,7 +130,7 @@ public class MattermostHandler {
     // Mattermost 채널 헤더에 conference 링크 달기
     HttpClient beforeClient = HttpClient.newHttpClient();
     HttpClient putClient = HttpClient.newHttpClient();
-    public int putHeaderLink(String channelId, String sessionToken) throws IOException, InterruptedException, JSONException {
+    public int putHeaderLink(String channelId, String sessionToken) throws IOException, InterruptedException {
         // 이전 channel의 정보를 가져오기
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://meeting.ssafy.com/api/v4/channels/" + channelId))
@@ -150,26 +150,25 @@ public class MattermostHandler {
         String header = objectMapper.readTree(channelInfo.body()).get("header").asText();
 
         // 헤더에 weffy 링크 넣기
-        try {
-            // 헤더에 weffy 링크 넣어서 JSON으로 다시 묶기
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", channelId);
-            jsonObject.put("name", name);
-            jsonObject.put("display_name", display_name);
-            jsonObject.put("purpose", purpose);
-            jsonObject.put("header", header + "|[ :weffy_logo:  Start WEFFY](https://i9d107.p.ssafy.io/meeting/" + channelId + ")");
 
-            String requestBodyData = jsonObject.toString();
+        // 헤더에 weffy 링크 넣어서 JSON으로 다시 묶기
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode jsonObject = mapper.createObjectNode();
 
-            HttpRequest putHeader = HttpRequest.newBuilder()
-                    .uri(URI.create("https://meeting.ssafy.com/api/v4/channels/" + channelId))
-                    .header("Authorization", "Bearer " + sessionToken)
-                    .PUT(HttpRequest.BodyPublishers.ofString(requestBodyData))
-                    .build();
+        jsonObject.put("id", channelId);
+        jsonObject.put("name", name);
+        jsonObject.put("display_name", display_name);
+        jsonObject.put("purpose", purpose);
+        jsonObject.put("header", header + "|[ :weffy_logo:  Start WEFFY](https://i9d107.p.ssafy.io/meeting/" + channelId + ")");
 
-            return putClient.send(putHeader, HttpResponse.BodyHandlers.ofString()).statusCode();
-        } catch (IOException | InterruptedException | JSONException e) {
-            throw new CustomException(ExceptionEnum.HEADER_MODIFICATION_FAILED);
-        }
+        String requestBodyData = jsonObject.toString();
+
+        HttpRequest putHeader = HttpRequest.newBuilder()
+                .uri(URI.create("https://meeting.ssafy.com/api/v4/channels/" + channelId))
+                .header("Authorization", "Bearer " + sessionToken)
+                .PUT(HttpRequest.BodyPublishers.ofString(requestBodyData))
+                .build();
+
+        return putClient.send(putHeader, HttpResponse.BodyHandlers.ofString()).statusCode();
     }
 }
