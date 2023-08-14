@@ -1,0 +1,35 @@
+.me {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'NanumSquareNeo';
+}
+
+.roleMe {
+    margin-right: 10px;
+    padding: 2px 10px;
+    border: 1px solid #1B3555;
+    border-radius: 10px;
+    background: #192B42;
+
+    color: #2D8CFF;
+    font-family: 'Suite';
+}
+
+.nickNameForm {
+    left: 10px;
+    font-family: "NanumSquareNeo";
+}
+
+.meSetting {
+    display: flex;
+    margin-right: 10px;
+}
+
+.other {
+    height: 29.6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: "NanumSquareNeo";
+    font-size: 13px;
+}
