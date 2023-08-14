@@ -50,7 +50,7 @@ public class MattermostController {
             @ApiResponse(responseCode = "4011", description =  "CANNOT_CREATE_ROOM", content = @Content(examples = @ExampleObject(value = "{\"status\": 4011, \"data\": \"해당 채널에서 weffy를 생성할 권한이 없습니다.\"}"))),
     })
     @PostMapping("/header")
-    public ResponseEntity<? extends BaseResponseBody> makeHeaderLink(@RequestPart(name = "channelId") String channelId) throws IOException, InterruptedException, JSONException {
+    public ResponseEntity<? extends BaseResponseBody> makeHeaderLink(@RequestPart(name = "channelId") String channelId) throws IOException, InterruptedException {
         String authorizedMember = SecurityUtil.getAuthorizedMember();
         WeffyUser weffyUser = userService.findByEmail(authorizedMember);
         if (mattermostService.makeHeaderLink(weffyUser, channelId) == 200) return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "SUCCESS"));
