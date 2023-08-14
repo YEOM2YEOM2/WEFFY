@@ -1,6 +1,7 @@
 package com.weffy.common.config;
 
 import com.weffy.common.kms.KmsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -10,9 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 
 @Configuration
+@RequiredArgsConstructor
 public class DataSourceConfiguration {
-    @Autowired
-    private KmsService kmsService;
+    private final KmsService kmsService;
 
     @Value("${spring.datasource.url}")
     private String url;

@@ -15,8 +15,8 @@ import java.nio.ByteBuffer;
 @Service
 public class KmsService {
 
-    @Value("${aws.kms.key-id}")
-    private String KEY_ID;
+//    @Value("${aws.kms.key-id}")
+//    private String KEY_ID;
 
     public String decryptData(String encryptedData) {
         try {
@@ -26,7 +26,7 @@ public class KmsService {
 
             DecryptRequest request = new DecryptRequest();
             request.withCiphertextBlob(ByteBuffer.wrap(Base64.decodeBase64(encryptedData)));
-            request.withKeyId(KEY_ID);
+            request.withKeyId("34e74f60-e450-43b1-ada9-a26be8e472fe");
             request.withEncryptionAlgorithm(EncryptionAlgorithmSpec.RSAES_OAEP_SHA_256);
             ByteBuffer plainText = kmsClient.decrypt(request).getPlaintext();
             return new String(plainText.array());
