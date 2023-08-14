@@ -1,19 +1,22 @@
 pipeline {
     agent none
     options { skipDefaultCheckout(true) }
-	stages {
+
+    stages {
         stage('Cleanup Workspace') {
             agent any
             steps {
                 sh 'rm -rf *'
             }
         }
+
         stage('Clone Repository') {
             agent any
             steps {
                 checkout scm
             }
         }
+
         stage('Prepare credentials') {
             agent any
             steps {
@@ -21,40 +24,39 @@ pipeline {
                     file(credentialsId: 'auth-application-dev.properties', variable: 'AUTH_FILE'),
                     file(credentialsId: 'ov-content-application-dev.properties', variable: 'OV_CONTENT_FILE')
                 ]) {
-                    // The credentials can be used within this block
                     sh 'cp $AUTH_FILE backend/authentication-integration-service/src/main/resources/application-dev.properties'
                     sh 'cp $OV_CONTENT_FILE backend/openvidu-content-service/src/main/resources/application-dev.properties'
                 }
             }
         }
+
         stage('Set Execute Permission for Gradlew') {
             agent any
             steps {
                 sh 'chmod +x backend/authentication-integration-service/gradlew'
                 sh 'chmod +x backend/openvidu-content-service/gradlew'
-                // If you also use ./gradlew for other services, repeat the chmod command for those paths as well.
             }
         }
+
         stage('Build and Test for authentication-integration-service') {
             agent {
                 docker {
-                    image 'authentication-integration-service' // Replace with the name of your custom image
+                    image 'authentication-integration-service'
                     args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
                 }
             }
-            options { skipDefaultCheckout(false) }
             steps {
                 sh 'cd backend/authentication-integration-service && ./gradlew clean build -x test'
             }
         }
+
         stage('Build and Test for openvidu-content-service') {
             agent {
                 docker {
-                    image 'openvidu-content-service' // Replace with the name of your custom image for openvidu-content-service
+                    image 'openvidu-content-service'
                     args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
                 }
             }
-            options { skipDefaultCheckout(false) }
             steps {
                 sh 'cd backend/openvidu-content-service && ./gradlew clean build -x test'
             }
@@ -63,16 +65,17 @@ pipeline {
         stage('Docker build for authentication-integration-service') {
             agent any
             steps {
-                sh 'docker build -t authentication-integration-service:latest backend/authentication-integration-service/'
+                sh 'docker build -f backend/authentication-integration-service/Dockerfile -t authentication-integration-service:latest backend/authentication-integration-service/'
             }
         }
 
         stage('Docker build for openvidu-content-service') {
             agent any
             steps {
-                sh 'docker build -t openvidu-content-service:latest backend/openvidu-content-service/'
+                sh 'docker build -f backend/openvidu-content-service/Dockerfile -t openvidu-content-service:latest backend/openvidu-content-service/'
             }
         }
+
         stage('Login to Docker Hub') {
             agent any
             steps {
@@ -81,30 +84,16 @@ pipeline {
                 }
             }
         }
+
         stage('Docker run for authentication-integration-service') {
             agent any
             steps {
                 script {
-                    try {
-                        sh 'docker ps -f name=authentication-integration-service -q \
-                            | xargs --no-run-if-empty docker container stop'
-                    } catch (Exception e) {
-                        echo "Error stopping container: ${e}"
-                    }
-
-                    try {
-                        sh 'docker container ls -a -f name=authentication-integration-service -q \
-                            | xargs -r docker container rm'
-                    } catch (Exception e) {
-                        echo "Error removing container: ${e}"
-                    }
-
-                    try {
-                        sh 'docker images -f "dangling=true" -q \
-                            | xargs -r docker rmi'
-                    } catch (Exception e) {
-                        echo "Error removing dangling images: ${e}"
-                    }
+                    sh '''
+                    docker ps -f name=authentication-integration-service -q | xargs --no-run-if-empty docker container stop
+                    docker container ls -a -f name=authentication-integration-service -q | xargs -r docker container rm
+                    docker images -f "dangling=true" -q | xargs -r docker rmi
+                    '''
                 }
 
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
@@ -112,30 +101,16 @@ pipeline {
                 }
             }
         }
+
         stage('Docker run for openvidu-content-service') {
             agent any
             steps {
                 script {
-                    try {
-                        sh 'docker ps -f name=openvidu-content-service -q \
-                            | xargs --no-run-if-empty docker container stop'
-                    } catch (Exception e) {
-                        echo "Error stopping container: ${e}"
-                    }
-
-                    try {
-                        sh 'docker container ls -a -f name=openvidu-content-service -q \
-                            | xargs -r docker container rm'
-                    } catch (Exception e) {
-                        echo "Error removing container: ${e}"
-                    }
-
-                    try {
-                        sh 'docker images -f "dangling=true" -q \
-                            | xargs -r docker rmi'
-                    } catch (Exception e) {
-                        echo "Error removing dangling images: ${e}"
-                    }
+                    sh '''
+                    docker ps -f name=openvidu-content-service -q | xargs --no-run-if-empty docker container stop
+                    docker container ls -a -f name=openvidu-content-service -q | xargs -r docker container rm
+                    docker images -f "dangling=true" -q | xargs -r docker rmi
+                    '''
                 }
 
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
@@ -145,4 +120,3 @@ pipeline {
         }
     }
 }
-
