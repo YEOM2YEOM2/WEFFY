@@ -985,7 +985,8 @@ class Conference extends Component {
               <List style={{ backgroundColor: "#17202E" }}>
                 {this.state.partChatToggle === "participant" ? (
                   <Participant
-                    participants={this.state.subscribers8}
+                    user = {localUser}
+                    participants={this.state.subscribers}
                     handleNickname={this.nicknameChanged}
                   />
                 ) : null}
