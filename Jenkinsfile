@@ -18,7 +18,7 @@ pipeline {
             agent any
             steps {
                 withCredentials([
-                    file(credentialsId: 'auth-application-dev.properties', variable: 'AUTH_FILE')
+                    file(credentialsId: 'auth-application-dev.properties', variable: 'AUTH_FILE'),
                     file(credentialsId: 'ov-content-application-dev.properties', variable: 'OV_CONTENT_FILE')
                 ]) {
                     // The credentials can be used within this block
