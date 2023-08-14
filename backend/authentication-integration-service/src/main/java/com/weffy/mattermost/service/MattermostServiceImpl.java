@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 @Service("mattermostService")
 @Transactional
-@RequiredArgsConstructor
 public class MattermostServiceImpl implements MattermostService {
     private final JpaSessionRepository jpaSessionRepository;
     private final UserRepository userRepository;
@@ -32,6 +31,23 @@ public class MattermostServiceImpl implements MattermostService {
     private final JpaChannelRepository jpaChannelRepository;
     private final JpaUserChannelRepository jpaUserChannelRepository;
     private final MattermostHandler mattermostHandler;
+
+    // 생성자를 직접 작성
+    public MattermostServiceImpl(JpaSessionRepository jpaSessionRepository,
+                                 UserRepository userRepository,
+                                 JpaTeamRepository jpaTeamRepository,
+                                 JpaUserTeamRepository jpaUserTeamRepository,
+                                 JpaChannelRepository jpaChannelRepository,
+                                 JpaUserChannelRepository jpaUserChannelRepository,
+                                 MattermostHandler mattermostHandler) {
+        this.jpaSessionRepository = jpaSessionRepository;
+        this.userRepository = userRepository;
+        this.jpaTeamRepository = jpaTeamRepository;
+        this.jpaUserTeamRepository = jpaUserTeamRepository;
+        this.jpaChannelRepository = jpaChannelRepository;
+        this.jpaUserChannelRepository = jpaUserChannelRepository;
+        this.mattermostHandler = mattermostHandler;
+    }
 
     @Override
     @Transactional

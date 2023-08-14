@@ -168,8 +168,10 @@ public class MattermostHandler {
                     .build();
 
             return putClient.send(putHeader, HttpResponse.BodyHandlers.ofString()).statusCode();
-        } catch (IOException | InterruptedException | JSONException e) {
+        } catch (IOException | InterruptedException  e) {
             throw new CustomException(ExceptionEnum.HEADER_MODIFICATION_FAILED);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
         }
     }
 }
