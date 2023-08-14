@@ -2,6 +2,8 @@ import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import React, { Component } from "react";
 import ChatComponent from "./../component/conference/chat/ChatComponent.js";
+import QuestionChat from "./../component/conference/chat/QuestionChat.js";
+
 import DialogExtensionComponent from "./../component/conference/dialog-extension/DialogExtension.js";
 import StreamComponent from "./../component/conference/stream/StreamComponent.js";
 import "./VideoRoomComponent.css";
@@ -21,7 +23,8 @@ class VideoRoomComponent extends Component {
     const sessionIdFromUrl = pathArray[pathArray.length - 1];
     this.hasBeenUpdated = false;
     this.layout = new OpenViduLayout();
-    let sessionName = sessionIdFromUrl;
+    let sessionName = decodeURIComponent(sessionIdFromUrl);
+    console.log(sessionName);
 
     let userName = this.props.user
       ? this.props.user
@@ -587,7 +590,7 @@ class VideoRoomComponent extends Component {
                 className="OT_root OT_publisher custom-class"
                 style={chatDisplay}
               >
-                <ChatComponent
+                <QuestionChat
                   user={localUser}
                   chatDisplay={this.state.chatDisplay}
                   close={this.toggleChat}
@@ -630,7 +633,8 @@ class VideoRoomComponent extends Component {
    * more about the integration of OpenVidu in your application server.
    */
   async getToken() {
-    const sessionId = await this.createSession(this.state.mySessionId);
+    let encoSessionId = encodeURI(this.state.mySessionIds);
+    const sessionId = await this.createSession(encoSessionId);
     return await this.createToken(sessionId);
   }
 
