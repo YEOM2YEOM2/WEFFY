@@ -27,6 +27,14 @@ pipeline {
                 }
             }
         }
+        stage('Set Execute Permission for Gradlew') {
+            agent any
+            steps {
+                sh 'chmod +x backend/authentication-integration-service/gradlew'
+                sh 'chmod +x backend/openvidu-content-service/gradlew'
+                // If you also use ./gradlew for other services, repeat the chmod command for those paths as well.
+            }
+        }
         stage('Build and Test for authentication-integration-service') {
             agent {
                 docker {
