@@ -17,7 +17,7 @@ const QuestionChat = ({ user }) => {
   const chatScroll = useRef(null);
 
   useEffect(() => {
-    const handleSignalChat = (event) => {
+    const handleSignalQuestion = (event) => {
       const data = JSON.parse(event.data);
       const newMessage = {
         connectionId: event.from.connectionId,
@@ -29,12 +29,12 @@ const QuestionChat = ({ user }) => {
       scrollToBottom();
     };
 
-    user.getStreamManager().stream.session.on("signal:chat", handleSignalChat);
+    user.getStreamManager().stream.session.on("signal:question", handleSignalQuestion);
 
     return () => {
       user
         .getStreamManager()
-        .stream.session.off("signal:chat", handleSignalChat);
+        .stream.session.off("signal:question", handleSignalQuestion);
     };
   }, [user]);
 
@@ -64,6 +64,7 @@ const QuestionChat = ({ user }) => {
         streamId: user.getStreamManager().stream.streamId,
         timestamp: getCurTimeStamp(),
       };
+      console.log('질문 채팅 user',user)
       user.getStreamManager().stream.session.signal({
         data: JSON.stringify(data),
         type: "chat",
