@@ -76,7 +76,7 @@ pipeline {
                     sh 'docker images -f "dangling=true" -q \
                         | xargs -r docker rmi'
                 }
-                withCredentials([$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']) {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
                     sh 'docker run -d -p 8081:8081 --name authentication-integration-service -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY authentication-integration-service:latest'
                 }
             }
