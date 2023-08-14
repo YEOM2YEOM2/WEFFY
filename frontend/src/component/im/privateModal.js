@@ -42,6 +42,8 @@ const PrivateModal = ({ handleClose }) => {
 
   const [localNickname, setLocalNickname] = useState(nickname);
 
+  const [sessionId, setSessionId] = useState("sessionB");
+
   useEffect(() => {
     setLocalNickname(nickname);
   }, [nickname]);
@@ -114,18 +116,11 @@ const PrivateModal = ({ handleClose }) => {
     setLocalNickname(newNickname);
   };
 
-  // const navigate = useNavigate();
-
+  const navigate = useNavigate();
   const startPrivateMeeting = () => {
     dispatch(setParticipateName(localNickname));
-
-    // navigate("/conference", {
-    //   state: {
-    //     nickname: setLocalNickname,
-    //   },
-    // });
-
-    
+    console.log("start Meeting!");
+    navigate(`/conference/${sessionId}`);
   };
 
   const handleSelectCamera = (event) => {
@@ -234,6 +229,8 @@ const PrivateModal = ({ handleClose }) => {
           >
             Start Private Meeting
           </Button>
+
+          {/* <Link to={`conferece/${sessionB}`}>Start Private Meeting</Link> */}
         </Grid>
       </div>
     </div>
