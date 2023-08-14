@@ -76,7 +76,7 @@ pipeline {
                     sh 'docker images -f "dangling=true" -q \
                         | xargs -r docker rmi'
                 }
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
+                withCredentials([$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']) {
                     sh 'docker run -d -p 8081:8081 --name authentication-integration-service -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY authentication-integration-service:latest'
                 }
             }
@@ -84,19 +84,19 @@ pipeline {
         stage('Docker run for openvidu-content-service') {
         agent any
         steps {
-            script {
-                sh 'docker ps -f name=openvidu-content-service -q \
-                    | xargs --no-run-if-empty docker container stop'
-                sh 'docker container ls -a -f name=openvidu-content-service -q \
-                    | xargs -r docker container rm'
-                sh 'docker images -f "dangling=true" -q \
-                    | xargs -r docker rmi'
-            }
-            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id-for-openvidu']]) {
+            // script {
+            //     sh 'docker ps -f name=openvidu-content-service -q \
+            //         | xargs --no-run-if-empty docker container stop'
+            //     sh 'docker container ls -a -f name=openvidu-content-service -q \
+            //         | xargs -r docker container rm'
+            //     sh 'docker images -f "dangling=true" -q \
+            //         | xargs -r docker rmi'
+            // }
+            withCredentials([$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id-for-openvidu']) {
                 sh 'docker run -d -p 8083:8083 --name openvidu-content-service -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY openvidu-content-service:latest'
             }
         }
-    }
+        }
     }
 }
 
