@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import styles from "./fileList.module.css";
 import axios from "axios";
+import { Button } from "@mui/material";
+
+//mui 버튼
+import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
+import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 
 function FileList(props) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -141,8 +146,15 @@ function FileList(props) {
           <p>1 of 3</p>
         </div>
         <div>
-          <button onClick={handlePrev}>◂</button>
-          <button onClick={handleNext}>▸</button>
+          <Button onClick={handlePrev} size="small">
+            <ArrowCircleLeftIcon />
+          </Button>
+          <Button onClick={handleNext} size="small">
+            <ArrowCircleRightIcon />
+          </Button>
+          {/* <button onClick={handlePrev}>◂</button>
+
+          <button onClick={handleNext}>▸</button> */}
         </div>
       </div>
       <div
