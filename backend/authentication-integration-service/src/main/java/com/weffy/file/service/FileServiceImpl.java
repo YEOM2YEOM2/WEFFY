@@ -7,14 +7,18 @@ import com.weffy.file.dto.request.FileReqDto;
 import com.weffy.file.dto.response.FileResDto;
 import com.weffy.file.dto.response.GetFileDto;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.weffy.file.repository.JpaFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 
@@ -110,17 +114,26 @@ public class FileServiceImpl implements FileService {
 
     private String bucketName = "weffy-conference";
     @Override
-    public void downloadFile(String objectKey, String filename) {
+    public ResponseEntity<byte[]> downloadFile(String objectKey, String filename) {
         try {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)
                     .key(objectKey)
                     .build();
 
-            String userHomeDirectory = System.getProperty("user.home");
-            String downloadsPath = userHomeDirectory + File.separator + "Downloads" + File.separator + filename;
+            // S3에서 파일 내용 가져오기
+            ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes());
 
-            s3Client.getObject(getObjectRequest, ResponseTransformer.toFile(Paths.get(downloadsPath)));
+            // 한글 파일 이름 인코딩 처리
+            String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8.toString()).replaceAll("\\+", "%20");
+
+            // HTTP 응답 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentDispositionFormData("attachment", encodedFilename);
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(objectBytes.asByteArray());
 
         } catch (Exception e) {
             e.printStackTrace();
