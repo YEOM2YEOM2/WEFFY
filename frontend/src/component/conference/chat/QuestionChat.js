@@ -78,8 +78,6 @@ const QuestionChat = ({ user }) => {
         anonymous: anonymousStatus,
       };
 
-      console.log(accessToken);
-
       axios({
         method: "post",
         url: `http://i9d107.p.ssafy.io:8083/api/v1/question`,
@@ -91,7 +89,7 @@ const QuestionChat = ({ user }) => {
         data: postData,
       })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
         })
         .catch((err) => {
           console.log(err.response);
