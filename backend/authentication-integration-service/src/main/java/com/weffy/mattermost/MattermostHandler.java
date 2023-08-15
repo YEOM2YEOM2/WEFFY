@@ -103,7 +103,7 @@ public class MattermostHandler {
         ObjectMapper objectMapper = new ObjectMapper();
 
         // HttpResponse의 body를 JSON으로 파싱
-       return objectMapper.readTree(channelInfo.body());
+        return objectMapper.readTree(channelInfo.body());
     }
 
     // Mattermost 채널 권한 가져오기
