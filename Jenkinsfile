@@ -89,11 +89,23 @@ pipeline {
             agent any
             steps {
                 script {
-                    sh '''
-                    docker ps -f name=authentication-integration-service -q | xargs --no-run-if-empty docker container stop
-                    docker container ls -a -f name=authentication-integration-service -q | xargs -r docker container rm
-                    docker images -f "dangling=true" -q | xargs -r docker rmi
-                    '''
+                    // 컨테이너 정지
+                    def stopStatus = sh(script: 'docker ps -f name=authentication-integration-service -q | xargs --no-run-if-empty docker container stop', returnStatus: true)
+                    if (stopStatus != 0) {
+                        echo "Failed to stop containers. They might not be running, which is okay. Continuing..."
+                    }
+
+                    // 컨테이너 삭제
+                    def rmStatus = sh(script: 'docker container ls -a -f name=authentication-integration-service -q | xargs -r docker container rm', returnStatus: true)
+                    if (rmStatus != 0) {
+                        echo "Failed to remove containers. They might not exist, which is okay. Continuing..."
+                    }
+
+                    // 이미지 삭제
+                    def rmiStatus = sh(script: 'docker images -f "dangling=true" -q | xargs -r docker rmi', returnStatus: true)
+                    if (rmiStatus != 0) {
+                        echo "Failed to remove dangling images. They might not exist, which is okay. Continuing..."
+                    }
                 }
 
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
@@ -101,16 +113,27 @@ pipeline {
                 }
             }
         }
-
         stage('Docker run for openvidu-content-service') {
             agent any
             steps {
                 script {
-                    sh '''
-                    docker ps -f name=openvidu-content-service -q | xargs --no-run-if-empty docker container stop
-                    docker container ls -a -f name=openvidu-content-service -q | xargs -r docker container rm
-                    docker images -f "dangling=true" -q | xargs -r docker rmi
-                    '''
+                    // 컨테이너 정지
+                    def stopStatus = sh(script: 'docker ps -f name=openvidu-content-service -q | xargs --no-run-if-empty docker container stop', returnStatus: true)
+                    if (stopStatus != 0) {
+                        echo "Failed to stop containers."
+                    }
+
+                    // 컨테이너 삭제
+                    def rmStatus = sh(script: 'docker container ls -a -f name=openvidu-content-service -q | xargs -r docker container rm', returnStatus: true)
+                    if (rmStatus != 0) {
+                        echo "Failed to remove containers."
+                    }
+
+                    // 이미지 삭제
+                    def rmiStatus = sh(script: 'docker images -f "dangling=true" -q | xargs -r docker rmi', returnStatus: true)
+                    if (rmiStatus != 0) {
+                        echo "Failed to remove dangling images."
+                    }
                 }
 
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
