@@ -8,7 +8,8 @@ let user = createSlice({
         refreshToken: null,
         csrfToken: null,
         nickname: null,
-        profileImg: null
+        profileImg: null,
+        id : null
     },
     reducers: {
         setIdentification(state, action) {
@@ -28,9 +29,12 @@ let user = createSlice({
         },
         setNickname(state, action) {
             state.nickname = action.payload
+        },
+        setId(state, action) {
+            state.id = action.payload
         }
     }
 })
 
-export const { setIdentification, setAccessToken, setRefreshToken, setCsrfToken, setProfileImg, setNickname } = user.actions
+export const { setIdentification, setAccessToken, setRefreshToken, setCsrfToken, setProfileImg, setNickname, setId } = user.actions
 export default user.reducer;
