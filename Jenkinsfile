@@ -64,7 +64,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'cd backend/openvidu-meeting-service && ./gradlew clean build -x test'
+                sh 'cd backend/openvidu-meeting-service && gradle clean build -x test'
             }
         }
 
