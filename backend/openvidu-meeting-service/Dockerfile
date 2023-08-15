@@ -38,5 +38,6 @@ WORKDIR /app/build/libs
 # Expose the port the app runs in and the debug port
 EXPOSE 8082
 
+ENTRYPOINT ["cat"]
 # Run the application with debug options
-CMD ["java", "-jar", "openvidu-meeting-service-2.28.0.jar"]
+#CMD ["java", "-jar", "openvidu-meeting-service-2.28.0.jar"]
