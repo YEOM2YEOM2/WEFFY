@@ -64,36 +64,35 @@ function FileList(props) {
     color: "skyblue",
     cursor: "pointer",
     borderRadius: "20px",
-    // borderColor : "skyblue",
   };
 
-  //들어오자마자 백에 요청해서 db에서 file들 가져오는 코드입니다용
-  useEffect(() => {
-    async function fetchFiles() {
-      try {
-        const url = "http://localhost:8081/api/v1/files";
+  // 들어오자마자 백에 요청해서 db에서 file들 가져오는 코드입니다용
+  // useEffect(() => {
+  //   async function fetchFiles() {
+  //     try {
+  //       const url = "http://localhost:8081/api/v1/files";
 
-        const requestData = {
-          conferenceId: conferenceId,
-          start: "시작시간",
-          end: "종료시간",
-        };
+  //       const requestData = {
+  //         conferenceId: conferenceId,
+  //         start: "시작시간",
+  //         end: "종료시간",
+  //       };
 
-        const response = await axios.post(url, { data: requestData });
-        if (
-          response.data &&
-          response.data.data &&
-          Array.isArray(response.data.data.getFileDto)
-        ) {
-          setFiles(response.data.data.getFileDto.map((file) => file.fileName));
-        }
-      } catch (error) {
-        console.error("Error : " + error);
-      }
-    }
+  //       const response = await axios.post(url, { data: requestData });
+  //       if (
+  //         response.data &&
+  //         response.data.data &&
+  //         Array.isArray(response.data.data.getFileDto)
+  //       ) {
+  //         setFiles(response.data.data.getFileDto.map((file) => file.fileName));
+  //       }
+  //     } catch (error) {
+  //       console.error("Error : " + error);
+  //     }
+  //   }
 
-    fetchFiles();
-  }, []);
+  //   fetchFiles();
+  // }, []);
 
   return (
     <div className={styles.modal}>
