@@ -180,7 +180,8 @@ pipeline {
                 }
 
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
-                    sh 'docker run -d -p 8082:8082 --name openvidu-meeting-service -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY openvidu-meeting-service:latest'
+                    sh 'docker run -d -p 8082:8082 --name openvidu-meeting-service -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY --entrypoint "java -jar /app/build/libs/openvidu-meeting-service-2.28.0.jar" openvidu-meeting-service:latest'
+
                 }
             }
         }
