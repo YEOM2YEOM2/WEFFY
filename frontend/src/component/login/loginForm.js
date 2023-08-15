@@ -17,7 +17,6 @@ import Container from 'react-bootstrap/Container';
 
 // store user 함수
 import { setIdentification, setAccessToken, setRefreshToken, setCsrfToken, setProfileImg, setNickname } from '../../store/reducers/user';
-import { identifier } from '@babel/types';
 
 function LoginForm() {
 
@@ -27,10 +26,6 @@ function LoginForm() {
   let [email, setEmail] = useState("");
   let [pw, setPw] = useState("");
   let [cnt, setCnt] = useState(0);
-
-  let [emailModal, setEmailModal] = useState(false);
-  let [pwModal, setPasswordModal] = useState(false);
-
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
