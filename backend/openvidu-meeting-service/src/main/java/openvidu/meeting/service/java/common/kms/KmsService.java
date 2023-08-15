@@ -6,6 +6,7 @@ import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.DecryptRequest;
 import com.amazonaws.services.kms.model.EncryptionAlgorithmSpec;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,12 @@ import java.nio.ByteBuffer;
 @Service
 public class KmsService {
 
-    @Value("${aws.kms.key-id}")
-    private String KEY_ID;
+    private final String KEY_ID;
+
+    @Autowired
+    public KmsService(@Value("${aws.kms.key-id}") String keyId) {
+        this.KEY_ID = keyId;
+    }
 
     public String decryptData(String encryptedData) {
         try {
