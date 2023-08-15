@@ -9,16 +9,16 @@
 # Use Ubuntu as base image
 FROM ubuntu:20.04
 
-# Install OpenJDK 17
+# Install OpenJDK 11
 RUN apt-get update && \
     apt-get install -y openjdk-11-jdk && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Gradle 8.2
+# Install necessary utilities and Gradle 8.2
 RUN apt-get update && apt-get install -y wget unzip \
  && wget https://services.gradle.org/distributions/gradle-8.2-bin.zip -P /tmp \
  && unzip -d /opt/gradle /tmp/gradle-*.zip \
- && rm -rf /tmp/*
+ && rm -rf /tmp/* /var/lib/apt/lists/*
 
 ENV GRADLE_HOME=/opt/gradle/gradle-8.2
 ENV PATH="$PATH:$GRADLE_HOME/bin"
@@ -29,11 +29,8 @@ WORKDIR /app
 # Copy the Gradle project
 COPY . .
 
-# Make gradlew executable
-RUN chmod +x ./gradlew
-
-# Build the project
-RUN ./gradlew clean build --no-daemon -x test
+# Build the project using installed Gradle (not gradlew)
+RUN gradle clean build --no-daemon -x test
 
 # Change the working directory to the build directory
 WORKDIR /app/build/libs
