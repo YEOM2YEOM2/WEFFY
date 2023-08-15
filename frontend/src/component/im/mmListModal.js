@@ -13,7 +13,11 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
 import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
+// store conference
+import { setClassId, setConferenceName } from "../../store/reducers/conference";
 
 const MMListModal = ({ handleClose, handleStartMeeting }) => {
   // const [groupData, setGroupData] = useState([]);
@@ -21,6 +25,8 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
 
   console.log(handleStartMeeting);
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const accessToken = useSelector((state) => state.user.accessToken);
   const inintMMList = () => {
     axios({
@@ -87,6 +93,10 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
 
   const startMeeting = () => {
     console.log("서버랑 통신 해서 sessionId받아와서 화면 넘기기");
+    dispatch(setClassId(selectedChannelId));
+    dispatch(setConferenceName(selectedChannel));
+
+    navigate(`/conference/${selectedChannelId}`);
   };
   return (
     <div
