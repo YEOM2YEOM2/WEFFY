@@ -23,6 +23,8 @@ public class OpenviduDB {
 
     private static Map<String, String> hostToken;
 
+    private static Map<String, Integer> sessionRecordingNumber;
+
    // private static Map<String, Boolean> sessionRecordings;
 
     //private static Map<String, String> mapIdentificationTokens;

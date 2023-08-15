@@ -200,17 +200,13 @@ class ChatComponent extends Component {
   }
 
   render() {
-    const styleChat = { display: this.props.chatDisplay };
     return (
-      <div id="chatContainer">
-        <div id="chatComponent" style={styleChat}>
+      <div id="chatContainer" style={{ position: "relative", bottom: "7px" }}>
+        <div id="chatComponent" style={{ margin: "0", height: "calc(100% + 15px)", width: "100%" }}>
           <div id="chatToolbar">
             <span style={{ fontFamily: "Agro", fontWeight: "400" }}>
               일반 채팅
             </span>
-            <IconButton id="closeButton" onClick={this.close}>
-              <CancelOutlinedIcon style={{ color: "red" }} />
-            </IconButton>
           </div>
           <div className="message-wrap" ref={this.chatScroll}>
             {this.state.messageList.map((data, i) =>
