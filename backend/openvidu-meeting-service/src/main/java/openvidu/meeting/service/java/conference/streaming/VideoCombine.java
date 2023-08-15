@@ -18,22 +18,34 @@ public class VideoCombine {
 
     public Logger logger = LoggerFactory.getLogger(VideoCombine.class);
 
-    // inputVideo1 : "C://recording/RecordingFile/classId/TotalZipFile/classId"
+    public StringBuilder recordingFileUrl = new StringBuilder().append("C:\\recording\\RecordingFile\\");
+
+    public StringBuilder textFileUrl = new StringBuilder().append("C:\\recording\\TotalTextFile\\");
+
+
     public void compressVideos(String classId) throws IOException, InterruptedException {
 
-        //
-        Path path1 = Paths.get("C://recording/TotalZipFile/"+classId);
+        recordingFileUrl.append(classId+".webm");
 
-        String recordingFileUrl = "C:\\recording\\TotalRecordingFile\\"+classId+".webm";
+        textFileUrl.append(classId+".txt");
 
-        String textFileUrl = "C:\\recording\\TotalTextFile\\"+classId+".txt";
+        // 파일을 합친다.
+        String command = "ffmpeg -f concat -safe 0 -i "+textFileUrl.toString()+" -c copy "+recordingFileUrl.toString();
+        ProcessBuilder processBuilder1 = new ProcessBuilder(command.split(" "));
+        processBuilder1.redirectErrorStream(true);
+        Process process1 = processBuilder1.start();
+        process1.waitFor();
 
-        // String command = "ffmpeg -f concat -safe 0 -i C:\\recording\\mylist.txt -c copy C:\\recording\\nimo.webm";
-        String command = "ffmpeg -f concat -safe 0 -i "+textFileUrl+" -c copy "+recordingFileUrl;
-        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
-        processBuilder.redirectErrorStream(true);
-        Process process = processBuilder.start();
-        process.waitFor();
+
+        // 해상도 조절
+        String combineCommand = "ffmpeg -i "+recordingFileUrl.toString()+" -vf \"scale=1920:1080\" "+recordingFileUrl.toString();
+        ProcessBuilder processBuilder2 = new ProcessBuilder(combineCommand.split(" "));
+        processBuilder2.redirectErrorStream(true);
+        Process process2 = processBuilder2.start();
+        process2.waitFor();
+
+
+        logger.info(classId + " 합치기 완료!!");
 
     }
 

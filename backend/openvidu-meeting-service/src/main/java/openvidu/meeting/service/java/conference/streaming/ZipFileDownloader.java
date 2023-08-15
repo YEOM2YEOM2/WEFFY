@@ -1,7 +1,10 @@
 package openvidu.meeting.service.java.conference.streaming;
 
+import io.openvidu.java.client.OpenVidu;
+import io.openvidu.java.client.Recording;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import openvidu.meeting.service.java.OpenviduDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Base64;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -31,6 +35,8 @@ public class ZipFileDownloader{
 
     private final RestTemplate restTemplate;
 
+    private OpenVidu openvidu;
+
     // @Value("${openvidu.api.username}")
     private String openViduApiUsername = "OPENVIDUAPP";
 
@@ -39,13 +45,15 @@ public class ZipFileDownloader{
 
     private String recordingFilePath = "C://recording/RecordingFile/";
 
+    private String totalTextFile = "C://recording/TotalTextFile/";
+
     private String totalZipFilePath = "C://recording/TotalZipFile/";
 
     private String zipFileUrl;
 
     private String classId;
 
-    private String title; // classId + index
+   // private String title; // classId + index
 
     private VideoCombine videoCombine;
 
@@ -53,12 +61,19 @@ public class ZipFileDownloader{
 
     private String identification;
 
+    public void setZipFileSetting(String zipFileUrl,String classId, String recordingId, String identification){
+        this.zipFileUrl = zipFileUrl;
+        this.classId = classId;
+     //   this.title = classId + index;
+        this.recordingId = recordingId;
+        this.identification = identification;
+    }
+
 
     public ZipFileDownloader(RestTemplateBuilder restTemplateBuilder) {
+        this.openvidu = OpenviduDB.getOpenvidu();
         this.restTemplate = restTemplateBuilder.build();
         this.videoCombine = new VideoCombine();
-
-       // this.identification = "jenny";
     }
 
     @Bean
@@ -86,7 +101,7 @@ public class ZipFileDownloader{
 
             byte[] zipBytes = response.getBody();
 
-            Path pathName = Paths.get(totalZipFilePath).resolve(title+".zip");
+            Path pathName = Paths.get(totalZipFilePath).resolve(classId+".zip");
 
             Files.write(pathName, zipBytes);
 
@@ -94,7 +109,7 @@ public class ZipFileDownloader{
             // unzipDir에 압축 해제된 파일들을 저장함
            // Path unzipDir = Files.createTempDirectory(Paths.get(totalZipFilePath),title);
 
-            Path unzipDir = Files.createDirectories(Paths.get(totalZipFilePath).resolve(title));
+            Path unzipDir = Files.createDirectories(Paths.get(totalZipFilePath).resolve(classId));
             try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(pathName))) {
                 ZipEntry entry;
                 while ((entry = zipInputStream.getNextEntry()) != null) {
@@ -107,38 +122,33 @@ public class ZipFileDownloader{
                     }
                 }
             }
+            // 녹화한 파일 삭제
+            this.openvidu.deleteRecording(recordingId);
 
+
+            // 파일을 합친다.
             videoCombine.compressVideos(classId);
 
 
+            // [폴더&파일 삭제]
+            this.removeFolder(totalZipFilePath,classId, true); // C://recording/TotalZipFile/세션이름 폴더에 있는 모든 파일을 지운다 + 폴더도 지운다.
 
-//            // 압축 해제된 디렉토리에 있는 mp4 파일의 경로와 로컬 저장 경로를 설정한다.
-//            Path extractedMp4Path = unzipDir.resolve(title+".mp4");
-//
-//            Path targetPath = Paths.get(new StringBuilder().append(this.recordingFilePath).append(this.classId).append("/").toString(), title+".mp4");
-//
-//            // 기존에 저장한 폴더에서 지정한 로컬 경로로 파일을 옮긴다.
-//            Files.move(extractedMp4Path, targetPath, StandardCopyOption.REPLACE_EXISTING);
-//
-//           //  생성한 mp4 파일을 s3에 저장할 수 있도록 header에 담아서 보낸다.
-//
+            Files.deleteIfExists(Paths.get(totalZipFilePath+classId+".zip")); // zip 파일을 삭제한다.
+
+            Files.deleteIfExists(Paths.get(totalTextFile+classId+".txt")); // C://recording/TotalTextFile/세션이름.txt 파일을 지운다.
+
+            // S3 통신
 //            try{
 //                VideoSender sv = new VideoSender();
-//                sv.sendRequest(classId, title, identification);
+//                sv.sendRequest(classId, identification);
 //                logger.info("Success : ");
 //            }catch(Exception e){
 //                e.printStackTrace();
 //                logger.info("Error : ");
 //            }
-//
-//            // 로컬에 다운받은 임시 파일을 지운다.
-//            Files.delete(pathName);
-//
-//            // 압축을 폴었던 파일에 json 파일도 있었기 때문에 하위 파일을 먼저 지우고 폴더를 삭제한다.
-//            Files.delete(Paths.get(unzipDir.toString()).resolve(recordingId+".json"));
-//            Files.delete(unzipDir);
 
-            return new StringBuilder(title).append(".mp4").toString();
+
+            return new StringBuilder(classId).append(".webm").toString();
         }catch (Exception e){
             e.printStackTrace();
             return null;
@@ -146,11 +156,11 @@ public class ZipFileDownloader{
 
     }
 
-    public void removeFolder(String classId){
+    public void removeFolder(String deletePath, String classId, boolean ischeck){
 
         logger.info("removeFolder를 호출함");
 
-        File folder = new File(recordingFilePath+classId);
+        File folder = new File(deletePath+classId);
 
         if(folder.exists() && folder.isDirectory()){
             File[] files = folder.listFiles();
@@ -161,8 +171,10 @@ public class ZipFileDownloader{
                 }
             }
         }
-
-        folder.delete();
+        // RecordingFile이 아닌 경우
+        if(ischeck){
+            folder.delete();
+        }
 
     }
 
