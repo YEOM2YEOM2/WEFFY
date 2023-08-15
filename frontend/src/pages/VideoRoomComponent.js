@@ -26,6 +26,7 @@ const mapStateToProps = (state) => {
     accessToken: state.user.accessToken,
     identification: state.user.identification,
     classId: state.conference.classId,
+    conferenceName: state.conference.conferenceName,
   };
 };
 
@@ -697,12 +698,13 @@ class VideoRoomComponent extends Component {
     const { accessToken } = this.props;
     const { identification } = this.props;
     const { classId } = this.props;
+    const { conferenceName } = this.props;
     console.log("classId", classId);
     let encoSessionId = encodeURI(this.state.mySessionIds);
     const sessionId = await this.createSession(
       identification,
       classId,
-      "임시_제목",
+      conferenceName,
       "임시_설명"
     );
     return await this.createToken(identification, classId, accessToken);
@@ -710,21 +712,25 @@ class VideoRoomComponent extends Component {
 
   async createSession(identification, classId, title, description) {
     console.log(identification);
-
-    const response = await axios.post(
-      APPLICATION_SERVER_URL + "conferences",
-      {
-        identification: identification,
-        classId: classId,
-        title: title,
-        description: description,
-        active: true,
-      },
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    return response.data; // The sessionId
+    try {
+      const response = await axios.post(
+        APPLICATION_SERVER_URL + "conferences",
+        {
+          identification: identification,
+          classId: classId,
+          title: title,
+          description: description,
+          active: true,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      // return response.data; // The sessionId
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
   async createToken(identification, classId, accessToken) {
