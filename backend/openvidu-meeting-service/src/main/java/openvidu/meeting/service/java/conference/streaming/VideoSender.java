@@ -23,12 +23,11 @@ import java.nio.file.Paths;
 public class VideoSender {
     private Logger logger = LoggerFactory.getLogger(VideoSender.class);
 
-    @Value("${local.recording.path}")
-    private String localRecordingPath;
+    private String recordingFileUrl = "C:\\recording\\RecordingFile\\";
     private String accessToken;
 
     //"?type=lecture"
-    public void sendRequest(String classId, String fileName, String identification) throws IOException {
+    public void sendRequest(String classId,  String identification) throws IOException {
 
         logger.info("sendRequest 호출");
 
@@ -42,7 +41,7 @@ public class VideoSender {
 
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
-        Path file = Paths.get(localRecordingPath + classId + "/" + fileName + ".mp4");
+        Path file = Paths.get(recordingFileUrl + classId + ".webm");
 
        // System.out.println("문장 : "+ file.toString());
         builder.addBinaryBody("file", Files.newInputStream(file), ContentType.APPLICATION_OCTET_STREAM, file.getFileName().toString());
