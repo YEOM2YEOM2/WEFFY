@@ -36,5 +36,5 @@ WORKDIR /app/build/libs
 EXPOSE 8082
 
 # Run the JAR file
-CMD ["java", "-jar", "openvidu-meeting-service-2.28.0.jar"]
+ENTRYPOINT ["java", "-jar", "openvidu-meeting-service-2.28.0.jar"]
 
