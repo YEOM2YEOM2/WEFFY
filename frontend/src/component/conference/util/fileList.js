@@ -6,6 +6,9 @@ import { Button } from "@mui/material";
 //mui 버튼
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
+import CloseIcon from "@mui/icons-material/Close";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import { useFetcher } from "react-router-dom";
 
 function FileList(props) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -21,6 +24,10 @@ function FileList(props) {
     // Logic remains the same
     setUploadFile(e.target.files[0]);
   };
+
+  useEffect(() => {
+    console.log(uploadFile);
+  }, [uploadFile]);
 
   const handleUploadClick = async () => {
     if (!uploadFile) return;
@@ -108,10 +115,12 @@ function FileList(props) {
           justifyContent: "space-between",
           width: "100%",
           height: "30px",
+          fontFamily: "GmarketSans",
         }}
       >
         <h2>Files</h2>
-        <button onClick={props.onClose}>&times;</button>
+
+        <CloseIcon onClick={props.onClose} style={{ color: "red" }} />
       </div>
 
       <div>
@@ -138,54 +147,84 @@ function FileList(props) {
           display: "flex",
           justifyContent: "space-between",
           width: "100%",
+          fontFamily: "GmarketSans",
           height: "30px",
         }}
       >
-        <div style={{ display: "flex" }}>
+        <div
+          style={{
+            display: "flex",
+
+            fontSize: "15px",
+          }}
+        >
           <p>Showing 4 of 11 items</p>
           <p>1 of 3</p>
         </div>
-        <div>
-          <Button onClick={handlePrev} size="small">
+        <div className={styles["arrowContainer"]}>
+          <Button
+            onClick={handlePrev}
+            size="small"
+            className={styles["button"]}
+          >
             <ArrowCircleLeftIcon />
           </Button>
-          <Button onClick={handleNext} size="small">
+          <Button
+            onClick={handleNext}
+            size="small"
+            styles={{ width: "5px" }}
+            className={styles["button"]}
+          >
             <ArrowCircleRightIcon />
           </Button>
-          {/* <button onClick={handlePrev}>◂</button>
-
-          <button onClick={handleNext}>▸</button> */}
         </div>
       </div>
-      <div
-        className="upload"
-        style={{
-          border: "2px dotted gray",
-          borderRadius: "10px",
-        }}
-      >
-        <input
-          type="file"
-          className="hidden-input"
-          id="fileInput"
-          multiple
-          onChange={handleFileChange}
-          style={{ display: "none" }}
-        />
-        <label
-          htmlFor="fileInput"
-          className="custom-file-label"
-          style={labelStyles}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          Choose files
+
+      <div className={styles["upload"]}>
+        {/* <Button variant="outlined" startIcon={<AttachFileIcon />}>
+          Choose File
+          <input
+            type="file"
+            className="hidden-input"
+            id="fileInput"
+            multiple
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+          <label
+            htmlFor="fileInput"
+            className="custom-file-label"
+            style={labelStyles}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          />
+        </Button> */}
+        <label style={{ position: "relative", display: "inline-block" }}>
+          <Button variant="outlined">
+            {uploadFile === null ? "파일 선택" : uploadFile.name}
+          </Button>
+          <input
+            type="file"
+            className="hidden-input"
+            id="fileInput"
+            multiple
+            onChange={handleFileChange}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              opacity: 0,
+            }}
+          />
         </label>
+
         {uploadFile && (
-          <div>
-            <p>{uploadFile.name}</p>
-            <p>{uploadFile.size} bytes</p>
-            <button onClick={handleUploadClick}>Upload</button>
+          <div className={styles["uploadBtn"]}>
+            <Button variant="contained" onClick={handleUploadClick}>
+              Upload
+            </Button>
           </div>
         )}
       </div>
