@@ -39,6 +39,8 @@ public class ZipFileDownloader{
 
     private String recordingFilePath = "C://recording/RecordingFile/";
 
+    private String totalTextFile = "C://recording/TotalTextFile/";
+
     private String totalZipFilePath = "C://recording/TotalZipFile/";
 
     private String zipFileUrl;
@@ -108,7 +110,17 @@ public class ZipFileDownloader{
                 }
             }
 
+            // 파일을 합친다.
             videoCombine.compressVideos(classId);
+
+
+            this.removeFolder(classId); // C://recording/TotalZipFile/세션이름 폴더에 있는 모든 파일을 지운다 + 폴더도 지운다.
+
+            Files.deleteIfExists(Paths.get(totalZipFilePath+classId+".zip")); // zip 파일을 삭제한다.
+
+            // C://recording/TotalTextFile/세션이름.txt 파일을 지운다.
+            Files.deleteIfExists(Paths.get(totalTextFile+classId+".txt"));
+
 
 
 
@@ -138,7 +150,7 @@ public class ZipFileDownloader{
 //            Files.delete(Paths.get(unzipDir.toString()).resolve(recordingId+".json"));
 //            Files.delete(unzipDir);
 
-            return new StringBuilder(title).append(".mp4").toString();
+            return new StringBuilder(title).append(".webm").toString();
         }catch (Exception e){
             e.printStackTrace();
             return null;
@@ -150,7 +162,7 @@ public class ZipFileDownloader{
 
         logger.info("removeFolder를 호출함");
 
-        File folder = new File(recordingFilePath+classId);
+        File folder = new File(totalZipFilePath+classId);
 
         if(folder.exists() && folder.isDirectory()){
             File[] files = folder.listFiles();
