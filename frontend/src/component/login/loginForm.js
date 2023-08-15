@@ -96,6 +96,7 @@ function LoginForm() {
       dispatch(setCsrfToken(res.data.data.token.csrfToken))
       dispatch(setProfileImg(res.data.data.profileImg))
       dispatch(setNickname(res.data.data.nickName))
+      dispatch(setId(email.split('@')[0]))
       navigate("/im")
     }).catch((err)=>{
       setCnt(cnt+1)
