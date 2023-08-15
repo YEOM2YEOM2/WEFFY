@@ -57,6 +57,7 @@ class ChatComponent extends Component {
         // console.log(data.timestamp);
         let messageList = this.state.messageList;
         messageList.push({
+          // isQuestion: false,
           connectionId: event.from.connectionId,
           nickname: data.nickname,
           message: data.message,
@@ -151,7 +152,8 @@ class ChatComponent extends Component {
       // console.log(this.props.activeSessionId);
       axios({
         method: "post",
-        url: `http://i9d107.p.ssafy.io:8081/api/v1/files/${this.props.activeSessionId}`,
+        // url: `http:/i9d107.p.ssafy.io:8081/api/v1/files/${this.props.activeSessionId}`,
+        url: `http://i9d107.p.ssafy.io:8081/api/v1/files/sessionB?type=null`,
         headers: {
           accept: "application/json",
           "Content-Type": "multipart/form-data",
@@ -211,59 +213,66 @@ class ChatComponent extends Component {
             </IconButton>
           </div>
           <div className="message-wrap" ref={this.chatScroll}>
-            {/* {console.log(this.state.messageList)} */}
-            {this.state.messageList.map((data, i) => (
-              <div
-                key={i}
-                id="remoteUsers"
-                className={
-                  "message" +
-                  (data.connectionId !== this.props.user.getConnectionId()
-                    ? " left"
-                    : " right")
-                }
-              >
-                <div className="msg-detail">
-                  <div className="msg-info">
-                    <p style={{ fontFamily: "Poppins", fontSize: "12px" }}>
-                      {data.nickname}
-                    </p>
-                  </div>
-                  <div className="content-with-timestamp">
-                    <div className="msg-content">
-                      <p className="text" style={{ fontFamily: "GmarketSans" }}>
+            {this.state.messageList.map((data, i) =>
+              typeof data.message === "object" ||
+              (typeof data.message === "string" &&
+                !data.message.startsWith("Q. ")) ? (
+                <div
+                  key={i}
+                  id="remoteUsers"
+                  className={
+                    "message" +
+                    (data.connectionId !== this.props.user.getConnectionId()
+                      ? " left"
+                      : " right")
+                  }
+                >
+                  <div className="msg-detail">
+                    <div className="msg-info">
+                      <p style={{ fontFamily: "Poppins", fontSize: "12px" }}>
+                        {data.nickname}
+                      </p>
+                    </div>
+                    <div className="content-with-timestamp">
+                      <div className="msg-content">
                         <p
                           className="text"
                           style={{ fontFamily: "GmarketSans" }}
                         >
-                          {data.message && typeof data.message === "object" ? (
-                            <IconButton
-                              className="downloadText"
-                              onClick={() =>
-                                this.fileDownload(
-                                  data.message.objectKey,
-                                  data.message.title
-                                )
-                              }
-                            >
-                              <SimCardDownloadIcon
-                                style={{
-                                  color: "orange",
-                                }}
-                              />
-                              {data.message.title}
-                            </IconButton>
-                          ) : (
-                            data.message || ""
-                          )}
+                          <p
+                            className="text"
+                            style={{ fontFamily: "GmarketSans" }}
+                          >
+                            {data.message &&
+                            typeof data.message === "object" ? (
+                              <IconButton
+                                className="downloadText"
+                                onClick={() =>
+                                  this.fileDownload(
+                                    data.message.objectKey,
+                                    data.message.title
+                                  )
+                                }
+                              >
+                                <SimCardDownloadIcon
+                                  style={{
+                                    color: "orange",
+                                  }}
+                                />
+                                {data.message.title}
+                              </IconButton>
+                            ) : (
+                              data.message || ""
+                            )}
+                          </p>
                         </p>
-                      </p>
+                      </div>
+                      <span className="timeStamp">{data.timestamp}</span>
                     </div>
-                    <span className="timeStamp">{data.timestamp}</span>
                   </div>
                 </div>
-              </div>
-            ))}
+              ) : null
+            )}
           </div>
 
           <div id="fileContainer">

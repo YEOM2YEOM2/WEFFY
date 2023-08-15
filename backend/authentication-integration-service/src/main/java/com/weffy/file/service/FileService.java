@@ -5,6 +5,7 @@ import com.weffy.file.dto.response.FileResDto;
 import com.weffy.file.dto.response.GetFileDto;
 import com.weffy.file.entity.Files;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.image.BufferedImage;
@@ -21,5 +22,5 @@ public interface FileService {
 
     List<GetFileDto> getFiles(FileReqDto fileReqDto);
 
-    void downloadFile(String objectKey,  String filename);
+    ResponseEntity<byte[]> downloadFile(String objectKey, String filename);
 }
