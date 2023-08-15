@@ -18,7 +18,8 @@ import openvidu.meeting.service.java.conference.streaming.ZipFileDownloader;
 import openvidu.meeting.service.java.exception.ExceptionEnum;
 import openvidu.meeting.service.java.history.dto.request.HistoryReqDto;
 import openvidu.meeting.service.java.history.service.HistoryService;
-import org.aspectj.apache.bcel.classfile.Module;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
@@ -28,7 +29,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,11 +44,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/conferences")
 @CrossOrigin(origins = "*")
 public class ConferenceController {
+
+    private Logger logger = LoggerFactory.getLogger(ConferenceController.class);
     private OpenVidu openvidu;
 
     @Value("${spring.connection.path}")
     private String root;
-    // private Map<String, String> hostToken; // <identification, accessToken>
     private Map<String, Map<String, String>> sessionConnectionList; // classId, <identification, connectionId>
     private Map<String, List<String>> sessionParticipantList; // <classId, [participant Name1, Name2, ... ]>
     private Map<String, String> sessionHostList; // <classId, identification>
@@ -88,7 +89,10 @@ public class ConferenceController {
         //hostToken = OpenviduDB.getHostToken();
 
         conferenceSetting();
+
+
     }
+
 
     // DB에 있는 방(세션)을 모두 오픈비두에 넣어준다.
     public void conferenceSetting() throws OpenViduJavaClientException, OpenViduHttpException {
@@ -99,9 +103,6 @@ public class ConferenceController {
         for (Conference conference : roomList) {
             properties = new SessionProperties.Builder().customSessionId(conference.getClassId()).build();
             session = openvidu.createSession(properties);
-
-            // 기존에 있던 방을 방 참가자 리스트에 추가한다.
-            // sessionParticipantList.put(conference.getClassId(), new ArrayList<>());
 
             // 방의 호스트를 저장한다.
             sessionHostList.put(conference.getClassId(), conference.getIdentification());
@@ -119,17 +120,19 @@ public class ConferenceController {
     public ResponseEntity<? extends BaseResponseBody> createConference(
             @ApiParam(value = "회의 세부 사항", required = true)
             @RequestBody(required = false) ConferenceCreateReqDto reqDto)
-            throws OpenViduJavaClientException, OpenViduHttpException {
+            throws OpenViduJavaClientException, OpenViduHttpException, IOException, InterruptedException {
 
         // 이미 만들어진 방(세션)인 경우
         if (conferenceRepository.findByClassId((String) reqDto.getClassId()) != null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4000, ExceptionEnum.CONFERENCE_EXIST));
         }
 
+
         try {
             // openvidu에서 방(세션)을 생성함
             SessionProperties properties = new SessionProperties.Builder().customSessionId(reqDto.getClassId()).build();
             Session session = openvidu.createSession(properties);
+
 
             // DB에 방(세션)을 저장함
             ConferenceCreateResDto resDto = ConferenceCreateResDto.builder()
@@ -141,9 +144,6 @@ public class ConferenceController {
 
             // 새롭게 생성한 방을 DB에 저장한다.
             Conference newConference = conferenceService.createSession(resDto);
-
-            // 새롭게 생성한 방을 방 참가자 리스트에 추가한다.
-            //sessionParticipantList.put(reqDto.getClassId(), new ArrayList<>());
 
             // 호스트 설정
             sessionHostList.put((String) reqDto.getClassId(), (String)reqDto.getIdentification());
@@ -218,14 +218,13 @@ public class ConferenceController {
         if(!sessionParticipantList.containsKey(classId)){
             // 방에 처음 들어오는 사람이 host가 아닌 경우
             if(!identification.equals(sessionHostList.get(classId))){
-                System.out.println(identification+","+sessionHostList.get(classId));
+                logger.info("방에 처음 들어오는 사람이 host가 아닌 경우 : "+identification+","+sessionHostList.get(classId));
                 return new ResponseEntity<>("아직 host가 방을 활성화하지 않았습니다. 기다려주세요.", HttpStatus.NOT_FOUND);
             }
             firstCome = true;
         }
 
 
-        //return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, connection.getConnectionId()));
 
         try {
             // 연결 설정
@@ -234,7 +233,7 @@ public class ConferenceController {
 
             // 방에 제일 처음 입장하는 경우(host인 경우)
             if (firstCome) {
-                System.out.println("처음 입장합니다");
+                logger.info("처음 입장합니다");
 
                 // 방에 참가한 사람들을 담을 map을 세팅한다.
                 sessionParticipantList.put(classId, new ArrayList<>());
@@ -242,14 +241,13 @@ public class ConferenceController {
 
                 // accessToken을 받아서 저장한다.
                 String accessToken = request.getHeader("Authorization");
-                //hostToken.put(identification, accessToken);
                 OpenviduDB.getHostToken().put(identification, accessToken);
 
                 // 녹화를 시작한다.
-                currentRecordingList.put(classId, new VideoRecorder(classId, identification));
+                //currentRecordingList.put(classId, new VideoRecorder(classId, identification));
 
                 // 해당 세션을 스레드로 시작한다.
-                executorService.submit(() -> currentRecordingList.get(classId).recordingMethod());
+                //executorService.submit(() -> currentRecordingList.get(classId).recordingMethod());
 
             }
 
@@ -505,8 +503,12 @@ public class ConferenceController {
         // 녹화 기능을 목록에서 삭제한다.
         currentRecordingList.remove(classId);
 
+        Session session = openvidu.getActiveSession(classId);
+
+        Connection conn = session.getConnection(sessionConnectionList.get(classId).get(sessionHostList.get(classId)));
+
         // 로컬의 녹화 파일들 삭제하기
-        zipFileDownloader.removeFolder(classId);
+        // zipFileDownloader.removeFolder(classId);
 
 
         // 230813 파일을 다운 받으면서 로컬에 파일이 남았을 경우 - 다시 확인하기
