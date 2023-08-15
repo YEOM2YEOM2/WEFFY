@@ -12,6 +12,7 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,7 +22,9 @@ import java.nio.file.Paths;
 @Slf4j
 public class VideoSender {
     private Logger logger = LoggerFactory.getLogger(VideoSender.class);
-    private String localRecordingPath = "C://recording/";
+
+    @Value("${local.recording.path}")
+    private String localRecordingPath;
     private String accessToken;
 
     //"?type=lecture"

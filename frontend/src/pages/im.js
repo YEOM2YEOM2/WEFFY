@@ -48,7 +48,6 @@ import newPrivate from "../assets/images/newPrivate.png";
 import participate from "../assets/images/participate.png";
 
 //Modal js
-import StartMM from "../component/im/startMM.js";
 import MMListModal from "../component/im/mmListModal";
 import PrivateModal from "../component/im/privateModal.js";
 import JoinMeetingModal from "../component/im/joinMeetingList.js";
@@ -191,14 +190,30 @@ export default function Im() {
     MMListModal: false,
   });
 
-  //mm연동 미팅 시작 핸들링
-  const handleStartMeeting = () => {
-    setModalStatus({
-      ...modalStatus,
-      startMM: true, // MmModal을 보여주고
-      MMListModal: false, // MMListModal은 숨깁니다.
-    });
-  };
+  const [selectedChannelId, setSelectedChannelId] = useState(null);
+  const [selectedChannel, setSelectedChannel] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+
+  // //mm연동 미팅 시작 핸들링
+  // const handleStartMeeting = (groupName, channelName, channelId) => {
+  //   setSelectedGroup(groupName);
+  //   setSelectedChannel(channelName);
+  //   setSelectedChannelId(channelId);
+
+  //   console.log("startMeeting 클릭 완료!", groupName, channelName, channelId);
+
+  //   setModalStatus({
+  //     ...modalStatus,
+  //     startMM: true, // MmModal을 보여주고
+  //     MMListModal: false, // MMListModal은 숨깁니다.
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   console.log(selectedChannelId);
+  //   console.log(selectedChannel);
+  //   console.log(selectedGroup);
+  // }, [selectedChannelId, selectedChannel, selectedGroup]);
 
   const handleModalOpen = (modalName) => {
     //modalName에 맞는 modal true로 변경
@@ -372,13 +387,24 @@ export default function Im() {
         {modalStatus.MMListModal && (
           <MMListModal
             handleClose={() => handleModalClose("MMListModal")}
-            handleStartMeeting={handleStartMeeting}
+            // handleStartMeeting={() =>
+            //   handleStartMeeting(
+            //     selectedGroup,
+            //     selectedChannel,
+            //     selectedChannelId
+            //   )
+            // }
           />
         )}
 
-        {modalStatus.startMM && (
-          <StartMM handleClose={() => handleModalClose("startMM")} />
-        )}
+        {/* {modalStatus.startMM && (
+          <StartMM
+            handleClose={() => handleModalClose("startMM")}
+            groupName={selectedGroup}
+            channelName={selectedChannel}
+            channelId={selectedChannelId}
+          />
+        )} */}
         {modalStatus.PrivateModal && (
           <PrivateModal
             show={modalStatus.PrivateModal}
