@@ -30,7 +30,7 @@ import { IconButton } from "@mui/material";
 
 import defaultImg from "../../assets/images/defualt_image.png";
 
-const PrivateModal = ({ handleClose }) => {
+const StartMM = ({ handleClose, groupName, channelName, channelId }) => {
   const dispatch = useDispatch();
   const [nickname, setUserNickname] = useState("default nickname");
   const [micList, setMicList] = useState([]);
@@ -41,6 +41,12 @@ const PrivateModal = ({ handleClose }) => {
 
   const selectedMic = useSelector((state) => state.selectedMic);
   const selectedCam = useSelector((state) => state.selectedCam);
+
+  useEffect(() => {
+    console.log(groupName);
+    console.log(channelName);
+    console.log(channelId);
+  }, [groupName, channelName, channelId]);
 
   const handleMicStatusToggle = () => {
     dispatch(toggleMicStatus());
@@ -201,4 +207,4 @@ const PrivateModal = ({ handleClose }) => {
   );
 };
 
-export default PrivateModal;
+export default StartMM;
