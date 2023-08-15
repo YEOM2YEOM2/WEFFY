@@ -37,8 +37,8 @@ public class FileServiceImpl implements FileService{
     @Value("${max_batch_size}")
     private int MAX_BATCH_SIZE;
 
-    @Value("${max_file_size")
-    private long maxFileSize;
+    @Value("${max_file_size}")
+    private long maxFileSize= 52428800;
 
     @Override
     public void uploadFilesMM(String sessionToken, String classId, List<FileDto> lists) throws IOException, URISyntaxException {
