@@ -45,7 +45,7 @@ public class VideoCombine {
         process2.waitFor();
 
 
-        logger.info(classId + "합치기 완료!!");
+        logger.info(classId + " 합치기 완료!!");
 
     }
 
