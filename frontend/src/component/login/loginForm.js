@@ -16,7 +16,7 @@ import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
 
 // store user 함수
-import { setIdentification, setAccessToken, setRefreshToken, setCsrfToken, setProfileImg, setNickname } from '../../store/reducers/user';
+import { setIdentification, setAccessToken, setRefreshToken, setCsrfToken, setProfileImg, setNickname, setId } from '../../store/reducers/user';
 import { identifier } from '@babel/types';
 
 function LoginForm() {
@@ -101,6 +101,7 @@ function LoginForm() {
       dispatch(setCsrfToken(res.data.data.token.csrfToken))
       dispatch(setProfileImg(res.data.data.profileImg))
       dispatch(setNickname(res.data.data.nickName))
+      dispatch(setId(email.split('@')[0]))
       navigate("/im")
     }).catch((err)=>{
       setCnt(cnt+1)
