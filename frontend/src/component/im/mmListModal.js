@@ -11,13 +11,15 @@ import Typography from "@mui/material/Typography";
 
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 
-const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
+const MMListModal = ({ handleClose, handleStartMeeting }) => {
   // const [groupData, setGroupData] = useState([]);
   const [groupData, setGroupData] = useState([]);
+
+  console.log(handleStartMeeting);
 
   const accessToken = useSelector((state) => state.user.accessToken);
   const inintMMList = () => {
@@ -57,22 +59,35 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
   }, []);
 
   const [selectedGroup, setSelectedGroup] = React.useState("");
-  const [selectedNames, setSelectedNames] = React.useState([]);
+  const [selectedChannel, setSelectedChannel] = React.useState("");
+  const [selectedChannelId, setSelectedChannelId] = React.useState("");
 
-  const handleGroupChange = (group) => {
-    setSelectedGroup(group);
-    setSelectedNames([]);
+  //큰 그룹을 선택했을때 보여주기 위한 코드
+  const handleGroupChange = (groupName) => {
+    setSelectedGroup(groupName);
+    setSelectedChannel([]);
   };
 
-  const handleNamesChange = (name) => {
-    setSelectedNames([name]);
+  const handleChannelChange = (channel) => {
+    setSelectedChannel(channel.name);
+    setSelectedChannelId(channel.identification);
   };
 
   const currentGroup = groupData.find((group) => group.name === selectedGroup);
-  const currentNames = currentGroup
-    ? currentGroup.channels.map((channel) => channel.name)
-    : [];
+  const currentChannel = useMemo(() => {
+    return currentGroup ? currentGroup.channels.map((channel) => channel) : [];
+  }, [currentGroup]);
 
+  useEffect(() => {
+    console.log("mmList에서 출력");
+    console.log(selectedGroup);
+    console.log(selectedChannel);
+    console.log(selectedChannelId);
+  }, [selectedGroup, selectedChannel, selectedChannelId]);
+
+  const startMeeting = () => {
+    console.log("서버랑 통신 해서 sessionId받아와서 화면 넘기기");
+  };
   return (
     <div
       className={styles["modal"]}
@@ -127,21 +142,19 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
               className={styles["selectField"]}
               style={{ fontFamily: "GmarketSans" }}
             >
-              {selectedNames.length > 0
-                ? selectedNames.join(", ")
-                : "MatterMost Channel"}
+              {selectedChannel ? selectedChannel : "MatterMost Channel"}
             </Typography>
             <List className={styles["textFieldInput"]}>
-              {currentNames.map((name) => (
+              {currentChannel.map((channel) => (
                 <ListItem
-                  key={name}
+                  key={channel.name}
                   button
-                  onClick={() => handleNamesChange(name)}
+                  onClick={() => handleChannelChange(channel)}
                 >
                   <ListItemText
                     primary={
                       <Typography sx={{ fontFamily: "GmarketSans" }}>
-                        {name}
+                        {channel.name}
                       </Typography>
                     }
                   />
@@ -151,7 +164,7 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
           </Grid>
         </Grid>
         <Grid container justifyContent="flex-end">
-          <Button variant="contained" onClick={handleStartMeeting}>
+          <Button variant="contained" onClick={startMeeting}>
             Start Private Meeting
           </Button>
         </Grid>
