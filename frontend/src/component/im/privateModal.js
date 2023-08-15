@@ -30,7 +30,10 @@ import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { IconButton } from "@mui/material";
 
 // store conference
-import { setClassId } from "../../store/reducers/conference.js";
+import {
+  setClassId,
+  setConferenceName,
+} from "../../store/reducers/conference.js";
 
 const PrivateModal = ({ handleClose }) => {
   const micStatus = useSelector((state) => state.setting.micStatus);
@@ -43,6 +46,7 @@ const PrivateModal = ({ handleClose }) => {
   const profileImg = useSelector((state) => state.user.profileImg);
   const nickname = useSelector((state) => state.user.nickname) || "";
   const userId = useSelector((state) => state.user.id);
+  const conferenceName = useSelector((state) => state.user.conferenceName);
 
   const [localNickname, setLocalNickname] = useState(nickname);
 
@@ -125,6 +129,7 @@ const PrivateModal = ({ handleClose }) => {
     dispatch(setActiveSessionId(sessionId));
     dispatch(setParticipateName(localNickname));
     dispatch(setClassId(userId));
+    dispatch(setConferenceName(userId + "님의 개인룸"));
 
     console.log("start Meeting!");
     // let ecodedSessionId = decodeURIComponent(sessionId);
