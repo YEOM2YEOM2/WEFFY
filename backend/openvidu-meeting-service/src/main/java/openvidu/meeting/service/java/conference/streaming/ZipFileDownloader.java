@@ -2,9 +2,9 @@ package openvidu.meeting.service.java.conference.streaming;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import openvidu.meeting.service.java.OpenviduDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
@@ -31,17 +31,23 @@ public class ZipFileDownloader{
 
     private final RestTemplate restTemplate;
 
+    // @Value("${openvidu.api.username}")
     private String openViduApiUsername = "OPENVIDUAPP";
 
+    //  @Value("${openvidu.api.password}")
     private String openViduApiPassword = "MY_SECRET";
 
-    private String localRecordingPath = "C://recording/";
+    private String recordingFilePath = "C://recording/RecordingFile/";
+
+    private String totalZipFilePath = "C://recording/TotalZipFile/";
 
     private String zipFileUrl;
 
     private String classId;
 
     private String title; // classId + index
+
+    private VideoCombine videoCombine;
 
     private String recordingId;
 
@@ -50,7 +56,9 @@ public class ZipFileDownloader{
 
     public ZipFileDownloader(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
-        this.identification = "jenny";
+        this.videoCombine = new VideoCombine();
+
+       // this.identification = "jenny";
     }
 
     @Bean
@@ -75,64 +83,60 @@ public class ZipFileDownloader{
                     byte[].class
             );
 
-            // classId에 해당하는 폴더를 만든다.
-            Path recordingFolderPath = Paths.get(localRecordingPath+this.classId);
-            try {
-                Files.createDirectories(recordingFolderPath);
-                logger.info("Folder created :" + recordingFolderPath);
-            } catch (IOException e) {
-                e.printStackTrace();
-                logger.info("Failed to create folder: " + recordingFolderPath);
-            }
 
-            // 다운로드한 zip 파일을 임시 파일로 저장한다.
-            // recordingId 변수를 파일 이름에 사용하고 Files.write를 사용하여 내용을 기록한다.
             byte[] zipBytes = response.getBody();
-            Path tempFile = Files.createTempFile(title, ".zip");
-            Files.write(tempFile, zipBytes);
+
+            Path pathName = Paths.get(totalZipFilePath).resolve(title+".zip");
+
+            Files.write(pathName, zipBytes);
 
             // 다운로드한 zip 파일을 압축 해제하고 내부의 파일을 처리한다.
             // unzipDir에 압축 해제된 파일들을 저장함
-            Path unzipDir = Files.createTempDirectory(title);
-            try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(tempFile))) {
+           // Path unzipDir = Files.createTempDirectory(Paths.get(totalZipFilePath),title);
+
+            Path unzipDir = Files.createDirectories(Paths.get(totalZipFilePath).resolve(title));
+            try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(pathName))) {
                 ZipEntry entry;
                 while ((entry = zipInputStream.getNextEntry()) != null) {
-                    Path entryPath = unzipDir.resolve(entry.getName());
-                    Files.copy(zipInputStream, entryPath, StandardCopyOption.REPLACE_EXISTING);
-                    zipInputStream.closeEntry();
 
-                    // 이름을 변경하고 파일을 옮긴다.
-                    if (entry.getName().endsWith(".webm")) {
-                        Path renamedMp4Path = unzipDir.resolve(title+".mp4"); // 바꿀 이름 설정
-                        Files.move(entryPath, renamedMp4Path, StandardCopyOption.REPLACE_EXISTING);
+                    Path entryPath = unzipDir.resolve(entry.getName());
+
+                    if (entry.getName().startsWith("str_SCR") && entry.getName().endsWith(".webm")) {
+                        Files.copy(zipInputStream, entryPath, StandardCopyOption.REPLACE_EXISTING);
+                        zipInputStream.closeEntry();
                     }
                 }
             }
 
-            // 압축 해제된 디렉토리에 있는 mp4 파일의 경로와 로컬 저장 경로를 설정한다.
-            Path extractedMp4Path = unzipDir.resolve(title+".mp4");
+            videoCombine.compressVideos(classId);
 
-            Path targetPath = Paths.get(new StringBuilder().append(this.localRecordingPath).append(this.classId).append("/").toString(), title+".mp4");
 
-            // 기존에 저장한 폴더에서 지정한 로컬 경로로 파일을 옮긴다.
-            Files.move(extractedMp4Path, targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-            // 생성한 mp4 파일을 s3에 저장할 수 있도록 header에 담아서 보낸다.
-            try{
-                VideoSender sv = new VideoSender();
-                sv.sendRequest(classId, title, identification);
-                logger.info("Success : ");
-            }catch(Exception e){
-                e.printStackTrace();
-                logger.info("Error : ");
-            }
-
-            // 로컬에 다운받은 임시 파일을 지운다.
-            Files.delete(tempFile);
-
-            // 압축을 폴었던 파일에 json 파일도 있었기 때문에 하위 파일을 먼저 지우고 폴더를 삭제한다.
-            Files.delete(Paths.get(unzipDir.toString()).resolve(recordingId+".json"));
-            Files.delete(unzipDir);
+//            // 압축 해제된 디렉토리에 있는 mp4 파일의 경로와 로컬 저장 경로를 설정한다.
+//            Path extractedMp4Path = unzipDir.resolve(title+".mp4");
+//
+//            Path targetPath = Paths.get(new StringBuilder().append(this.recordingFilePath).append(this.classId).append("/").toString(), title+".mp4");
+//
+//            // 기존에 저장한 폴더에서 지정한 로컬 경로로 파일을 옮긴다.
+//            Files.move(extractedMp4Path, targetPath, StandardCopyOption.REPLACE_EXISTING);
+//
+//           //  생성한 mp4 파일을 s3에 저장할 수 있도록 header에 담아서 보낸다.
+//
+//            try{
+//                VideoSender sv = new VideoSender();
+//                sv.sendRequest(classId, title, identification);
+//                logger.info("Success : ");
+//            }catch(Exception e){
+//                e.printStackTrace();
+//                logger.info("Error : ");
+//            }
+//
+//            // 로컬에 다운받은 임시 파일을 지운다.
+//            Files.delete(pathName);
+//
+//            // 압축을 폴었던 파일에 json 파일도 있었기 때문에 하위 파일을 먼저 지우고 폴더를 삭제한다.
+//            Files.delete(Paths.get(unzipDir.toString()).resolve(recordingId+".json"));
+//            Files.delete(unzipDir);
 
             return new StringBuilder(title).append(".mp4").toString();
         }catch (Exception e){
@@ -146,7 +150,7 @@ public class ZipFileDownloader{
 
         logger.info("removeFolder를 호출함");
 
-        File folder = new File(localRecordingPath+classId);
+        File folder = new File(recordingFilePath+classId);
 
         if(folder.exists() && folder.isDirectory()){
             File[] files = folder.listFiles();

@@ -62,6 +62,8 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 
 
+    // ffmpeg
+    implementation 'net.bramp.ffmpeg:ffmpeg:0.6.2'
 
 //    // scheduled
 //    implementation 'org.springframework.boot:spring-boot-starter-task'
