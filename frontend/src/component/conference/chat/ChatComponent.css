@@ -167,13 +167,10 @@
   float: right;
   display: flex;
 
-  /* justify-content: flex-end; */
   align-items: center;
   padding: 5px;
-  /* margin: 5px; */
 }
 
-/* End my messages */
 
 #messageInput {
   position: absolute;
@@ -223,12 +220,6 @@
 .chatComponentLight ::-webkit-scrollbar-thumb {
   background-color: #eeeeee !important;
 }
-/* 
-.timeStamp.right {
-  position: absolute;
-  right: 10px;
-  color: yellow;
-} */
 
 .timeStamp {
   font-size: 10px;
@@ -239,7 +230,6 @@
 }
 
 .timeStamp.right {
-  /* color: #7ae2a9; */
   align-content: flex-end;
 }
 
@@ -257,10 +247,7 @@
 }
 
 .message.right .content-with-timestamp {
-  /* justify-content: flex-end !important; */
   flex-direction: row-reverse;
-  /* background-color: #2d8cff; */
-  /* margin-right: 10px; */
 }
 
 .timeStamp {

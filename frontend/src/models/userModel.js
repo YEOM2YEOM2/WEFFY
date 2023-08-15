@@ -6,6 +6,7 @@ class UserModel {
     nickname;
     streamManager;
     type; // 'remote' | 'local'
+    mmIdentification;
 
     constructor() {
         this.connectionId = '';
@@ -15,6 +16,7 @@ class UserModel {
         this.nickname = '';
         this.streamManager = null;
         this.type = 'local';
+        this.mmIdentification = '';
     }
 
     isAudioActive() {
@@ -41,11 +43,18 @@ class UserModel {
         return this.streamManager;
     }
 
+    getMmIdentification() {
+        return this.mmIdentification;
+    }
+
     isLocal() {
         return this.type === 'local';
     }
     isRemote() {
         return !this.isLocal();
+    }
+    isHost() {
+        return this.role === 'host';
     }
     setAudioActive(isAudioActive) {
         this.audioActive = isAudioActive;
@@ -70,6 +79,9 @@ class UserModel {
         if (type === 'local' |  type === 'remote') {
             this.type = type;
         }
+    }
+    setMmIdentification(identification) {
+        this.mmIdentification = identification;
     }
 }
 
