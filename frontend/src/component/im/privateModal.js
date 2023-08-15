@@ -29,6 +29,9 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { IconButton } from "@mui/material";
 
+// store conference
+import { setClassId } from "../../store/reducers/conference.js";
+
 const PrivateModal = ({ handleClose }) => {
   const micStatus = useSelector((state) => state.setting.micStatus);
   const cameraStatus = useSelector((state) => state.setting.cameraStatus);
@@ -39,6 +42,7 @@ const PrivateModal = ({ handleClose }) => {
   //redux에서 값 가져오기
   const profileImg = useSelector((state) => state.user.profileImg);
   const nickname = useSelector((state) => state.user.nickname) || "";
+  const userId = useSelector((state) => state.user.id);
 
   const [localNickname, setLocalNickname] = useState(nickname);
 
@@ -120,10 +124,13 @@ const PrivateModal = ({ handleClose }) => {
   const startPrivateMeeting = () => {
     dispatch(setActiveSessionId(sessionId));
     dispatch(setParticipateName(localNickname));
+    dispatch(setClassId(userId));
 
     console.log("start Meeting!");
-    let ecodedSessionId = decodeURIComponent(sessionId);
-    navigate(`/conference/${ecodedSessionId}`);
+    // let ecodedSessionId = decodeURIComponent(sessionId);
+
+    // navigate(`/conference/${nickname}`);
+    navigate(`/conference/${userId}`);
   };
 
   const handleSelectCamera = (event) => {
