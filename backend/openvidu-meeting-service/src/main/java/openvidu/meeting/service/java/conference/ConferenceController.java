@@ -244,10 +244,10 @@ public class ConferenceController {
                 OpenviduDB.getHostToken().put(identification, accessToken);
 
                 // 녹화를 시작한다.
-                //currentRecordingList.put(classId, new VideoRecorder(classId, identification));
+                currentRecordingList.put(classId, new VideoRecorder(classId, identification));
 
                 // 해당 세션을 스레드로 시작한다.
-                //executorService.submit(() -> currentRecordingList.get(classId).recordingMethod());
+                executorService.submit(() -> currentRecordingList.get(classId).recordingMethod());
 
             }
 
@@ -500,12 +500,16 @@ public class ConferenceController {
         // Host가 녹화를 중지한다.
         videoRecorder.recordingStop();
 
+        logger.info("삭제한다!!");
+
         // 녹화 기능을 목록에서 삭제한다.
         currentRecordingList.remove(classId);
 
+        logger.info("삭제했다!!");
+
         Session session = openvidu.getActiveSession(classId);
 
-        Connection conn = session.getConnection(sessionConnectionList.get(classId).get(sessionHostList.get(classId)));
+       // Connection conn = session.getConnection(sessionConnectionList.get(classId).get(sessionHostList.get(classId)));
 
         // 로컬의 녹화 파일들 삭제하기
         // zipFileDownloader.removeFolder(classId);
