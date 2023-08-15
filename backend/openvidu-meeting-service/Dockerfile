@@ -34,4 +34,4 @@ COPY /backend/openvidu-meeting-service/build/libs/openvidu-meeting-service-2.28.
 EXPOSE 8082
 
 # Run the application JAR
-CMD ["java", "-jar", "openvidu-meeting-service-2.28.0.jar"]
+ENTRYPOINT ["java", "-jar", "openvidu-meeting-service-2.28.0.jar"]
