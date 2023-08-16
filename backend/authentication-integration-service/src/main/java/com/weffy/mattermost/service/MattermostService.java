@@ -4,6 +4,7 @@ package com.weffy.mattermost.service;
 
 import com.weffy.mattermost.dto.response.TeamChannelResDto;
 import com.weffy.user.entity.WeffyUser;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
