@@ -124,7 +124,7 @@ const QuestionChat = ({ user }) => {
             typeof data.message === "string" &&
             data.message.startsWith("Q. ") ? (
               <div key={i} id="remoteUsers" className={"message"}>
-                <div className="msg-detail">
+                <div className="msg-detail" style={{ marginRight: "7px" }}>
                   <div className="msg-info">
                     <p style={{ fontFamily: "Poppins", fontSize: "12px" }}>
                       {data.nickname}
@@ -136,7 +136,7 @@ const QuestionChat = ({ user }) => {
                         {data.message}
                       </p>
                     </div>
-                    <span className="timeStamp">{data.timestamp}</span>
+                    <span className="timeStamp" style={{ margin: "0 10px 0 0", fontSize: "12px" }}>{data.timestamp}</span>
                   </div>
                 </div>
               </div>

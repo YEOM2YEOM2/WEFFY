@@ -240,6 +240,7 @@
 
 .message.left .content-with-timestamp {
   justify-content: flex-start;
+  flex-direction: row;
 }
 
 .message.right .content-with-timestamp {
