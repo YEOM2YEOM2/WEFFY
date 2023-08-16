@@ -7,7 +7,6 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import "./QuestionChat.css";
-// assuming you're not using `useNavigate`, I've removed it
 
 const QuestionChat = ({ user }) => {
   const accessToken = useSelector((state) => state.user.accessToken);
@@ -29,12 +28,14 @@ const QuestionChat = ({ user }) => {
       scrollToBottom();
     };
 
-    user.getStreamManager().stream.session.on("signal:question", handleSignalQuestion);
+    user
+      .getStreamManager()
+      .stream.session.on("signal:chat", handleSignalQuestion);
 
     return () => {
       user
         .getStreamManager()
-        .stream.session.off("signal:question", handleSignalQuestion);
+        .stream.session.off("signal:chat", handleSignalQuestion);
     };
   }, [user]);
 
@@ -59,17 +60,40 @@ const QuestionChat = ({ user }) => {
     if (typeof message === "string" && message.trim() !== "" && user) {
       const data = {
         message: `Q. ${message.trim()}`,
-        // If anonymousStatus is true, use 'anonymous', otherwise use the user's nickname
         nickname: anonymousStatus ? "익명" : user.getNickname(),
         streamId: user.getStreamManager().stream.streamId,
         timestamp: getCurTimeStamp(),
       };
-      console.log('질문 채팅 user',user)
+      console.log("질문 채팅 user", user);
       user.getStreamManager().stream.session.signal({
         data: JSON.stringify(data),
         type: "chat",
       });
       setMessage("");
+
+      const postData = {
+        senderId: data.nickname.toString(),
+        conferenceId: "sessionB",
+        content: data.message.toString(),
+        anonymous: anonymousStatus,
+      };
+
+      axios({
+        method: "post",
+        url: `http://i9d107.p.ssafy.io:8083/api/v1/question`,
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        data: postData,
+      })
+        .then((res) => {
+          // console.log(res);
+        })
+        .catch((err) => {
+          console.log(err.response);
+        });
     }
   };
 
@@ -87,39 +111,41 @@ const QuestionChat = ({ user }) => {
 
   // const styleChat = { display: this.props.chatDisplay };
   return (
-    <div id="chatContainer">
-      <div id="chatComponent">
+    <div id="chatContainer" style={{ position: "relative", bottom: "7px" }}>
+      <div id="chatComponent" style={{ margin: "0", height: "calc(100% + 15px)", width: "100%" }}>
         <div id="chatToolbar">
           <span style={{ fontFamily: "Agro", fontWeight: "400" }}>
             질문 채팅
           </span>
         </div>
         <div className="message-wrap" ref={chatScroll}>
-          {/* {console.log(this.state.messageList)} */}
-          {messageList.map((data, i) => (
-            <div key={i} id="remoteUsers" className={"message"}>
-              <div className="msg-detail">
-                <div className="msg-info">
-                  <p style={{ fontFamily: "Poppins", fontSize: "12px" }}>
-                    {data.nickname}
-                  </p>
-                </div>
-                <div className="content-with-timestamp">
-                  <div className="msg-content">
-                    <p className="text" style={{ fontFamily: "GmarketSans" }}>
+          {messageList.map((data, i) =>
+            data.message !== "object" &&
+            typeof data.message === "string" &&
+            data.message.startsWith("Q. ") ? (
+              <div key={i} id="remoteUsers" className={"message"}>
+                <div className="msg-detail" style={{ marginRight: "7px" }}>
+                  <div className="msg-info">
+                    <p style={{ fontFamily: "Poppins", fontSize: "12px" }}>
+                      {data.nickname}
+                    </p>
+                  </div>
+                  <div className="content-with-timestamp">
+                    <div className="msg-content">
                       <p className="text" style={{ fontFamily: "GmarketSans" }}>
                         {data.message}
                       </p>
-                    </p>
+                    </div>
+                    <span className="timeStamp" style={{ margin: "0 10px 0 0", fontSize: "12px" }}>{data.timestamp}</span>
                   </div>
-                  <span className="timeStamp">{data.timestamp}</span>
                 </div>
               </div>
-            </div>
-          ))}
+            ) : null
+          )}
         </div>
 
         <div id="fileContainer">
+          <span style={{ zIndex: "99999", color: "white", fontFamily: "NanumSquareNeo", fontSize: "13px", position: "absolute", top: "4.5px", right: "50px" }}>익명</span>
           <Tooltip title="익명으로 질문하기" placement="top">
             <IconButton
               size="small"
@@ -151,7 +177,7 @@ const QuestionChat = ({ user }) => {
               size="small"
               id="sendButton"
               onClick={sendMessage}
-              style={{ padding: "10px", margin: "4px" }}
+              style={{ padding: "10px", margin: "4px", width: "40px" }}
             >
               <SendIcon style={{ color: "white" }} />
             </IconButton>

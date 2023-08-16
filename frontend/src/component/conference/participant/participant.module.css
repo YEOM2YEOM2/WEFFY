@@ -27,9 +27,17 @@
 
 .other {
     height: 29.6px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-family: "NanumSquareNeo";
     font-size: 13px;
+}
+
+.divider {
+    margin: 5px 0px 0px 8px ;
+    height: 0.1px;
+    background-color: white;
+    opacity: 0.5;
 }

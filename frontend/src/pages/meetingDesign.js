@@ -1,4 +1,5 @@
 import { React, Component } from "react";
+import { connect } from "react-redux";
 import styles from "./meetingDesign.module.css";
 
 // Openvidu
@@ -8,7 +9,8 @@ import UserModel from "../models/userModel";
 import OpenViduLayout from "../layout/customLayout.js";
 import FileList from "../component/conference/util/fileList.js";
 
-import ChatComponent from "../component/conference/chat/ChatComponent.js";
+import Chat from "../component/conference/chat/ChatComponent.js";
+import QuestionChat from "./../component/conference/chat/QuestionChat.js";
 import DialogExtensionComponent from "../component/conference/dialog-extension/DialogExtension.js";
 import StreamOthers from "../component/conference/stream/StreamOthers.js";
 import GridStream from "../component/conference/stream/GridStream.js";
@@ -47,6 +49,9 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 // bootstrap
 import Dropdown from "react-bootstrap/Dropdown";
+
+// Swal
+import Swal from "sweetalert2";
 
 const drawerWidth = 320;
 
@@ -97,23 +102,31 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
-  process.env.NODE_ENV === "production" ? "" : "http://localhost:8080/";
+  process.env.NODE_ENV === "production" ? "" : "http://localhost:8082/";
+
+const mapStateToProps = (state) => {
+  return {
+    selectedMic: state.setting.selectedMic,
+    selectedCam: state.setting.selectedCam,
+    accessToken: state.user.accessToken,
+    identification: state.user.identification,
+    activeSessionId: state.conference.activeSessionId,
+    activeSessionName: state.conference.activeSessionName,
+  };
+};
 
 class Conference extends Component {
   constructor(props) {
     super(props);
     this.hasBeenUpdated = false;
     this.layout = new OpenViduLayout();
-    const pathArray = window.location.pathname.split("/");
-    const sessionIdFromUrl = pathArray[pathArray.length - 1];
-    let sessionName = sessionIdFromUrl ? sessionIdFromUrl : "Default Session";
     let userName = this.props.user
       ? this.props.user
       : "WEFFY_User" + Math.floor(Math.random() * 100);
     this.remotes = [];
     this.localUserAccessAllowed = false;
     this.state = {
-      mySessionId: sessionName,
+      mySessionId: this.props.activeSessionId,
       myUserName: userName,
       session: undefined,
       localUser: undefined,
@@ -122,6 +135,7 @@ class Conference extends Component {
       subIdx4: 0,
       subIdx8: 0,
       chatDisplay: "none",
+      QuestionDisplay: "none",
       currentVideoDevice: undefined,
 
       // mui 사용을 위한 변수
@@ -141,7 +155,6 @@ class Conference extends Component {
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
-    //   this.updateLayout = this.updateLayout.bind(this);
     this.camStatusChanged = this.camStatusChanged.bind(this);
     this.micStatusChanged = this.micStatusChanged.bind(this);
     this.nicknameChanged = this.nicknameChanged.bind(this);
@@ -151,7 +164,9 @@ class Conference extends Component {
     this.stopScreenShare = this.stopScreenShare.bind(this);
     this.closeDialogExtension = this.closeDialogExtension.bind(this);
     this.toggleChat = this.toggleChat.bind(this);
+    this.toggleQuestion = this.toggleQuestion.bind(this);
     this.checkNotification = this.checkNotification.bind(this);
+    this.checkQuestionNotification = this.checkQuestionNotification.bind(this);
     this.checkSize = this.checkSize.bind(this);
 
     // mui 사용을 위한 함수
@@ -180,29 +195,13 @@ class Conference extends Component {
   };
 
   componentDidMount() {
-    const openViduLayoutOptions = {
-      maxRatio: 3 / 2, // The narrowest ratio that will be used (default 2x3)
-      minRatio: 9 / 16, // The widest ratio that will be used (default 16x9)
-      fixedRatio: false, // If this is true then the aspect ratio of the video is maintained and minRatio and maxRatio are ignored (default false)
-      bigClass: "OV_big", // The class to add to elements that should be sized bigger
-      bigPercentage: 0.8, // The maximum percentage of space the big ones should take up
-      bigFixedRatio: false, // fixedRatio for the big ones
-      bigMaxRatio: 3 / 2, // The narrowest ratio to use for the big elements (default 2x3)
-      bigMinRatio: 9 / 16, // The widest ratio to use for the big elements (default 16x9)
-      bigFirst: true, // Whether to place the big one in the top left (true) or bottom right
-      animate: true, // Whether you want to animate the transitions
-    };
-
-    //   this.layout.initLayoutContainer(document.getElementById('layout'), openViduLayoutOptions);
     window.addEventListener("beforeunload", this.onbeforeunload);
-    //   window.addEventListener('resize', this.updateLayout);
     window.addEventListener("resize", this.checkSize);
     this.joinSession();
   }
 
   componentWillUnmount() {
     window.removeEventListener("beforeunload", this.onbeforeunload);
-    //   window.removeEventListener('resize', this.updateLayout);
     window.removeEventListener("resize", this.checkSize);
     this.leaveSession();
   }
@@ -248,7 +247,12 @@ class Conference extends Component {
             status: error.status,
           });
         }
-        alert("There was an error getting the token:", error.message);
+        Swal.fire({
+          icon: "error",
+          html: `<div style="font-family:GmarketSans">유효하지 않은 사용자입니다.<br>로그인 후 이용해주세요.</div>`,
+          confirmButtonText: "OK",
+          confirmButtonColor: "#2672B9",
+        });
       }
     }
   }
@@ -268,12 +272,12 @@ class Conference extends Component {
             status: error.status,
           });
         }
-        alert("There was an error connecting to the session:", error.message);
-        console.log(
-          "There was an error connecting to the session:",
-          error.code,
-          error.message
-        );
+        Swal.fire({
+          icon: "error",
+          html: `<div style="font-family:GmarketSans">회의 연결이 원활하지 않습니다.<br>잠시 후 다시 시도해주세요.</div>`,
+          confirmButtonText: "OK",
+          confirmButtonColor: "#2672B9",
+        });
       });
   }
 
@@ -321,7 +325,6 @@ class Conference extends Component {
       { currentVideoDevice: videoDevices[0], localUser: localUser },
       () => {
         this.state.localUser.getStreamManager().on("streamPlaying", (e) => {
-          //   this.updateLayout();
           publisher.videos[0].video.parentElement.classList.remove(
             "custom-class"
           );
@@ -346,7 +349,6 @@ class Conference extends Component {
             isScreenShareActive: this.state.localUser.isScreenShareActive(),
           });
         }
-        //   this.updateLayout();
       }
     );
   }
@@ -577,11 +579,26 @@ class Conference extends Component {
         if (error && error.name === "SCREEN_EXTENSION_NOT_INSTALLED") {
           this.setState({ showExtensionDialog: true });
         } else if (error && error.name === "SCREEN_SHARING_NOT_SUPPORTED") {
-          alert("Your browser does not support screen sharing");
+          Swal.fire({
+            icon: "error",
+            html: `<div style="font-family:GmarketSans">사용하시는 브라우저에서는 화면 공유 기능을 제공하지 않습니다.<br>Chrome을 이용해주세요.</div>`,
+            confirmButtonText: "OK",
+            confirmButtonColor: "#2672B9",
+          });
         } else if (error && error.name === "SCREEN_EXTENSION_DISABLED") {
-          alert("You need to enable screen sharing extension");
+          Swal.fire({
+            icon: "info",
+            html: `<div style="font-family:GmarketSans">화면 공유 기능 확장 프로그램 설치가 필요합니다.</div>`,
+            confirmButtonText: "OK",
+            confirmButtonColor: "#2672B9",
+          });
         } else if (error && error.name === "SCREEN_CAPTURE_DENIED") {
-          alert("You need to choose a window or application to share");
+          Swal.fire({
+            icon: "question",
+            html: `<div style="font-family:GmarketSans">공유할 페이지나 어플리케이션을 선택해 주세요.</div>`,
+            confirmButtonText: "OK",
+            confirmButtonColor: "#2672B9",
+          });
         }
       }
     );
@@ -599,7 +616,6 @@ class Conference extends Component {
       });
     });
     publisher.on("streamPlaying", () => {
-      //   this.updateLayout();
       publisher.videos[0].video.parentElement.classList.remove("custom-class");
     });
   }
@@ -632,7 +648,6 @@ class Conference extends Component {
       animate: true,
     };
     this.layout.setLayoutOptions(openviduLayoutOptions);
-    //   this.updateLayout();
   }
 
   toggleChat(property) {
@@ -644,10 +659,21 @@ class Conference extends Component {
     if (display === "block") {
       this.setState({ chatDisplay: display, messageReceived: false });
     } else {
-      console.log("chat", display);
       this.setState({ chatDisplay: display });
     }
-    //   this.updateLayout();
+  }
+
+  toggleQuestion(property) {
+    let display = property;
+
+    if (display === undefined) {
+      display = this.state.QuestionDisplay === "none" ? "block" : "none";
+    }
+    if (display === "block") {
+      this.setState({ QuestionDisplay: display, QuestionReceived: false });
+    } else {
+      this.setState({ QuestionDisplay: display });
+    }
   }
 
   checkNotification(event) {
@@ -655,12 +681,20 @@ class Conference extends Component {
       messageReceived: this.state.chatDisplay === "none",
     });
   }
+
+  checkQuestionNotification(event) {
+    this.setState({
+      QuestionReceived: this.state.QuestionDisplay === "none",
+    });
+  }
+
   checkSize() {
     if (
       document.getElementById("layout").offsetWidth <= 700 &&
       !this.hasBeenUpdated
     ) {
       this.toggleChat("none");
+      this.toggleQuestion("none");
       this.hasBeenUpdated = true;
     }
     if (
@@ -734,7 +768,8 @@ class Conference extends Component {
   render() {
     const mySessionId = this.state.mySessionId;
     const localUser = this.state.localUser;
-    var chatDisplay = { display: this.state.chatDisplay };
+    let chatDisplay = { display: this.state.chatDisplay };
+    let QuestionDisplay = { display: this.state.QuestionDisplay };
 
     // Mode toggle 버튼
     let defaultMode = this.state.defaultMode;
@@ -755,7 +790,9 @@ class Conference extends Component {
                 <p className={styles.logo}>WEEFY</p>
                 {mySessionId && (
                   <div className={styles.sessionId}>
-                    <span id="session-title">{mySessionId}</span>
+                    <span id="session-title">
+                      {this.props.activeSessionName}
+                    </span>
                   </div>
                 )}
                 <Typography
@@ -783,11 +820,6 @@ class Conference extends Component {
                     {!defaultMode ? <div className={styles.line}></div> : null}
                   </IconButton>
                 </Typography>
-                <div>
-                  <IconButton className={styles.record}>
-                    <RadioButtonCheckedOutlinedIcon style={{ color: "red" }} />
-                  </IconButton>
-                </div>
               </Toolbar>
             </AppBar>
             <Main
@@ -934,6 +966,7 @@ class Conference extends Component {
                 flexShrink: 0,
                 "& .MuiDrawer-paper": {
                   width: drawerWidth,
+                  background: "rgb(16, 22, 31)",
                 },
               }}
               variant="persistent"
@@ -972,6 +1005,10 @@ class Conference extends Component {
                       value="participant"
                       aria-label="left aligned"
                       style={{ width: "99px" }}
+                      onClick={() => {
+                        this.toggleQuestion("none");
+                        this.toggleChat("none");
+                      }}
                     >
                       <AccountCircleIcon />
                     </ToggleButton>
@@ -979,8 +1016,12 @@ class Conference extends Component {
                       value="generalChat"
                       aria-label="centered"
                       style={{ width: "96px" }}
+                      onClick={() => {
+                        this.toggleQuestion("none");
+                        this.toggleChat("block");
+                      }}
                     >
-                      <Badge badgeContent={4} color="primary">
+                      <Badge badgeContent={0} color="primary">
                         <ChatIcon />
                       </Badge>
                     </ToggleButton>
@@ -988,8 +1029,12 @@ class Conference extends Component {
                       value="questionChat"
                       aria-label="centered"
                       style={{ width: "99px" }}
+                      onClick={() => {
+                        this.toggleQuestion("block");
+                        this.toggleChat("none");
+                      }}
                     >
-                      <Badge badgeContent={4} color="primary">
+                      <Badge badgeContent={0} color="primary">
                         <QuizIcon />
                       </Badge>
                     </ToggleButton>
@@ -1015,9 +1060,7 @@ class Conference extends Component {
                       <Dropdown.Item onClick={this.showFileList}>
                         파일 목록
                       </Dropdown.Item>
-                      <Dropdown.Item href="#/action-2">
-                        동영상 목록
-                      </Dropdown.Item>
+                      <Dropdown.Item href="#/action-2">스트리밍</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                   {this.state.isFileListVisible && (
@@ -1026,7 +1069,12 @@ class Conference extends Component {
                 </div>
               </DrawerHeader>
               <Divider />
-              <List style={{ backgroundColor: "#17202E" }}>
+              <List
+                style={{
+                  backgroundColor: "#17202E",
+                  height: "calc(100% - 93.5px)",
+                }}
+              >
                 {this.state.partChatToggle === "participant" ? (
                   <Participant
                     user={localUser}
@@ -1034,8 +1082,34 @@ class Conference extends Component {
                     handleNickname={this.nicknameChanged}
                   />
                 ) : null}
-                {/* { this.state.partChatToggle === "participant" ? <Participant /> : null } */}
-                {/* { this.state.partChatToggle === "participant" ? <Participant /> : null } */}
+                {localUser !== undefined &&
+                localUser.getStreamManager() !== undefined ? (
+                  <div
+                    className="OT_root OT_publisher custom-class"
+                    style={chatDisplay}
+                  >
+                    <Chat
+                      user={localUser}
+                      chatDisplay={this.state.chatDisplay}
+                      close={this.toggleChat}
+                      messageReceived={this.checkNotification}
+                    />
+                  </div>
+                ) : null}
+                {localUser !== undefined &&
+                localUser.getStreamManager() !== undefined ? (
+                  <div
+                    className="OT_root OT_publisher custom-class"
+                    style={QuestionDisplay}
+                  >
+                    <QuestionChat
+                      user={localUser}
+                      QuestionDisplay={this.state.QuestionDisplay}
+                      close={this.toggleQuestion}
+                      questionReceived={this.checkQuestionNotification}
+                    />
+                  </div>
+                ) : null}
               </List>
               <Divider />
             </Drawer>
@@ -1059,14 +1133,32 @@ class Conference extends Component {
   }
 
   async getToken() {
-    const sessionId = await this.createSession(this.state.mySessionId);
-    return await this.createToken(sessionId);
+    //classId
+    const { activeSessionId } = this.props;
+    const { accessToken } = this.props;
+    const { identification } = this.props;
+    const { activeSessionName } = this.props;
+    console.log("activeSessionId", activeSessionId);
+    console.log("accessToken", accessToken);
+    console.log("identification", identification);
+    console.log("activeSessionName", activeSessionName);
+    await this.createSession(
+      identification,
+      activeSessionId,
+      activeSessionName
+    );
+    return await this.createToken(identification, activeSessionId, accessToken);
   }
 
-  async createSession(sessionId) {
+  async createSession(identification, activeSessionId, activeSessionName) {
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions",
-      { customSessionId: sessionId },
+      APPLICATION_SERVER_URL + "conferences",
+      {
+        identification: identification,
+        classId: activeSessionId,
+        title: activeSessionName,
+        active: true,
+      },
       {
         headers: { "Content-Type": "application/json" },
       }
@@ -1074,15 +1166,22 @@ class Conference extends Component {
     return response.data; // The sessionId
   }
 
-  async createToken(sessionId) {
+  async createToken(identification, activeSessionId, accessToken) {
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
+      APPLICATION_SERVER_URL +
+        "conferences/connection/" +
+        activeSessionId +
+        "/" +
+        identification,
       {},
       {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
     );
     return response.data; // The token
   }
 }
-export default Conference;
+export default connect(mapStateToProps)(Conference);

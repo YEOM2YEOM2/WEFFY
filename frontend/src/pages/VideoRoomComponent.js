@@ -1,7 +1,7 @@
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import React, { Component } from "react";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import ChatComponent from "./../component/conference/chat/ChatComponent.js";
 import QuestionChat from "./../component/conference/chat/QuestionChat.js";
 
@@ -15,7 +15,7 @@ import ToolbarComponent from "./../component/conference/toolbar/ToolbarComponent
 
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
-  process.env.NODE_ENV === "production" ? "" : "http://localhost:8080/";
+  process.env.NODE_ENV === "production" ? "" : "http://localhost:8082/";
 
 const mapStateToProps = (state) => {
   console.log(state.setting.selectedMic);
@@ -23,12 +23,17 @@ const mapStateToProps = (state) => {
   return {
     selectedMic: state.setting.selectedMic,
     selectedCam: state.setting.selectedCam,
+    accessToken: state.user.accessToken,
+    identification: state.user.identification,
+    activeSessionId: state.conference.activeSessionId,
+    activeSessionName: state.conference.activeSessionName,
   };
 };
 
 class VideoRoomComponent extends Component {
   constructor(props) {
     super(props);
+
     const pathArray = window.location.pathname.split("/");
     const sessionIdFromUrl = pathArray[pathArray.length - 1];
     this.hasBeenUpdated = false;
@@ -43,7 +48,7 @@ class VideoRoomComponent extends Component {
     this.remotes = [];
     this.localUserAccessAllowed = false;
     this.state = {
-      mySessionId: sessionName,
+      mySessionId: this.props.active,
       myUserName: userName,
       session: undefined,
       localUser: undefined,
@@ -492,6 +497,7 @@ class VideoRoomComponent extends Component {
         });
       });
     });
+    console.log("!!!!화면ㄷ공유한 인간!!!!!! ",localUser)
     publisher.on("streamPlaying", () => {
       this.updateLayout();
       publisher.videos[0].video.parentElement.classList.remove("custom-class");
@@ -630,7 +636,7 @@ class VideoRoomComponent extends Component {
                 className="OT_root OT_publisher custom-class"
                 style={chatDisplay}
               >
-                <ChatComponent 
+                <ChatComponent
                   user={localUser}
                   chatDisplay={this.state.chatDisplay}
                   close={this.toggleChat}
@@ -638,7 +644,7 @@ class VideoRoomComponent extends Component {
                 />
               </div>
             )}
-            {localUser !== undefined &&
+          {localUser !== undefined &&
             localUser.getStreamManager() !== undefined && (
               <div
                 className="OT_root OT_publisher custom-class"
@@ -689,31 +695,66 @@ class VideoRoomComponent extends Component {
    * more about the integration of OpenVidu in your application server.
    */
   async getToken() {
+    // console.log("들어왔음!");
+    const { accessToken } = this.props;
+    const { identification } = this.props;
+    const { classId } = this.props;
+    const { conferenceName } = this.props;
+    console.log("classId", classId);
     let encoSessionId = encodeURI(this.state.mySessionIds);
-    const sessionId = await this.createSession(encoSessionId);
-    return await this.createToken(sessionId);
-  }
-
-  async createSession(sessionId) {
-    const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions",
-      { customSessionId: sessionId },
-      {
-        headers: { "Content-Type": "application/json" },
-      }
+    const sessionId = await this.createSession(
+      identification,
+      classId,
+      conferenceName,
+      "임시_설명"
     );
-    return response.data; // The sessionId
+    return await this.createToken(identification, classId, accessToken);
   }
 
-  async createToken(sessionId) {
+  async createSession(identification, classId, title, description) {
+    console.log(identification);
+    try {
+      const response = await axios.post(
+        APPLICATION_SERVER_URL + "conferences",
+        {
+          identification: identification,
+          classId: classId,
+          title: title,
+          description: description,
+          active: true,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      // return response.data; // The sessionId
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async createToken(identification, classId, accessToken) {
+    console.log(accessToken);
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
+      APPLICATION_SERVER_URL +
+        "conferences/connection/" +
+        classId +
+        "/" +
+        identification,
       {},
       {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
     );
     return response.data; // The token
+  }
+  catch(error) {
+    console.error(error);
+    throw error;
   }
 }
 export default connect(mapStateToProps)(VideoRoomComponent);

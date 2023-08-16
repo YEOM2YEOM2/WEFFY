@@ -133,7 +133,7 @@ export default class ToolbarComponent extends Component {
                             </Tooltip>
                         </IconButton>
                         <IconButton color="inherit" onClick={this.toggleQuestion} >
-                            {this.props.showQuestion && <div id="point" className="" />}
+                            {this.props.showQuestion && <div id="point" />}
                             <Tooltip title="질문">
                                 <QuestionAnswerIcon />
                             </Tooltip>
