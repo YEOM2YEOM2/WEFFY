@@ -13,8 +13,6 @@
   font-size: 14px;
   text-align: center;
   padding-top: 4px;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
   color: #ffffff;
 }
 
@@ -130,7 +128,7 @@
 }
 
 .message .msg-detail .msg-info {
-  text-align: left !important;
+  text-align: right !important;
   align-items: flex-end;
 }
 
@@ -153,8 +151,6 @@
   text-align: center;
   padding: 10px 0px;
   height: 45px;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
 }
 
 #messageInput input {

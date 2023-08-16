@@ -134,8 +134,8 @@ class Conference extends Component {
       subscribers8: [],
       subIdx4: 0,
       subIdx8: 0,
-      chatDisplay: "block",
-      QuestionDisplay: "block",
+      chatDisplay: "none",
+      QuestionDisplay: "none",
       currentVideoDevice: undefined,
 
       // mui 사용을 위한 변수
@@ -659,7 +659,6 @@ class Conference extends Component {
     if (display === "block") {
       this.setState({ chatDisplay: display, messageReceived: false });
     } else {
-      console.log("chat", display);
       this.setState({ chatDisplay: display });
     }
   }
@@ -673,7 +672,6 @@ class Conference extends Component {
     if (display === "block") {
       this.setState({ QuestionDisplay: display, QuestionReceived: false });
     } else {
-      console.log("Question", display);
       this.setState({ QuestionDisplay: display });
     }  }
 
@@ -819,11 +817,6 @@ class Conference extends Component {
                     {!defaultMode ? <div className={styles.line}></div> : null}
                   </IconButton>
                 </Typography>
-                <div>
-                  <IconButton className={styles.record}>
-                    <RadioButtonCheckedOutlinedIcon style={{ color: "red" }} />
-                  </IconButton>
-                </div>
               </Toolbar>
             </AppBar>
             <Main
@@ -970,6 +963,7 @@ class Conference extends Component {
                 flexShrink: 0,
                 "& .MuiDrawer-paper": {
                   width: drawerWidth,
+                  background: "rgb(16, 22, 31)"
                 },
               }}
               variant="persistent"
@@ -1008,6 +1002,10 @@ class Conference extends Component {
                       value="participant"
                       aria-label="left aligned"
                       style={{ width: "99px" }}
+                      onClick={()=> {
+                        this.toggleQuestion("none")
+                        this.toggleChat("none")
+                      }}
                     >
                       <AccountCircleIcon />
                     </ToggleButton>
@@ -1015,6 +1013,10 @@ class Conference extends Component {
                       value="generalChat"
                       aria-label="centered"
                       style={{ width: "96px" }}
+                      onClick={()=> {
+                        this.toggleQuestion("none")
+                        this.toggleChat("block")
+                      }}
                     >
                       <Badge badgeContent={4} color="primary">
                         <ChatIcon />
@@ -1024,6 +1026,10 @@ class Conference extends Component {
                       value="questionChat"
                       aria-label="centered"
                       style={{ width: "99px" }}
+                      onClick={()=> {
+                        this.toggleQuestion("block")
+                        this.toggleChat("none")
+                      }}
                     >
                       <Badge badgeContent={4} color="primary">
                         <QuizIcon />
@@ -1070,8 +1076,7 @@ class Conference extends Component {
                     handleNickname={this.nicknameChanged}
                   />
                 ) : null}
-                { this.state.partChatToggle === "generalChat"
-                && localUser !== undefined && localUser.getStreamManager() !== undefined ? 
+                { localUser !== undefined && localUser.getStreamManager() !== undefined ? 
                   <div
                   className="OT_root OT_publisher custom-class"
                   style={chatDisplay}
@@ -1083,8 +1088,7 @@ class Conference extends Component {
                       messageReceived={this.checkNotification}
                     />
                   </div> : null }
-                { this.state.partChatToggle === "questionChat"
-                && localUser !== undefined && localUser.getStreamManager() !== undefined ?
+                { localUser !== undefined && localUser.getStreamManager() !== undefined ?
                   <div
                   className="OT_root OT_publisher custom-class"
                   style={QuestionDisplay}
