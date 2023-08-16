@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "../pages/myList.module.css";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 //mui component
 import Button from "@mui/material/Button"; // Button imported
@@ -10,67 +12,71 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 
-//image
-import defaultImg from "../assets/images/defualt_image.png";
-
-const itemData = [
-  {
-    id: 1,
-    img: defaultImg,
-    text: "nickname1",
-    url: "url1",
-  },
-  {
-    id: 2,
-    img: defaultImg,
-    text: "nickname2",
-    url: "url2",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-];
+// const itemData = [
+//   {
+//     text: "nickname1",
+//     url: "url1",
+//   },
+//   {
+//     text: "nickname2",
+//     url: "url2",
+//   },
+//   {
+//     text: "nickname3",
+//     url: "url3",
+//   },
+//   {
+//     text: "nickname3",
+//     url: "url3",
+//   },
+//   {
+//     text: "nickname3",
+//     url: "url3",
+//   },
+//   {
+//     text: "nickname3",
+//     url: "url3",
+//   },
+//   {
+//     text: "nickname3",
+//     url: "url3",
+//   },
+//   {
+//     text: "nickname3",
+//     url: "url3",
+//   },
+//   {
+//     text: "nickname3",
+//     url: "url3",
+//   },
+// ];
 
 const MyList = (props) => {
+  const [itemData, setItemData] = useState([]);
+  const identification = useSelector((state) => state.user.identification);
+  console.log("123" + identification);
+  useEffect(() => {
+    const fetchConferenceList = async () => {
+      try {
+        console.log("identification+" + identification);
+        const response = await axios.get(
+          `http://localhost:8082/conferences?identification=${identification}`
+        );
+        console.log(response.data);
+        const formattedData = response.data.data.map((item) => ({
+          text: item.title,
+          url: item.conferenceUrl, // 예제에 따라 실제 필드를 사용해 주세요.
+        }));
+        console.log(formattedData);
+
+        setItemData(formattedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchConferenceList();
+  }, [identification]);
+
   const handleButtonClick = () => {
     // do something
   };
@@ -89,17 +95,8 @@ const MyList = (props) => {
                   className={styles["listItem"]}
                   alignItems="flex-start"
                 >
-                  <ListItemAvatar
-                    className={styles["private-modal-list-item-avatar"]}
-                  >
-                    <Avatar alt={item.text} src={item.img} />
-                  </ListItemAvatar>
                   <Typography className={styles["listItemText"]}>
-                    {" "}
-                    {/* Updated class */}
                     {item.text}
-                    <br />
-                    {item.url}
                   </Typography>
                   <div className={styles["buttonContainer"]}>
                     {" "}
