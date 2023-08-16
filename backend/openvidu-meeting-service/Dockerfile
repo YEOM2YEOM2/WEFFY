@@ -42,7 +42,7 @@ WORKDIR /app/build/libs
 EXPOSE 8082
 
 # Run the application with debug options
-CMD ["java", "-jar", "authentication-integration-service-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "authentication-integration-service-0.0.1-SNAPSHOT.jar"]
 
 # Run the JAR file
 #ENTRYPOINT ["java", "-jar", "openvidu-meeting-service-2.28.0.jar"]
