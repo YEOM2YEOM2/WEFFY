@@ -1021,7 +1021,7 @@ class Conference extends Component {
                         this.toggleChat("block");
                       }}
                     >
-                      <Badge badgeContent={4} color="primary">
+                      <Badge badgeContent={0} color="primary">
                         <ChatIcon />
                       </Badge>
                     </ToggleButton>
@@ -1034,7 +1034,7 @@ class Conference extends Component {
                         this.toggleChat("none");
                       }}
                     >
-                      <Badge badgeContent={4} color="primary">
+                      <Badge badgeContent={0} color="primary">
                         <QuizIcon />
                       </Badge>
                     </ToggleButton>
