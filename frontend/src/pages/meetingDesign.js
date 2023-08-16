@@ -33,7 +33,6 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import SquareRoundedIcon from "@mui/icons-material/SquareRounded";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
-import RadioButtonCheckedOutlinedIcon from "@mui/icons-material/RadioButtonCheckedOutlined";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -52,6 +51,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 
 // Swal
 import Swal from "sweetalert2";
+import { ConnectingAirportsOutlined } from "@mui/icons-material";
 
 //redux
 import { setActiveSessionId } from "../store/reducers/conference";
@@ -643,9 +643,24 @@ class Conference extends Component {
           this.sendSignalUserChanged({
             isScreenShareActive: localUser.isScreenShareActive(),
           });
+          axios({
+            method: "post",
+            url: `http://localhost:8082/stream/${publisher.session.sessionId}/${publisher.stream.streamId}`,
+            headers: {
+              accept: "application/json",
+              "Content-Type": "application/json",
+            }
+          })
+          .then((res) => {
+            console.log("화면공유 aixos결과!!!!",res)
+          })
+          .catch((err) => {
+            console.log("화면공유 axios 에러!!!",err)
+          })
         });
       });
     });
+    console.log("화면공유",publisher)
     publisher.on("streamPlaying", () => {
       publisher.videos[0].video.parentElement.classList.remove("custom-class");
     });
@@ -821,7 +836,7 @@ class Conference extends Component {
                 <p className={styles.logo}>WEEFY</p>
                 {mySessionId && (
                   <div className={styles.sessionId}>
-                    <span id="session-title">
+                    <span style={{ fontFamily: "Agro", fontWeight: "100" }}>
                       {this.props.activeSessionName}
                     </span>
                   </div>
