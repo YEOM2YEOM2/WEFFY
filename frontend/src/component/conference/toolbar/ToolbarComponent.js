@@ -116,10 +116,6 @@ export default class ToolbarComponent extends Component {
                                     <StopScreenShareIcon style={{ color: "red" }} />
                                 </IconButton>
                             )}
-                        {/* 카메라 스위치 버튼 
-                        <IconButton color="inherit" className="navButton" onClick={this.switchCamera}>
-                            <SwitchCameraIcon />
-                        </IconButton> */}
                         <IconButton color="inherit" className="navButton" onClick={this.toggleFullscreen}>
                             {localUser !== undefined && this.state.fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
                         </IconButton>
