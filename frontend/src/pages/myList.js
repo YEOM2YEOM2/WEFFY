@@ -13,19 +13,15 @@ import Typography from "@mui/material/Typography";
 const MyList = (props) => {
   const [itemData, setItemData] = useState([]);
   const identification = useSelector((state) => state.user.identification);
-  console.log("123" + identification);
   const fetchConferenceList = async () => {
     try {
-      console.log("identification+" + identification);
       const response = await axios.get(
         `http://localhost:8082/conferences?identification=${identification}`
       );
-      console.log(response.data);
       const formattedData = response.data.data.map((item) => ({
         text: item.title,
         url: item.conferenceUrl,
       }));
-      console.log(formattedData);
 
       setItemData(formattedData);
     } catch (error) {
@@ -38,10 +34,8 @@ const MyList = (props) => {
   }, []);
 
   const handleButtonClick = async (url) => {
-    console.log(url);
     let lastUrl = url.split("/").pop();
 
-    console.log(lastUrl);
     // do something
     try {
       const response = await axios.patch(
@@ -54,7 +48,6 @@ const MyList = (props) => {
         }
       );
       if (response.status === 200) {
-        console.log("비활성화 완료");
         fetchConferenceList();
       } else {
         console.error("Error:" + response.data);
