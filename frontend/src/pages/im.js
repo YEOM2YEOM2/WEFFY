@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Route, Routes, Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -190,30 +190,7 @@ export default function Im() {
     MMListModal: false,
   });
 
-  const [selectedChannelId, setSelectedChannelId] = useState(null);
-  const [selectedChannel, setSelectedChannel] = useState(null);
-  const [selectedGroup, setSelectedGroup] = useState(null);
 
-  // //mm연동 미팅 시작 핸들링
-  // const handleStartMeeting = (groupName, channelName, channelId) => {
-  //   setSelectedGroup(groupName);
-  //   setSelectedChannel(channelName);
-  //   setSelectedChannelId(channelId);
-
-  //   console.log("startMeeting 클릭 완료!", groupName, channelName, channelId);
-
-  //   setModalStatus({
-  //     ...modalStatus,
-  //     startMM: true, // MmModal을 보여주고
-  //     MMListModal: false, // MMListModal은 숨깁니다.
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   console.log(selectedChannelId);
-  //   console.log(selectedChannel);
-  //   console.log(selectedGroup);
-  // }, [selectedChannelId, selectedChannel, selectedGroup]);
 
   const handleModalOpen = (modalName) => {
     //modalName에 맞는 modal true로 변경
@@ -237,15 +214,12 @@ export default function Im() {
 
   //옆 사이드바 아이콘을 클릭 했을 경우 url을 옮겨줄 hanndler
   const handleDashboardClick = () => {
-    console.log("Dashboard was clicked");
     // Dashboard 클릭 시 수행할 동작
     navigate("/im");
   };
 
   const handleMyMeetingClick = () => {
-    console.log("My Meeting was clicked");
     // My Meeting 클릭 시 수행할 동작
-    // window.location.href = "https://localhost:8080";
     navigate("/im/mylist");
   };
 
