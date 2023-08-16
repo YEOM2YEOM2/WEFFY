@@ -70,7 +70,7 @@ const JoinMeetingList = ({ handleClose, sidebarOpen }) => {
           onKeyDown={handleEnter} // 추가
         />
 
-        <div className={styles["mettingList"]}>
+        {/* <div className={styles["mettingList"]}>
           <List>
             {recentList.map((item, index) => (
               <React.Fragment key={index}>
@@ -108,10 +108,10 @@ const JoinMeetingList = ({ handleClose, sidebarOpen }) => {
               </React.Fragment>
             ))}
           </List>
-        </div>
+        </div> */}
 
         <Grid container justifyContent="flex-end">
-          <Button variant="contained">Start Private Meeting</Button>
+          {/* <Button variant="contained">Start Private Meeting</Button> */}
         </Grid>
       </div>
     </div>

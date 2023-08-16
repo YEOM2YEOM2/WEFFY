@@ -19,38 +19,7 @@ function FileList(props) {
   );
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const [files, setFiles] = useState([
-    {
-      fileUrl:
-        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
-      fileName: "fileName.PNG",
-    },
-    {
-      fileUrl:
-        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
-      fileName: "fileName.PNG",
-    },
-    {
-      fileUrl:
-        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
-      fileName: "fileName.PNG",
-    },
-    {
-      fileUrl:
-        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
-      fileName: "fileName.PNG",
-    },
-    {
-      fileUrl:
-        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
-      fileName: "fileName.PNG",
-    },
-    {
-      fileUrl:
-        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
-      fileName: "fileName.PNG",
-    },
-  ]);
+  const [files, setFiles] = useState([]);
 
   let currentPage = Math.ceil(currentIndex / 4) + 1;
   let totalPages = Math.ceil(files.length / 4);
@@ -80,9 +49,7 @@ function FileList(props) {
         Authorization: `Bearer ${accessToken}`,
       },
     })
-      .then((res) => {
-        console.log(res);
-      })
+      .then((res) => {})
       .catch((err) => {
         console.log(err.response);
       });
@@ -99,11 +66,23 @@ function FileList(props) {
     })
       .then((res) => {
         console.log(res);
+        const tempFiles = [];
+        res.map((val) => {
+          let temp = { fileName: "", fileUrl: "" };
+          temp.fileName = val.fileName;
+          temp.fileUrl = val.fileUrl;
+          tempFiles.push(temp);
+        });
+        setFiles(tempFiles);
       })
       .catch((err) => {
         console.log(err);
       });
   };
+
+  useEffect(() => {
+    initFileList();
+  }, []);
 
   return (
     <div className={styles.modal}>
@@ -119,7 +98,15 @@ function FileList(props) {
       >
         <p className={styles["title"]}>파일 목록</p>
         <IconButton>
-          <CloseIcon onClick={props.onClose} style={{ color: "gray", position: "relative", bottom: "5px", left: "9px" }} />
+          <CloseIcon
+            onClick={props.onClose}
+            style={{
+              color: "gray",
+              position: "relative",
+              bottom: "5px",
+              left: "9px",
+            }}
+          />
         </IconButton>
       </div>
       <div>
