@@ -140,17 +140,17 @@ pipeline {
                 script {
                     def stopStatus = sh(script: 'docker ps -f name=authentication-integration-service -q | xargs --no-run-if-empty docker container stop', returnStatus: true)
                     if (stopStatus != 0) {
-                        echo "Failed to stop containers. They might not be running, which is okay. Continuing..."
+                        echo "Failed to stop containers."
                     }
 
                     def rmStatus = sh(script: 'docker container ls -a -f name=authentication-integration-service -q | xargs -r docker container rm', returnStatus: true)
                     if (rmStatus != 0) {
-                        echo "Failed to remove containers. They might not exist, which is okay. Continuing..."
+                        echo "Failed to remove containers."
                     }
 
                     def rmiStatus = sh(script: 'docker images -f "dangling=true" -q | xargs -r docker rmi', returnStatus: true)
                     if (rmiStatus != 0) {
-                        echo "Failed to remove dangling images. They might not exist, which is okay. Continuing..."
+                        echo "Failed to remove dangling images."
                     }
                 }
 
@@ -180,7 +180,7 @@ pipeline {
                 }
 
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
-                    sh 'docker run -d -p 8082:8082 --name openvidu-meeting-service -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY openvidu-meeting-service:latest java -jar /app/build/libs/openvidu-meeting-service-2.28.0.jar'
+                    sh 'docker run -d -p 8082:8082 --name openvidu-meeting-service -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY openvidu-meeting-service:latest'
                 }
             }
         }
