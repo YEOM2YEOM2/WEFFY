@@ -20,7 +20,7 @@ public class KmsTest {
 
     @Test
     void encrypt() {
-        final String plaintext = "weffy";
+        final String plaintext = "root";
 
         try {
             AWSKMS kmsClient = AWSKMSClientBuilder.standard()
