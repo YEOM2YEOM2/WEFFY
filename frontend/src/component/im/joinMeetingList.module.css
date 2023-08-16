@@ -12,7 +12,7 @@
 
 .modalBody {
   width: 50vw;
-  height: 70vh;
+  height: 50vh;
   padding: 20px;
   text-align: center;
   background-color: rgba(46, 46, 72, 0.7);
@@ -42,7 +42,7 @@
   height: 60px;
   align-self: center;
   font-family: "GmarketSans";
-  font-size: 6  px;
+  font-size: 6 px;
   background-color: #f1f3f5;
   border-radius: 10px;
   font-size: 20px;
