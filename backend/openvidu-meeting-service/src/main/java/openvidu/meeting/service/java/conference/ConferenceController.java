@@ -75,6 +75,8 @@ public class ConferenceController {
     @Value("${local.recording.path}")
     private String recordingFilePath;
 
+    private String meetingUrl = "http://localhost:3000/meeting/";
+
     @PostConstruct
     public void init() throws OpenViduJavaClientException, OpenViduHttpException {
         openvidu = OpenviduDB.getOpenvidu();
@@ -168,7 +170,7 @@ public class ConferenceController {
                     .identification(reqDto.getIdentification())
                     .classId(reqDto.getClassId()).title(reqDto.getTitle())
                     .description(reqDto.getDescription())
-                    .conferenceUrl(root + reqDto.getClassId())
+                    .conferenceUrl(meetingUrl + reqDto.getClassId())
                     .active(reqDto.isActive()).build();
 
             // 새롭게 생성한 방을 DB에 저장한다.
@@ -273,10 +275,10 @@ public class ConferenceController {
                 OpenviduDB.getHostToken().put(identification, accessToken);
 
                 // 녹화를 시작한다.
-                currentRecordingList.put(classId, new VideoRecorder(classId, identification));
+              //  currentRecordingList.put(classId, new VideoRecorder(classId, identification));
 
                 // 해당 세션을 스레드로 시작한다.
-                executorService.submit(() -> currentRecordingList.get(classId).recordingMethod());
+              //  executorService.submit(() -> currentRecordingList.get(classId).recordingMethod());
             }
 
             // 어디 방에 들어간 사람인지 구분하기 위함(참가자 리스트에 추가함)
@@ -357,6 +359,7 @@ public class ConferenceController {
                 // openvidu와 연결을 해제
                 String connectionId = OpenviduDB.getSessionConnectionList().get(classId).get(identification);
                 openvidu.getActiveSession(classId).forceDisconnect(connectionId);
+
 
                 // sessionConnectionList에서 삭제함
                 OpenviduDB.getSessionConnectionList().get(classId).remove(identification);
@@ -528,13 +531,12 @@ public class ConferenceController {
           videoRecorder.recordingStop();
 
           // 로컬의 녹화 파일들 삭제하기
-          zipFileDownloader.removeFolder(recordingFilePath,classId,false);
+          //zipFileDownloader.removeFolder(recordingFilePath,classId,false);
 
           // 녹화 기능을 목록에서 삭제한다.
           currentRecordingList.remove(classId);
 
           // 이전의 녹화기록 삭제하기
-
 //        List<Recording> list = this.openvidu.listRecordings();
 //        for(Recording rec : list){
 //            this.openvidu.deleteRecording(rec.getId());

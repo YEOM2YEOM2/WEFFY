@@ -127,7 +127,9 @@ public class ZipFileDownloader{
 
 
             // 파일을 합친다.
-            videoCombine.compressVideos(classId);
+            //videoCombine.compressVideos(classId);
+
+            videoCombine.compressVideos("SessionA");
 
 
             // [폴더&파일 삭제]
@@ -138,14 +140,16 @@ public class ZipFileDownloader{
 //            Files.deleteIfExists(Paths.get(totalTextFile+classId+".txt")); // C://recording/TotalTextFile/세션이름.txt 파일을 지운다.
 
             // S3 통신
-//            try{
-//                VideoSender sv = new VideoSender();
-//                sv.sendRequest(classId, identification);
-//                logger.info("Success : ");
-//            }catch(Exception e){
-//                e.printStackTrace();
-//                logger.info("Error : ");
-//            }
+            try{
+                VideoSender sv = new VideoSender();
+                // sv.sendRequest(classId, identification);
+                logger.info("sendRequest 호출");
+                sv.sendRequest("SessionA", identification);
+                logger.info("Success : ");
+            }catch(Exception e){
+                e.printStackTrace();
+                logger.info("Error : ");
+            }
 
 
             return new StringBuilder(classId).append(".webm").toString();
