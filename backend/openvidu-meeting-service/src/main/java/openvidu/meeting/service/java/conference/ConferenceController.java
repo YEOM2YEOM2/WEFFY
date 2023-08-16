@@ -1,5 +1,6 @@
 package openvidu.meeting.service.java.conference;
 
+
 import io.swagger.annotations.*;
 import openvidu.meeting.service.java.OpenviduDB;
 import openvidu.meeting.service.java.common.dto.BaseResponseBody;
@@ -30,6 +31,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +72,8 @@ public class ConferenceController {
 
     private final ConferenceService conferenceService;
 
-    private String recordingFilePath = "C:\\recording\\RecordingFile";
+    @Value("${local.recording.path}")
+    private String recordingFilePath;
 
     @PostConstruct
     public void init() throws OpenViduJavaClientException, OpenViduHttpException {
@@ -87,8 +92,11 @@ public class ConferenceController {
         // 녹화 삭제 관련 초기화
         zipFileDownloader = new ZipFileDownloader(new RestTemplateBuilder());
 
+        // DB에 있는 conference 데이터를 Openvidu에 넣어준다.
         conferenceSetting();
 
+        // 로컬에 폴더를 생성한다.
+        fileOrDirectorySetting();
     }
 
 
@@ -101,37 +109,61 @@ public class ConferenceController {
         for (Conference conference : roomList) {
             properties = new SessionProperties.Builder().customSessionId(conference.getClassId()).build();
             session = openvidu.createSession(properties);
-
             // 방의 호스트를 저장한다.
             sessionHostList.put(conference.getClassId(), conference.getIdentification());
         }
-
     }
 
-    @ApiOperation(value = "방 생성", notes = "새로운 회의방 만들고 회의 URL반환")
+    public void fileOrDirectorySetting(){
+        Path recordingPath, totalTextFile, totalZipFile;
+        try{
+            if(Files.isDirectory(Paths.get(recordingFilePath+"RecordingFile"))){
+                zipFileDownloader.removeFolder(recordingFilePath,"RecordingFile", false);
+            }
+
+            if(Files.isDirectory(Paths.get(recordingFilePath+"TotalTextFile"))){
+                zipFileDownloader.removeFolder(recordingFilePath,"TotalTextFile", false);
+            }
+
+            if(Files.isDirectory(Paths.get(recordingFilePath+"TotalZipFile"))){
+                zipFileDownloader.removeFolder(recordingFilePath,"TotalZipFile", false);
+            }
+
+
+            recordingPath = Files.createDirectories(Paths.get(recordingFilePath).resolve("RecordingFile"));
+            totalTextFile = Files.createDirectories(Paths.get(recordingFilePath).resolve("TotalTextFile"));
+            totalZipFile = Files.createDirectories(Paths.get(recordingFilePath).resolve("TotalZipFile"));
+
+            logger.info("로컬에 RecordingFile, TotalTextFile, TotalZipFile 폴더를 생성함");
+        }catch(Exception e){
+            logger.info("로컬에 RecordingFile, TotalTextFile, TotalZipFile 폴더를 생성하지 못했음");
+        }
+    }
+
+
+
+    //사용자가 방을 생성한다.
+    @ApiOperation(value = "사용자가 방을 생성한다.", notes = "새로운 회의방 만들고 회의 URL반환")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = BaseResponseBody.class),
-            @ApiResponse(code = 4000, message = "이미 존재하는 방입니다."),
-            @ApiResponse(code = 4009, message = "서버 오류(404 Error)")
+            @ApiResponse(code = 4009, message = "404 Error")
     })
-    //방 생성
     @PostMapping
     public ResponseEntity<? extends BaseResponseBody> createConference(
             @ApiParam(value = "회의 세부 사항", required = true)
             @RequestBody(required = false) ConferenceCreateReqDto reqDto)
             throws OpenViduJavaClientException, OpenViduHttpException, IOException, InterruptedException {
 
-        // 이미 만들어진 방(세션)인 경우
+        // 이미 만들어진 방(세션)인 경우 → 기존에 있던 방의 url을 반환한다.
         if (conferenceRepository.findByClassId((String) reqDto.getClassId()) != null) {
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, root+ reqDto.getClassId()));
         }
 
 
+        // Openvidu에서 방(세션)을 생성함
         try {
-            // openvidu에서 방(세션)을 생성함
             SessionProperties properties = new SessionProperties.Builder().customSessionId(reqDto.getClassId()).build();
             Session session = openvidu.createSession(properties);
-
 
             // DB에 방(세션)을 저장함
             ConferenceCreateResDto resDto = ConferenceCreateResDto.builder()
@@ -160,11 +192,11 @@ public class ConferenceController {
         }
     }
 
-    // 유저가 host인 방 리스트 가져오기(방 이름, 설명, url을 반환함)
-    @ApiOperation(value = "유저가 host인 활성화가 되어있는 방 리스트 가져오기", notes = "지정된 ID를 기준으로 회의 목록 반환")
+    // 사용자가 HOST인 방 리스트 가져오기(방 이름, 설명, url을 반환함)
+    @ApiOperation(value = "사용자가 HOST인 활성화가 되어있는 방 리스트 가져오기", notes = "지정된 ID를 기준으로 회의 목록 반환")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = BaseResponseBody.class),
-            @ApiResponse(code = 4009, message = "서버 오류")
+            @ApiResponse(code = 4009, message = "404 Error")
     })
     @GetMapping
     public ResponseEntity<? extends BaseResponseBody> conferenceList(
@@ -174,7 +206,7 @@ public class ConferenceController {
             List<Conference> roomList = conferenceRepository.findAllByIdentificationAndActiveTrue(identification);
 
             List<ConferenceHostListResDto> dtoList = roomList.stream()
-                    .map(conference -> new ConferenceHostListResDto(conference.getTitle(), conference.getDescription(), conference.getConferenceUrl()))
+                    .map(conference -> new ConferenceHostListResDto(conference.getConferenceUrl(), conference.getTitle()))
                     .collect(Collectors.toList());
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, dtoList));
         } catch (Exception e) {
@@ -183,14 +215,12 @@ public class ConferenceController {
     }
 
     //  사람이 방(세션)에 들어갈 때(방이 존재하는지 확인하고, 토큰을 발급해준다)
-    @ApiOperation(value = "방 연결", notes = "class_id, identification, role을 기반으로 특정 회의방에 사용자를 연결")
+    @ApiOperation(value = "방에 사용자가 들어가는 경우(방 연결)", notes = "class_id, identification, role을 기반으로 특정 회의방에 사용자를 연결")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = BaseResponseBody.class),
-            @ApiResponse(code = 4001, message = "회의 존재X"),
-            @ApiResponse(code = 4009, message = "서버 오류")
+            @ApiResponse(code = 4001, message = "아직 host가 방을 활성화하지 않았습니다. 기다려주세요."),
+            @ApiResponse(code = 404, message = "404 ERROR")
     })
-
-    // HttpServletResponse response,
 
     @PostMapping("/connection/{class_id}/{identification}")
     public ResponseEntity<String> connectionConference(
@@ -201,7 +231,7 @@ public class ConferenceController {
             @ApiParam(value = "사용자 identification", required = true)
             @PathVariable("identification") String identification,
 
-            @ApiParam(value = "빈 map", required = false)
+            @ApiParam(value = "connection에 필요한 설정 map", required = false)
             @RequestBody(required = false) Map<String, Object> info) throws OpenViduJavaClientException, OpenViduHttpException
     {
 
@@ -237,6 +267,9 @@ public class ConferenceController {
                 sessionParticipantList.put(classId, new ArrayList<>());
                 sessionConnectionList.put(classId, new HashMap<>());
 
+                // host의 connectionId를 저장한다
+                OpenviduDB.getHostConnectionId().put(classId, connection.getConnectionId());
+
                 // accessToken을 받아서 저장한다.
                 String accessToken = request.getHeader("Authorization");
                 OpenviduDB.getHostToken().put(identification, accessToken);
@@ -246,13 +279,12 @@ public class ConferenceController {
 
                 // 해당 세션을 스레드로 시작한다.
                 executorService.submit(() -> currentRecordingList.get(classId).recordingMethod());
-
             }
 
-            // 어디 방에 들어간 사람인지 구분하기 위함
+            // 어디 방에 들어간 사람인지 구분하기 위함(참가자 리스트에 추가함)
             sessionParticipantList.get(classId).add(identification);
 
-            // connectionId 저장
+            // connectionId 저장(identification, connectionId를 추가함)
             sessionConnectionList.get(classId).put(identification, connection.getConnectionId());
 
             //history connection
@@ -272,9 +304,8 @@ public class ConferenceController {
     @ApiOperation(value = "방 연결 해제", notes = "제공된 class ID와 identification을 기반으로 특정 회의에서 사용자 연결 해제")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = BaseResponseBody.class),
-            @ApiResponse(code = 4001, message = "회의가 존재X"),
-            @ApiResponse(code = 4002, message = "사용자가 회의에 참가X"),
-            @ApiResponse(code = 4009, message = "서버 오류")
+            @ApiResponse(code = 4001, message = "호스트가 방을 삭제하지 못했습니다."),
+            @ApiResponse(code = 4002, message = "HISTORY ERROR")
     })
     // 호스트 : 회의 종료, 사용자 : 회의 나가기
     @PostMapping("/{class_id}/{identification}")
@@ -292,7 +323,10 @@ public class ConferenceController {
         if(identification.equals(sessionHostList.get(classId))){
             try {
                 // 회의에 참가하고 있는 사용자 전체 삭제
-                sessionParticipantList.get(classId).clear();
+                sessionParticipantList.remove(classId);
+
+                // connectionId 삭제
+                OpenviduDB.getHostConnectionId().remove(classId);
 
                 // 호스트 토큰 삭제
                 OpenviduDB.getHostToken().remove(classId);
@@ -306,20 +340,19 @@ public class ConferenceController {
                 // 회의에 참가하고 있는 connectionId 전부 삭제
                 sessionConnectionList.remove(classId);
 
-                // 230812 videoRecorder 연결 끊기 - 수정하기
+                // videoRecorder 연결 끊기
                 currentRecordingList.get(classId).recordingStop();
                 currentRecordingList.remove(classId);
 
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4007, ExceptionEnum.CONFERENCE_HOST_OUT_FAILED));
-            } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "호스트가 회의를 종료했습니다."));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_HOST_NOT_TERMINATED));
             }
         }
 
         // 사용자가 회의 종료를 누른 경우
         for (String id : sessionParticipantList.get(classId)) {
             if (id.equals(identification)) {
-
                 // 참가자 목록에서 삭제함
                 sessionParticipantList.remove(id);
 
@@ -328,7 +361,7 @@ public class ConferenceController {
                 openvidu.getActiveSession(classId).forceDisconnect(connectionId);
 
                 // sessionConnectionList에서 삭제함
-                sessionConnectionList.remove(classId).remove(identification);
+                sessionConnectionList.get(classId).remove(identification);
                 break;
             }
         }
@@ -346,16 +379,16 @@ public class ConferenceController {
             }
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "사용자가 회의를 종료했습니다."));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4008, ExceptionEnum.CONFERENCE_USER_OUT_FAILED));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4002, ExceptionEnum.CONFERENCE_HISTORY_FAILED));
         }
     }
 
     // 회의 상세 보기(1개)
-    // title,  active, updatedAt을 반환한다.
+    // title, active, updatedAt을 반환한다.
     @ApiOperation(value = "회의 상세 정보 조회", notes = "제공된 class ID를 기반으로 특정 회의의 상세 정보 조회")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = BaseResponseBody.class),
-            @ApiResponse(code = 4009, message = "서버 오류")
+            @ApiResponse(code = 4009, message = "404 ERROR")
     })
     @GetMapping("/{class_id}")
     public ResponseEntity<? extends BaseResponseBody> conferenceDetail(
@@ -374,11 +407,11 @@ public class ConferenceController {
         }
     }
 
-    // 회의 수정 (제목, 내용)
+    // 회의 수정 (제목)
     @ApiOperation(value = "회의 상세 정보 수정", notes = "제공된 class ID 및 정보를 기반으로 특정 회의의 상세 정보를 업데이트")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = BaseResponseBody.class),
-            @ApiResponse(code = 4009, message = "서버 오류")
+            @ApiResponse(code = 4009, message = "404 ERROR")
     })
     @PatchMapping("/{class_id}")
     public ResponseEntity<? extends BaseResponseBody> modifyConference(
@@ -390,11 +423,9 @@ public class ConferenceController {
     {
         try {
             String title = (String) info.get("title");
-            //String description = (String) info.get("description");
 
             Conference conference = conferenceRepository.findByClassId(classId);
             conference.setTitle(title);
-            //conference.setDescription(description);
 
             conferenceRepository.save(conference);
 
@@ -413,8 +444,8 @@ public class ConferenceController {
             notes = " 회의의 호스트만 비활성화 가능")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "회의를 찾을 수 없음"),
-            @ApiResponse(code = 4010, message = "호스트만 회의 상태 수정 가능")
+            @ApiResponse(code = 4003, message = "방은 호스트만 삭제할 수 있습니다."),
+            @ApiResponse(code = 4009, message = "404 ERROR")
     })
     @PatchMapping("/{class_id}/status")
     public ResponseEntity<? extends BaseResponseBody> disableConference(
@@ -425,7 +456,7 @@ public class ConferenceController {
     {
         // 방을 삭제하려는 사람이 Host가 아닌 경우
         if (!identification.equals(sessionHostList.get(classId))) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4010, ExceptionEnum.ONLY_HOST_DELETE));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4003, ExceptionEnum.ONLY_HOST_CAN_DELETE));
         }
 
         // 방을 삭제하려는 사람이 Host인 경우
@@ -437,11 +468,11 @@ public class ConferenceController {
             conferenceRepository.save(conference);
 
             // 녹화를 중지하기
-            VideoRecorder videoRecorder = currentRecordingList.get(classId);
-            videoRecorder.recordingStop();
+//            VideoRecorder videoRecorder = currentRecordingList.get(classId);
+//            videoRecorder.recordingStop();
 
             // 로컬의 녹화 파일들 삭제하기
-            zipFileDownloader.removeFolder(recordingFilePath,classId,false);
+//            zipFileDownloader.removeFolder(recordingFilePath,classId,false);
 
             //history DELETE
             HistoryReqDto dto = new HistoryReqDto();
@@ -462,7 +493,7 @@ public class ConferenceController {
             notes = "사용자가 방문한 가장 최근의 10개 회의를 반환")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 404, message = "회의 못찾음")
+            @ApiResponse(code = 4009, message = "404 ERROR")
     })
     @GetMapping("/visited")
     public ResponseEntity<? extends BaseResponseBody> recentConference(
@@ -483,46 +514,49 @@ public class ConferenceController {
     }
 
     // Host가 녹화 중지하기
-    @ApiOperation(value = "주어진 회의의 녹화 중지",
+    @ApiOperation(value = "HOST가 녹화를 중지한 경우",
             notes = "호스트가 지정된 회의의 녹화를 중지")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "잘못된 요청이거나 녹화 중지 중에 오류 발생"),
-            @ApiResponse(code = 404, message = "회의를 찾을 수 없거나 녹화가 진행 중이 아님")
+            @ApiResponse(code = 4004, message = "HOST가 녹화를 중지할 수 없습니다.")
     })
     @GetMapping("/stop/recordings/{class_id}")
     public ResponseEntity<? extends BaseResponseBody> stopRecording(
             @ApiParam(value = "녹화를 중지할 회의의 식별자 class_id", required = true)
             @PathVariable(name = "class_id") String classId) throws IOException, OpenViduJavaClientException, OpenViduHttpException {
-        // 녹화를 중지하기
-        VideoRecorder videoRecorder = currentRecordingList.get(classId);
-        videoRecorder.recordingStop();
+      try{
+          // 녹화를 중지하기
+          VideoRecorder videoRecorder = currentRecordingList.get(classId);
+          videoRecorder.recordingStop();
 
-        // 로컬의 녹화 파일들 삭제하기
-        zipFileDownloader.removeFolder(recordingFilePath,classId,false);
+          // 로컬의 녹화 파일들 삭제하기
+          zipFileDownloader.removeFolder(recordingFilePath,classId,false);
 
-        // 녹화 기능을 목록에서 삭제한다.
-        currentRecordingList.remove(classId);
+          // 녹화 기능을 목록에서 삭제한다.
+          currentRecordingList.remove(classId);
 
-        // 이전의 녹화기록 삭제하기
+          // 이전의 녹화기록 삭제하기
+
 //        List<Recording> list = this.openvidu.listRecordings();
 //        for(Recording rec : list){
 //            this.openvidu.deleteRecording(rec.getId());
 //        }
 //
-        logger.info("녹화를 중지하고 삭제함");
+
+          logger.info("녹화를 중지하고 삭제함");
+
+          //history REC_END
+          HistoryReqDto dto = new HistoryReqDto();
+          Conference nowConference = conferenceRepository.findByClassId(classId);
+          dto.setConference_id(nowConference.getId());
+          dto.setIdentification(nowConference.getIdentification());
+          historyService.createHistory(dto, "REC_END");
+          return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "성공!!!"));
+      }catch(Exception e){
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4004, ExceptionEnum.CONFERENCE_HOST_RECORDING_NOT_TERMINATED));
+      }
 
 
-        // 230813 파일을 다운 받으면서 로컬에 파일이 남았을 경우 - 다시 확인하기
-
-        //history REC_END
-        HistoryReqDto dto = new HistoryReqDto();
-        Conference nowConference = conferenceRepository.findByClassId(classId);
-        dto.setConference_id(nowConference.getId());
-        dto.setIdentification(nowConference.getIdentification());
-        historyService.createHistory(dto, "REC_END");
-
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "성공!!!"));
     }
 
 
@@ -531,8 +565,7 @@ public class ConferenceController {
             notes = "지정된 회의에 현재 참가하고 있는 참가자들의 식별자 목록 반환")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 400, message = "잘못된 요청이거나 처리 중에 오류 발생"),
-            @ApiResponse(code = 404, message = "회의를 찾을 수 없거나 참가자가 없음")
+            @ApiResponse(code = 4009, message = "404 ERROR"),
     })
     @GetMapping("/enter/{class_id}")
     public ResponseEntity<? extends BaseResponseBody> conferenceEntryList(
@@ -547,9 +580,17 @@ public class ConferenceController {
 
     }
 
-    // host 가 녹화 시작을 눌렀을 때
+    // HOST가 녹화 시작을 눌렀을 때
+    @ApiOperation(value = "HOST가 녹화를 시작한 경우",
+            notes = "지정된 회의에 현재 참가하고 있는 참가자들의 식별자 목록 반환")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 4005, message = "HOST가 녹화를 생성할 수 없습니다."),
+    })
     @GetMapping("/start/recording/{class_id}")
-    public ResponseEntity<? extends BaseResponseBody> startRecording(@PathVariable(name="class_id") String classId) throws IOException {
+    public ResponseEntity<? extends BaseResponseBody> startRecording(
+            @ApiParam(value = "녹화를 중지할 회의의 식별자 class_id", required = true)
+            @PathVariable(name="class_id") String classId) throws IOException {
 
         try{
             //history REC_START
@@ -561,7 +602,7 @@ public class ConferenceController {
 
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "녹화를 시작합니다."));
         }catch(Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4005, ExceptionEnum.RECORDING_GENERATION_ERROR));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4005, ExceptionEnum.CONFERENCE_HOST_RECORDING_NOT_CREATE));
         }
 
     }
