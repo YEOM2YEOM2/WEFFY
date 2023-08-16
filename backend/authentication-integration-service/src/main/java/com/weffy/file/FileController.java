@@ -96,7 +96,7 @@ public class FileController {
                             "}"))),
             @ApiResponse(responseCode = "4006", description =  "FILE_NOT_FOUND", content = @Content(examples = @ExampleObject(value = "{\"status\": 4006, \"data\": \"파일이 존재하지 않습니다.\"}")))
     })
-    @GetMapping("")
+    @PostMapping("")
     public ResponseEntity<? extends BaseResponseBody> getFiles(@RequestBody FileReqDto fileReqDto) {
         String authorizedMember = SecurityUtil.getAuthorizedMember();
         WeffyUser weffyUser = userService.findByEmail(authorizedMember);
