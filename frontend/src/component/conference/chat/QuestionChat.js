@@ -111,8 +111,8 @@ const QuestionChat = ({ user }) => {
 
   // const styleChat = { display: this.props.chatDisplay };
   return (
-    <div id="chatContainer">
-      <div id="chatComponent">
+    <div id="chatContainer" style={{ position: "relative", bottom: "7px" }}>
+      <div id="chatComponent" style={{ margin: "0", height: "calc(100% + 15px)", width: "100%" }}>
         <div id="chatToolbar">
           <span style={{ fontFamily: "Agro", fontWeight: "400" }}>
             질문 채팅
@@ -145,6 +145,7 @@ const QuestionChat = ({ user }) => {
         </div>
 
         <div id="fileContainer">
+          <span style={{ zIndex: "99999", color: "white", fontFamily: "NanumSquareNeo", fontSize: "13px", position: "absolute", top: "4.5px", right: "50px" }}>익명</span>
           <Tooltip title="익명으로 질문하기" placement="top">
             <IconButton
               size="small"
@@ -176,7 +177,7 @@ const QuestionChat = ({ user }) => {
               size="small"
               id="sendButton"
               onClick={sendMessage}
-              style={{ padding: "10px", margin: "4px" }}
+              style={{ padding: "10px", margin: "4px", width: "40px" }}
             >
               <SendIcon style={{ color: "white" }} />
             </IconButton>
