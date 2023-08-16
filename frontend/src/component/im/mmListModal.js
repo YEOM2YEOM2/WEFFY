@@ -17,10 +17,12 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // store conference
-import { setClassId, setConferenceName } from "../../store/reducers/conference";
+import {
+  setActiveSessionId,
+  setSessionName,
+} from "../../store/reducers/conference";
 
 const MMListModal = ({ handleClose, handleStartMeeting }) => {
-  // const [groupData, setGroupData] = useState([]);
   const [groupData, setGroupData] = useState([]);
 
   console.log(handleStartMeeting);
@@ -93,8 +95,8 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
 
   const startMeeting = () => {
     console.log("서버랑 통신 해서 sessionId받아와서 화면 넘기기");
-    dispatch(setClassId(selectedChannelId));
-    dispatch(setConferenceName(selectedChannel));
+    dispatch(setActiveSessionId(selectedChannelId));
+    dispatch(setSessionName(`${selectedGroup} ${selectedChannel}의 미팅룸`));
 
     navigate(`/conference/${selectedChannelId}`);
   };

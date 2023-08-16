@@ -13,7 +13,7 @@
 application-dev.properties
 
 # Package Files #
-*.jar
+
 *.war
 *.ear
 *.zip

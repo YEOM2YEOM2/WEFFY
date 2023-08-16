@@ -10,8 +10,6 @@ import {
   toggleCameraStatus,
 } from "../../store/reducers/setting.js";
 
-import { setActiveSessionId } from "../../store/reducers/conference.js";
-
 import { OpenVidu } from "openvidu-browser";
 
 import Avatar from "@mui/material/Avatar";
@@ -31,14 +29,13 @@ import { IconButton } from "@mui/material";
 
 // store conference
 import {
-  setClassId,
-  setConferenceName,
+  setActiveSessionId,
+  setSessionName,
 } from "../../store/reducers/conference.js";
 
 const PrivateModal = ({ handleClose }) => {
   const micStatus = useSelector((state) => state.setting.micStatus);
   const cameraStatus = useSelector((state) => state.setting.cameraStatus);
-
   const selectedMic = useSelector((state) => state.setting.selectedMic);
   const selectedCam = useSelector((state) => state.setting.selectedCam);
 
@@ -46,11 +43,8 @@ const PrivateModal = ({ handleClose }) => {
   const profileImg = useSelector((state) => state.user.profileImg);
   const nickname = useSelector((state) => state.user.nickname) || "";
   const userId = useSelector((state) => state.user.id);
-  const conferenceName = useSelector((state) => state.user.conferenceName);
 
   const [localNickname, setLocalNickname] = useState(nickname);
-
-  const [sessionId, setSessionId] = useState("sessionB");
 
   useEffect(() => {
     setLocalNickname(nickname);
@@ -72,9 +66,8 @@ const PrivateModal = ({ handleClose }) => {
   };
 
   useEffect(() => {
-    dispatch(setActiveSessionId(sessionId));
-
     console.log();
+    dispatch(setActiveSessionId(userId));
 
     OV.getDevices()
       .then((devices) => {
@@ -125,17 +118,12 @@ const PrivateModal = ({ handleClose }) => {
   };
 
   const navigate = useNavigate();
+
   const startPrivateMeeting = () => {
-    dispatch(setActiveSessionId(sessionId));
     dispatch(setParticipateName(localNickname));
-    dispatch(setClassId(userId));
-    dispatch(setConferenceName(userId + "님의 개인룸"));
+    dispatch(setSessionName(`${userId}의 개인룸`));
 
-    console.log("start Meeting!");
-    // let ecodedSessionId = decodeURIComponent(sessionId);
-
-    // navigate(`/conference/${nickname}`);
-    navigate(`/conference/${userId}`);
+    navigate(`/conference/${userId} `);
   };
 
   const handleSelectCamera = (event) => {
