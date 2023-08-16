@@ -305,7 +305,7 @@ class ChatComponent extends Component {
                 size="small"
                 id="sendButton"
                 onClick={this.sendMessage}
-                style={{ padding: "10px", margin: "4px" }}
+                style={{ padding: "10px", margin: "4px", width: "40px" }}
               >
                 <SendIcon style={{ color: "white" }} />
               </IconButton>

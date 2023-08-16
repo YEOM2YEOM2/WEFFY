@@ -128,7 +128,7 @@
 }
 
 .message .msg-detail .msg-info {
-  text-align: left !important;
+  text-align: right !important;
   align-items: flex-end;
 }
 
