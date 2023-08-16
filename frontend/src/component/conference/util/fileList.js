@@ -11,6 +11,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import IconButton from "@mui/material/IconButton";
 import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
+import { Today } from "@mui/icons-material";
 
 function FileList(props) {
   const accessToken = useSelector((state) => state.user.accessToken);
@@ -21,11 +22,17 @@ function FileList(props) {
 
   const [files, setFiles] = useState([]);
 
+  // const dateNow = new Date();
+  // const today = dateNow.toISOString().slice(0, 10);
+  // const curDate = const curDate = new Date().toISOString().split('T')[0];
+  const curDate = new Date().toISOString().split("T")[0];
+
+  console.log(curDate);
+
   let currentPage = Math.ceil(currentIndex / 4) + 1;
   let totalPages = Math.ceil(files.length / 4);
 
   let displayText = `${currentPage}/${totalPages}`;
-  console.log(files);
 
   const handlePrev = () => {
     if (currentIndex > 0) {
@@ -57,23 +64,22 @@ function FileList(props) {
 
   const initFileList = () => {
     axios({
-      method: "get",
-      url: `http://i9d107.p.ssafy.io:8081/api/v1/files?conferenceId=${activeSessionId}`,
+      method: "post",
+      url: `http://i9d107.p.ssafy.io:8081/api/v1/files`,
+      data: {
+        conferenceId: activeSessionId,
+        start: `${curDate}T00:00:00`,
+        end: `${curDate}T23:59:59`,
+      },
       headers: {
         accept: "application/json",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     })
       .then((res) => {
         console.log(res);
-        const tempFiles = [];
-        res.map((val) => {
-          let temp = { fileName: "", fileUrl: "" };
-          temp.fileName = val.fileName;
-          temp.fileUrl = val.fileUrl;
-          tempFiles.push(temp);
-        });
-        setFiles(tempFiles);
+        // const tempFiles = [];
       })
       .catch((err) => {
         console.log(err);
