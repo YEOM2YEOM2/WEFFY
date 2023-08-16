@@ -123,7 +123,7 @@ public class ConferenceController {
 
         // 이미 만들어진 방(세션)인 경우
         if (conferenceRepository.findByClassId((String) reqDto.getClassId()) != null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4000, ExceptionEnum.CONFERENCE_EXIST));
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, root+ reqDto.getClassId()));
         }
 
 
