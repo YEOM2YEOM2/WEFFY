@@ -131,11 +131,11 @@ public class ZipFileDownloader{
 
 
             // [폴더&파일 삭제]
-            this.removeFolder(totalZipFilePath,classId, true); // C://recording/TotalZipFile/세션이름 폴더에 있는 모든 파일을 지운다 + 폴더도 지운다.
-
-            Files.deleteIfExists(Paths.get(totalZipFilePath+classId+".zip")); // zip 파일을 삭제한다.
-
-            Files.deleteIfExists(Paths.get(totalTextFile+classId+".txt")); // C://recording/TotalTextFile/세션이름.txt 파일을 지운다.
+//            this.removeFolder(totalZipFilePath,classId, true); // C://recording/TotalZipFile/세션이름 폴더에 있는 모든 파일을 지운다 + 폴더도 지운다.
+//
+//            Files.deleteIfExists(Paths.get(totalZipFilePath+classId+".zip")); // zip 파일을 삭제한다.
+//
+//            Files.deleteIfExists(Paths.get(totalTextFile+classId+".txt")); // C://recording/TotalTextFile/세션이름.txt 파일을 지운다.
 
             // S3 통신
 //            try{
