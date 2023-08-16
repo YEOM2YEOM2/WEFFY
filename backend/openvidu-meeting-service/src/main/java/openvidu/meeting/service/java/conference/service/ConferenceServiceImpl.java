@@ -35,7 +35,7 @@ public class ConferenceServiceImpl implements ConferenceService{
 
     @Override
     public Page<Conference> recentConference(String identification) {
-        Pageable pageable = PageRequest.of(0,10);
+        Pageable pageable = PageRequest.of(0,6);
         return conferenceRepository.findByIdentificationOrderByUpdatedAtDesc(identification, pageable);
     }
 

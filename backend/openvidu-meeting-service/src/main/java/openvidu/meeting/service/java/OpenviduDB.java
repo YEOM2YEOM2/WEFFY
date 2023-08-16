@@ -27,6 +27,8 @@ public class OpenviduDB {
 
     private static Map<String, String> hostConnectionId;
 
+    private static Map<String, Map<String, String>> sessionConnectionList;
+
     public static OpenVidu getOpenvidu(){
         if(openvidu == null){
             openvidu = new OpenVidu(OPENVIDU_URL,OPENVIDU_SECRET);
@@ -53,6 +55,13 @@ public class OpenviduDB {
             hostConnectionId = new ConcurrentHashMap<>();
         }
         return hostConnectionId;
+    }
+
+    public static Map<String, Map<String, String>> getSessionConnectionList(){
+        if(sessionConnectionList == null){
+            sessionConnectionList = new ConcurrentHashMap<>();
+        }
+        return sessionConnectionList;
     }
 
 
