@@ -53,6 +53,9 @@ import Dropdown from "react-bootstrap/Dropdown";
 // Swal
 import Swal from "sweetalert2";
 
+//redux
+import { setActiveSessionId } from "../store/reducers/conference";
+
 const drawerWidth = 320;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -115,6 +118,10 @@ const mapStateToProps = (state) => {
   };
 };
 
+const mapDispatchToProps = {
+  setActiveSessionId,
+};
+
 class Conference extends Component {
   constructor(props) {
     super(props);
@@ -125,8 +132,15 @@ class Conference extends Component {
       : "WEFFY_User" + Math.floor(Math.random() * 100);
     this.remotes = [];
     this.localUserAccessAllowed = false;
+    const pathArray = window.location.pathname.split("/");
+    const sessionIdFromUrl = pathArray[pathArray.length - 1];
+    this.hasBeenUpdated = false;
+    this.layout = new OpenViduLayout();
+    let sessionName = decodeURIComponent(sessionIdFromUrl);
+    this.props.setActiveSessionId(sessionName);
+
     this.state = {
-      mySessionId: this.props.activeSessionId,
+      mySessionId: sessionName,
       myUserName: userName,
       session: undefined,
       localUser: undefined,
@@ -1201,4 +1215,4 @@ class Conference extends Component {
     return response.data; // The token
   }
 }
-export default connect(mapStateToProps)(Conference);
+export default connect(mapStateToProps, mapDispatchToProps)(Conference);
