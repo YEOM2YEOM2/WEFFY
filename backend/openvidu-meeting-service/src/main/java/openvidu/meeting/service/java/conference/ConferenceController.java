@@ -504,7 +504,7 @@ public class ConferenceController {
             Page<Conference> page = conferenceService.recentConference(identification);
             List<ConferenceHostListResDto> resultList = page.getContent()
                     .stream()
-                    .map(conference -> new ConferenceHostListResDto(conference.getConferenceUrl(), conference.getTitle(), conference.getDescription()))
+                    .map(conference -> new ConferenceHostListResDto(conference.getConferenceUrl(), conference.getTitle()))
                     .collect(Collectors.toList());
 
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, resultList));
