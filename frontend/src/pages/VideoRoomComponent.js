@@ -497,6 +497,7 @@ class VideoRoomComponent extends Component {
         });
       });
     });
+    console.log("!!!!화면ㄷ공유한 인간!!!!!! ",localUser)
     publisher.on("streamPlaying", () => {
       this.updateLayout();
       publisher.videos[0].video.parentElement.classList.remove("custom-class");
