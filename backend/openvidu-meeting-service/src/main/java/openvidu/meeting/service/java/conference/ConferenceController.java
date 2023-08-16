@@ -54,7 +54,7 @@ public class ConferenceController {
 
     @Value("${spring.connection.path}")
     private String root;
-    private Map<String, Map<String, String>> sessionConnectionList; // classId, <identification, connectionId>
+    //private Map<String, Map<String, String>> sessionConnectionList; // classId, <identification, connectionId>
     private Map<String, List<String>> sessionParticipantList; // <classId, [participant Name1, Name2, ... ]>
     private Map<String, String> sessionHostList; // <classId, identification>
     private Map<String, VideoRecorder> currentRecordingList; // <classId, VideoRecorder>
@@ -78,8 +78,6 @@ public class ConferenceController {
     @PostConstruct
     public void init() throws OpenViduJavaClientException, OpenViduHttpException {
         openvidu = OpenviduDB.getOpenvidu();
-
-        sessionConnectionList = new ConcurrentHashMap<>();
         sessionHostList = new ConcurrentHashMap<>();
         sessionParticipantList = new ConcurrentHashMap<>();
 
@@ -265,7 +263,7 @@ public class ConferenceController {
 
                 // 방에 참가한 사람들을 담을 map을 세팅한다.
                 sessionParticipantList.put(classId, new ArrayList<>());
-                sessionConnectionList.put(classId, new HashMap<>());
+                OpenviduDB.getSessionConnectionList().put(classId, new HashMap<>());
 
                 // host의 connectionId를 저장한다
                 OpenviduDB.getHostConnectionId().put(classId, connection.getConnectionId());
@@ -285,7 +283,7 @@ public class ConferenceController {
             sessionParticipantList.get(classId).add(identification);
 
             // connectionId 저장(identification, connectionId를 추가함)
-            sessionConnectionList.get(classId).put(identification, connection.getConnectionId());
+            OpenviduDB.getSessionConnectionList().get(classId).put(identification, connection.getConnectionId());
 
             //history connection
             HistoryReqDto dto = new HistoryReqDto();
@@ -333,12 +331,12 @@ public class ConferenceController {
 
                 // openvidu에서 session과 연결되어있는 connection을 모두 삭제함
                 Session session = openvidu.getActiveSession(classId);
-                for(String conId : sessionConnectionList.get(classId).keySet()){
+                for(String conId : OpenviduDB.getSessionConnectionList().get(classId).keySet()){
                     session.forceDisconnect(conId);
                 }
 
                 // 회의에 참가하고 있는 connectionId 전부 삭제
-                sessionConnectionList.remove(classId);
+                OpenviduDB.getSessionConnectionList().remove(classId);
 
                 // videoRecorder 연결 끊기
                 currentRecordingList.get(classId).recordingStop();
@@ -357,11 +355,11 @@ public class ConferenceController {
                 sessionParticipantList.remove(id);
 
                 // openvidu와 연결을 해제
-                String connectionId = sessionConnectionList.get(classId).get(identification);
+                String connectionId = OpenviduDB.getSessionConnectionList().get(classId).get(identification);
                 openvidu.getActiveSession(classId).forceDisconnect(connectionId);
 
                 // sessionConnectionList에서 삭제함
-                sessionConnectionList.get(classId).remove(identification);
+                OpenviduDB.getSessionConnectionList().get(classId).remove(identification);
                 break;
             }
         }
@@ -374,7 +372,7 @@ public class ConferenceController {
             dto.setIdentification(identification);
             historyService.createHistory(dto, "EXIT");
             //방을 나갔는데 모두 나가게 되어서 LEAVE
-            if(sessionConnectionList.get(classId).size() == 0){
+            if(OpenviduDB.getSessionConnectionList().get(classId).size() == 0){
                 historyService.createHistory(dto,"LEAVE");
             }
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "사용자가 회의를 종료했습니다."));
@@ -488,9 +486,9 @@ public class ConferenceController {
         }
     }
 
-    // User가 방문한 회의 리스트 조회 (최근 10개)
+    // User가 방문한 회의 리스트 조회 (최근 6개)
     @ApiOperation(value = "사용자가 방문한 최근 회의 목록 조회",
-            notes = "사용자가 방문한 가장 최근의 10개 회의를 반환")
+            notes = "사용자가 방문한 가장 최근의 6개 회의를 반환")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 4009, message = "404 ERROR")
@@ -573,7 +571,7 @@ public class ConferenceController {
             @PathVariable("class_id") String classId)
     {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, sessionConnectionList.get(classId)));
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, OpenviduDB.getSessionConnectionList().get(classId)));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4009, ExceptionEnum.GENERIC_ERROR));
         }
