@@ -9,12 +9,11 @@ import lombok.Setter;
 public class ConferenceHostListResDto {
     private String conferenceUrl;
     private String title;
-    private String description;
+
 
     @Builder
-    public ConferenceHostListResDto(String conferenceUrl, String title, String description) {
+    public ConferenceHostListResDto(String conferenceUrl, String title) {
         this.conferenceUrl = conferenceUrl;
         this.title = title;
-        this.description = description;
     }
 }
