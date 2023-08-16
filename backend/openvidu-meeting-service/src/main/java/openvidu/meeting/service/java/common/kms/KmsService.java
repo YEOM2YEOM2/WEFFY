@@ -1,4 +1,4 @@
-package com.weffy.common.kms;
+package openvidu.meeting.service.java.common.kms;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.kms.AWSKMS;
@@ -9,14 +9,13 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-
 import java.nio.ByteBuffer;
 
 @Service
 public class KmsService {
 
-//    @Value("${aws.kms.key-id}")
-//    private String KEY_ID;
+    @Value("${aws.kms.key-id}")
+    private String KEY_ID;
 
     public String decryptData(String encryptedData) {
         try {
@@ -26,7 +25,7 @@ public class KmsService {
 
             DecryptRequest request = new DecryptRequest();
             request.withCiphertextBlob(ByteBuffer.wrap(Base64.decodeBase64(encryptedData)));
-            request.withKeyId("34e74f60-e450-43b1-ada9-a26be8e472fe");
+            request.withKeyId(KEY_ID);
             request.withEncryptionAlgorithm(EncryptionAlgorithmSpec.RSAES_OAEP_SHA_256);
             ByteBuffer plainText = kmsClient.decrypt(request).getPlaintext();
             return new String(plainText.array());

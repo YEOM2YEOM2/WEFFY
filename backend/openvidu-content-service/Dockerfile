@@ -30,8 +30,9 @@ RUN ./gradlew clean build --no-daemon -x test
 # Change the working directory to the build directory
 WORKDIR /app/build/libs
 
-# Expose the port the app runs in and the debug port
-EXPOSE 8081
+# Expose the port the app runs in
+EXPOSE 8083
 
-# Run the application with debug options
-CMD ["java", "-jar", "authentication-integration-service-0.0.1-SNAPSHOT.jar"]
+# Run the application
+CMD ["java", "-jar", "openvidu-content-service-0.0.1-SNAPSHOT.jar"]
+

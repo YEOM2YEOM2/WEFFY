@@ -65,6 +65,13 @@ dependencies {
     // ffmpeg
     implementation 'net.bramp.ffmpeg:ffmpeg:0.6.2'
 
+    // kms
+    implementation 'com.amazonaws:aws-java-sdk-core:1.11.1019'
+    implementation 'com.amazonaws:aws-java-sdk-kms:1.11.1019'
+    implementation 'com.amazonaws:jmespath-java:1.11.1019'
+    // https://mvnrepository.com/artifact/software.amazon.awssdk/kms
+    implementation 'software.amazon.awssdk:kms:2.20.115'
+
 //    // scheduled
 //    implementation 'org.springframework.boot:spring-boot-starter-task'
 }

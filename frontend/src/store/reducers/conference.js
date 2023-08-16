@@ -4,22 +4,21 @@ let conference = createSlice({
   name: "conference",
   initialState: {
     activeSessionId: null,
-    classId: null,
-    conferenceName: null,
+    // classId: null,
+    sessionName: null,
   },
   reducers: {
     setActiveSessionId(state, action) {
       state.activeSessionId = action.payload;
     },
-    setClassId(state, action) {
-      state.classId = action.payload;
-    },
-    setConferenceName(state, action) {
-      state.conferenceName = action.payload;
+    // setClassId(state, action) {
+    //   state.classId = action.payload;
+    // },
+    setSessionName(state, action) {
+      state.sessionName = action.payload;
     },
   },
 });
 
-export const { setActiveSessionId, setClassId, setConferenceName } =
-  conference.actions;
+export const { setActiveSessionId, setSessionName } = conference.actions;
 export default conference.reducer;
