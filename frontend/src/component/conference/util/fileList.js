@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styles from "./fileList.module.css";
 import axios from "axios";
-import { Button } from "@mui/material";
+import { Button, accordionActionsClasses } from "@mui/material";
+import { useSelector } from "react-redux";
 
 //mui 버튼
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
@@ -11,6 +12,10 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { useFetcher } from "react-router-dom";
 
 function FileList(props) {
+  const accessToken = useSelector((state) => state.user.accessToken);
+  const activeSessionId = useSelector(
+    (state) => state.conference.activeSessionId
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [files, setFiles] = useState([]);
 
@@ -33,29 +38,55 @@ function FileList(props) {
     if (!uploadFile) return;
 
     const formData = new FormData();
-    formData.append("uploadFile", uploadFile);
+    formData.append("file", uploadFile);
 
-    try {
-      // 업로드 파일 여기에 API맞춰서 하면 됩니당
-      const response = await axios.post(
-        `http://localhost:8081/${conferenceId}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          params: { type },
-        }
-      );
+    console.log("업로드 될 파일 정보");
+    console.log(uploadFile);
 
-      if (response.data.success) {
-        alert("File uploaded successfully");
-      } else {
-        alert("Failed to upload file");
-      }
-    } catch (error) {
-      console.error("There was an error while uploading files:", error);
-    }
+    axios({
+      method: "post",
+      url: `http://3.39.223.169:8081/api/v1/files/${activeSessionId}`,
+      // url: `http://i9d107.p.ssafy.io:8081/api/v1/files/sessionB`,
+      headers: {
+        accept: "application/json",
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      data: formData,
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+        // Set the message state to the error message you want to display.
+        // this.setState({ message: "파일 전송에 실패했습니다" }, () => {
+        //   this.sendMessage();
+        //   this.setState({ message: "" });
+        // });
+      });
+
+    // try {
+    //   // 업로드 파일 여기에 API맞춰서 하면 됩니당
+    //   const response = await axios.post(
+    //     `http://localhost:8081/${conferenceId}`,
+    //     formData,
+    //     {
+    //       headers: {
+    //         "Content-Type": "multipart/form-data",
+    //       },
+    //       params: { type },
+    //     }
+    //   );
+
+    //   if (response.data.success) {
+    //     alert("File uploaded successfully");
+    //   } else {
+    //     alert("Failed to upload file");
+    //   }
+    // } catch (error) {
+    //   console.error("There was an error while uploading files:", error);
+    // }
   };
 
   const handlePrev = () => {
@@ -68,14 +99,6 @@ function FileList(props) {
     if (currentIndex + 4 < files.length) {
       setCurrentIndex(currentIndex + 4);
     }
-  };
-
-  const labelStyles = {
-    padding: "10px 15px",
-    backgroundColor: isHovered ? "#45a049" : "white",
-    color: "skyblue",
-    cursor: "pointer",
-    borderRadius: "20px",
   };
 
   // 들어오자마자 백에 요청해서 db에서 file들 가져오는 코드입니다용
