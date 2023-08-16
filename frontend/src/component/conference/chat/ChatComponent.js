@@ -263,7 +263,7 @@ class ChatComponent extends Component {
                           </p>
                         </p>
                       </div>
-                      <span className="timeStamp">{data.timestamp}</span>
+                      <span className="timeStamp" style={{ fontSize: "12px" }}>{data.timestamp}</span>
                     </div>
                   </div>
                 </div>
