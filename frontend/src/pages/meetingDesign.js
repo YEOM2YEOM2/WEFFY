@@ -102,7 +102,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
-  process.env.NODE_ENV === "production" ? "" : "http://localhost:8080/";
+  process.env.NODE_ENV === "production" ? "" : "http://localhost:8082/";
 
 const mapStateToProps = (state) => {
   return {
@@ -1133,14 +1133,32 @@ class Conference extends Component {
   }
 
   async getToken() {
-    const sessionId = await this.createSession(this.state.mySessionId);
-    return await this.createToken(sessionId);
+    //classId
+    const { activeSessionId } = this.props;
+    const { accessToken } = this.props;
+    const { identification } = this.props;
+    const { activeSessionName } = this.props;
+    console.log("activeSessionId", activeSessionId);
+    console.log("accessToken", accessToken);
+    console.log("identification", identification);
+    console.log("activeSessionName", activeSessionName);
+    await this.createSession(
+      identification,
+      activeSessionId,
+      activeSessionName
+    );
+    return await this.createToken(identification, activeSessionId, accessToken);
   }
 
-  async createSession(sessionId) {
+  async createSession(identification, activeSessionId, activeSessionName) {
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions",
-      { customSessionId: sessionId },
+      APPLICATION_SERVER_URL + "conferences",
+      {
+        identification: identification,
+        classId: activeSessionId,
+        title: activeSessionName,
+        active: true,
+      },
       {
         headers: { "Content-Type": "application/json" },
       }
@@ -1148,12 +1166,19 @@ class Conference extends Component {
     return response.data; // The sessionId
   }
 
-  async createToken(sessionId) {
+  async createToken(identification, activeSessionId, accessToken) {
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
+      APPLICATION_SERVER_URL +
+        "conferences/connection/" +
+        activeSessionId +
+        "/" +
+        identification,
       {},
       {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
     );
     return response.data; // The token
