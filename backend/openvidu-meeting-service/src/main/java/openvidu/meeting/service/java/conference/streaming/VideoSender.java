@@ -28,34 +28,45 @@ public class VideoSender {
 
     //"?type=lecture"
     public void sendRequest(String classId,  String identification) throws IOException {
+        logger.info("sendRequest 호출! 호출! \n"+ accessToken);
+        try{
+            logger.info("sendRequest 호출!! 호출!! \n"+ accessToken);
 
-        logger.info("sendRequest 호출");
+            accessToken = OpenviduDB.getHostToken().get(identification);
 
-        accessToken = OpenviduDB.getHostToken().get(identification);
+            logger.info(classId+","+identification+"\n"+accessToken);
 
-        HttpClient httpClient = HttpClients.createDefault();
+            HttpClient httpClient = HttpClients.createDefault();
 
-        HttpPost postRequest = new HttpPost("http://i9d107.p.ssafy.io:8081/api/v1/files/" + classId +"?type=lecture");
+            // "?type=lecture"
+            HttpPost postRequest = new HttpPost("http://i9d107.p.ssafy.io:8081/api/v1/files/" + classId );
 
-        postRequest.addHeader("Authorization", "Bearer " + accessToken);
+            postRequest.addHeader("Authorization", "Bearer " + accessToken);
 
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
-        Path file = Paths.get(recordingFileUrl + classId + ".webm");
+            Path file = Paths.get(recordingFileUrl + classId + ".webm");
 
-       // System.out.println("문장 : "+ file.toString());
-        builder.addBinaryBody("file", Files.newInputStream(file), ContentType.APPLICATION_OCTET_STREAM, file.getFileName().toString());
+            logger.info(recordingFileUrl + classId + ".webm");
 
-       // System.out.println("file Path : "+ file.toString());
+            // System.out.println("문장 : "+ file.toString());
+            builder.addBinaryBody("file", Files.newInputStream(file), ContentType.APPLICATION_OCTET_STREAM, file.getFileName().toString());
 
-        HttpEntity multipartEntity = builder.build();
-        postRequest.setEntity(multipartEntity);
+            // System.out.println("file Path : "+ file.toString());
 
-        try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(postRequest)) {
-            String responseBody = EntityUtils.toString(response.getEntity());
-            System.out.println("Response: " + responseBody);
-        } catch (Exception e) {
+            HttpEntity multipartEntity = builder.build();
+            postRequest.setEntity(multipartEntity);
+
+            try (CloseableHttpResponse response = (CloseableHttpResponse) httpClient.execute(postRequest)) {
+                String responseBody = EntityUtils.toString(response.getEntity());
+                System.out.println("Response: " + responseBody);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.info("VideoSender ERROR-1");
+            }
+        }catch(Exception e){
             e.printStackTrace();
+            logger.info("VideoSender ERROR-2");
         }
 
     }

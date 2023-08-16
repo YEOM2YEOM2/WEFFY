@@ -36,13 +36,14 @@ public class VideoCombine {
         Process process1 = processBuilder1.start();
         process1.waitFor();
 
+        System.out.println("VideoCombine come!!!");
 
         // 해상도 조절
-        String combineCommand = "ffmpeg -i "+recordingFileUrl.toString()+" -vf \"scale=1920:1080\" "+recordingFileUrl.toString();
-        ProcessBuilder processBuilder2 = new ProcessBuilder(combineCommand.split(" "));
-        processBuilder2.redirectErrorStream(true);
-        Process process2 = processBuilder2.start();
-        process2.waitFor();
+//        String combineCommand = "ffmpeg -i "+recordingFileUrl.toString()+" -vf \"scale=1920:1080\" "+recordingFileUrl.toString();
+//        ProcessBuilder processBuilder2 = new ProcessBuilder(combineCommand.split(" "));
+//        processBuilder2.redirectErrorStream(true);
+//        Process process2 = processBuilder2.start();
+//        process2.waitFor();
 
 
         logger.info(classId + " 합치기 완료!!");
