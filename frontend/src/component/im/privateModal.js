@@ -30,7 +30,7 @@ import { IconButton } from "@mui/material";
 // store conference
 import {
   setActiveSessionId,
-  setSessionName,
+  setActiveSessionName,
 } from "../../store/reducers/conference.js";
 
 const PrivateModal = ({ handleClose }) => {
@@ -121,9 +121,9 @@ const PrivateModal = ({ handleClose }) => {
 
   const startPrivateMeeting = () => {
     dispatch(setParticipateName(localNickname));
-    dispatch(setSessionName(`${userId}의 개인룸`));
+    dispatch(setActiveSessionName(`${userId}의 개인룸`));
 
-    navigate(`/conference/${userId} `);
+    navigate(`/meeting/${userId} `);
   };
 
   const handleSelectCamera = (event) => {

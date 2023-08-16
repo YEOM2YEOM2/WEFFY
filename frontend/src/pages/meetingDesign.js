@@ -51,8 +51,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Dropdown from "react-bootstrap/Dropdown";
 
 // Swal
-import Swal from 'sweetalert2';
-
+import Swal from "sweetalert2";
 
 const drawerWidth = 320;
 
@@ -109,6 +108,10 @@ const mapStateToProps = (state) => {
   return {
     selectedMic: state.setting.selectedMic,
     selectedCam: state.setting.selectedCam,
+    accessToken: state.user.accessToken,
+    identification: state.user.identification,
+    activeSessionId: state.conference.activeSessionId,
+    activeSessionName: state.conference.activeSessionName,
   };
 };
 
@@ -117,16 +120,13 @@ class Conference extends Component {
     super(props);
     this.hasBeenUpdated = false;
     this.layout = new OpenViduLayout();
-    const pathArray = window.location.pathname.split("/");
-    const sessionIdFromUrl = pathArray[pathArray.length - 1];
-    let sessionName = sessionIdFromUrl ? sessionIdFromUrl : "Default Session";
     let userName = this.props.user
       ? this.props.user
       : "WEFFY_User" + Math.floor(Math.random() * 100);
     this.remotes = [];
     this.localUserAccessAllowed = false;
     this.state = {
-      mySessionId: sessionName,
+      mySessionId: this.props.activeSessionId,
       myUserName: userName,
       session: undefined,
       localUser: undefined,
@@ -248,11 +248,11 @@ class Conference extends Component {
           });
         }
         Swal.fire({
-          icon: 'error',
+          icon: "error",
           html: `<div style="font-family:GmarketSans">유효하지 않은 사용자입니다.<br>로그인 후 이용해주세요.</div>`,
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#2672B9',
-        })
+          confirmButtonText: "OK",
+          confirmButtonColor: "#2672B9",
+        });
       }
     }
   }
@@ -273,11 +273,11 @@ class Conference extends Component {
           });
         }
         Swal.fire({
-          icon: 'error',
+          icon: "error",
           html: `<div style="font-family:GmarketSans">회의 연결이 원활하지 않습니다.<br>잠시 후 다시 시도해주세요.</div>`,
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#2672B9',
-        })
+          confirmButtonText: "OK",
+          confirmButtonColor: "#2672B9",
+        });
       });
   }
 
@@ -580,25 +580,25 @@ class Conference extends Component {
           this.setState({ showExtensionDialog: true });
         } else if (error && error.name === "SCREEN_SHARING_NOT_SUPPORTED") {
           Swal.fire({
-            icon: 'error',
+            icon: "error",
             html: `<div style="font-family:GmarketSans">사용하시는 브라우저에서는 화면 공유 기능을 제공하지 않습니다.<br>Chrome을 이용해주세요.</div>`,
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#2672B9',
-          })
+            confirmButtonText: "OK",
+            confirmButtonColor: "#2672B9",
+          });
         } else if (error && error.name === "SCREEN_EXTENSION_DISABLED") {
           Swal.fire({
-            icon: 'info',
+            icon: "info",
             html: `<div style="font-family:GmarketSans">화면 공유 기능 확장 프로그램 설치가 필요합니다.</div>`,
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#2672B9',
-          })
+            confirmButtonText: "OK",
+            confirmButtonColor: "#2672B9",
+          });
         } else if (error && error.name === "SCREEN_CAPTURE_DENIED") {
           Swal.fire({
-            icon: 'question',
+            icon: "question",
             html: `<div style="font-family:GmarketSans">공유할 페이지나 어플리케이션을 선택해 주세요.</div>`,
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#2672B9',
-          })
+            confirmButtonText: "OK",
+            confirmButtonColor: "#2672B9",
+          });
         }
       }
     );
@@ -673,7 +673,8 @@ class Conference extends Component {
       this.setState({ QuestionDisplay: display, QuestionReceived: false });
     } else {
       this.setState({ QuestionDisplay: display });
-    }  }
+    }
+  }
 
   checkNotification(event) {
     this.setState({
@@ -789,7 +790,9 @@ class Conference extends Component {
                 <p className={styles.logo}>WEEFY</p>
                 {mySessionId && (
                   <div className={styles.sessionId}>
-                    <span id="session-title">{mySessionId}</span>
+                    <span id="session-title">
+                      {this.props.activeSessionName}
+                    </span>
                   </div>
                 )}
                 <Typography
@@ -963,7 +966,7 @@ class Conference extends Component {
                 flexShrink: 0,
                 "& .MuiDrawer-paper": {
                   width: drawerWidth,
-                  background: "rgb(16, 22, 31)"
+                  background: "rgb(16, 22, 31)",
                 },
               }}
               variant="persistent"
@@ -1002,9 +1005,9 @@ class Conference extends Component {
                       value="participant"
                       aria-label="left aligned"
                       style={{ width: "99px" }}
-                      onClick={()=> {
-                        this.toggleQuestion("none")
-                        this.toggleChat("none")
+                      onClick={() => {
+                        this.toggleQuestion("none");
+                        this.toggleChat("none");
                       }}
                     >
                       <AccountCircleIcon />
@@ -1013,9 +1016,9 @@ class Conference extends Component {
                       value="generalChat"
                       aria-label="centered"
                       style={{ width: "96px" }}
-                      onClick={()=> {
-                        this.toggleQuestion("none")
-                        this.toggleChat("block")
+                      onClick={() => {
+                        this.toggleQuestion("none");
+                        this.toggleChat("block");
                       }}
                     >
                       <Badge badgeContent={4} color="primary">
@@ -1026,9 +1029,9 @@ class Conference extends Component {
                       value="questionChat"
                       aria-label="centered"
                       style={{ width: "99px" }}
-                      onClick={()=> {
-                        this.toggleQuestion("block")
-                        this.toggleChat("none")
+                      onClick={() => {
+                        this.toggleQuestion("block");
+                        this.toggleChat("none");
                       }}
                     >
                       <Badge badgeContent={4} color="primary">
@@ -1057,9 +1060,7 @@ class Conference extends Component {
                       <Dropdown.Item onClick={this.showFileList}>
                         파일 목록
                       </Dropdown.Item>
-                      <Dropdown.Item href="#/action-2">
-                        스트리밍
-                      </Dropdown.Item>
+                      <Dropdown.Item href="#/action-2">스트리밍</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                   {this.state.isFileListVisible && (
@@ -1068,7 +1069,12 @@ class Conference extends Component {
                 </div>
               </DrawerHeader>
               <Divider />
-              <List style={{ backgroundColor: "#17202E", height: "calc(100% - 93.5px)" }}>
+              <List
+                style={{
+                  backgroundColor: "#17202E",
+                  height: "calc(100% - 93.5px)",
+                }}
+              >
                 {this.state.partChatToggle === "participant" ? (
                   <Participant
                     user={localUser}
@@ -1076,10 +1082,11 @@ class Conference extends Component {
                     handleNickname={this.nicknameChanged}
                   />
                 ) : null}
-                { localUser !== undefined && localUser.getStreamManager() !== undefined ? 
+                {localUser !== undefined &&
+                localUser.getStreamManager() !== undefined ? (
                   <div
-                  className="OT_root OT_publisher custom-class"
-                  style={chatDisplay}
+                    className="OT_root OT_publisher custom-class"
+                    style={chatDisplay}
                   >
                     <Chat
                       user={localUser}
@@ -1087,11 +1094,13 @@ class Conference extends Component {
                       close={this.toggleChat}
                       messageReceived={this.checkNotification}
                     />
-                  </div> : null }
-                { localUser !== undefined && localUser.getStreamManager() !== undefined ?
+                  </div>
+                ) : null}
+                {localUser !== undefined &&
+                localUser.getStreamManager() !== undefined ? (
                   <div
-                  className="OT_root OT_publisher custom-class"
-                  style={QuestionDisplay}
+                    className="OT_root OT_publisher custom-class"
+                    style={QuestionDisplay}
                   >
                     <QuestionChat
                       user={localUser}
@@ -1099,7 +1108,8 @@ class Conference extends Component {
                       close={this.toggleQuestion}
                       questionReceived={this.checkQuestionNotification}
                     />
-                  </div> : null }
+                  </div>
+                ) : null}
               </List>
               <Divider />
             </Drawer>

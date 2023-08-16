@@ -25,8 +25,8 @@ const mapStateToProps = (state) => {
     selectedCam: state.setting.selectedCam,
     accessToken: state.user.accessToken,
     identification: state.user.identification,
-    classId: state.conference.classId,
-    conferenceName: state.conference.conferenceName,
+    activeSessionId: state.conference.activeSessionId,
+    activeSessionName: state.conference.activeSessionName,
   };
 };
 
@@ -48,7 +48,7 @@ class VideoRoomComponent extends Component {
     this.remotes = [];
     this.localUserAccessAllowed = false;
     this.state = {
-      mySessionId: sessionName,
+      mySessionId: this.props.active,
       myUserName: userName,
       session: undefined,
       localUser: undefined,
