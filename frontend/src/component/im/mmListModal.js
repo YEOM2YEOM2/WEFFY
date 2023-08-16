@@ -30,6 +30,7 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const accessToken = useSelector((state) => state.user.accessToken);
+
   const inintMMList = () => {
     axios({
       method: "get",
@@ -93,7 +94,36 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
     console.log(selectedChannelId);
   }, [selectedGroup, selectedChannel, selectedChannelId]);
 
-  const startMeeting = () => {
+  const startMeeting = async () => {
+    try {
+      console.log("selectedChannelId+ " + selectedChannelId);
+      const formData = new FormData();
+      formData.append("channelId", selectedChannelId);
+
+      const response = await axios.post(
+        "http://i9d107.p.ssafy.io:8081/api/v1/mattermost/header",
+        formData,
+        {
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      console.log(response.data);
+      const { status, data } = response;
+
+      if (status === 200) {
+        console.log(data.data); // This will log "success" if everything is OK
+        return data.data;
+      } else {
+        console.error("Error:", data.data); // This will log the error message returned by the server
+        throw new Error(data.data);
+      }
+    } catch (error) {
+      console.error("Error making header link:", error);
+    }
+
     console.log("서버랑 통신 해서 sessionId받아와서 화면 넘기기");
     dispatch(setActiveSessionId(selectedChannelId));
     dispatch(
