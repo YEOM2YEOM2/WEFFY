@@ -151,7 +151,7 @@ function Participant(props) {
             )}
           </div>
           <div className={ styles.meSetting }>
-            <span className={ styles.roleMe }>Me</span>
+            <span className={ styles.roleMe }style={{ height: "28px" }}>Me</span>
             <div style={{ position: 'relative', top: '3px' }}>
               { user.audioActive ? <MicIcon fontSize='small' />: <MicOffIcon fontSize='small' style={{ color: "#AB0C11" }} /> }
               { user.videoActive ? <VideocamIcon fontSize='small' />: <VideocamOffIcon fontSize='small' style={{ color: "#AB0C11" }} /> }
