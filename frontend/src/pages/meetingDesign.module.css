@@ -22,7 +22,7 @@
 
 .screenMode {
   position: relative;
-  right: 60px;
+  right: 170px;
 }
 
 .logo {
@@ -37,7 +37,7 @@
   position: relative;
   right: 17px;
   bottom: 4px;
-  max-width: 250px;
+  max-width: 300px;
   background-color: #494949;
   border-radius: 5px;
   padding: 0px 15px;
