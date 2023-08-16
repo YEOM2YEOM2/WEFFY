@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Route, Routes, Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -48,7 +48,6 @@ import newPrivate from "../assets/images/newPrivate.png";
 import participate from "../assets/images/participate.png";
 
 //Modal js
-import StartMM from "../component/im/startMM.js";
 import MMListModal from "../component/im/mmListModal";
 import PrivateModal from "../component/im/privateModal.js";
 import JoinMeetingModal from "../component/im/joinMeetingList.js";
@@ -191,14 +190,7 @@ export default function Im() {
     MMListModal: false,
   });
 
-  //mm연동 미팅 시작 핸들링
-  const handleStartMeeting = () => {
-    setModalStatus({
-      ...modalStatus,
-      startMM: true, // MmModal을 보여주고
-      MMListModal: false, // MMListModal은 숨깁니다.
-    });
-  };
+
 
   const handleModalOpen = (modalName) => {
     //modalName에 맞는 modal true로 변경
@@ -222,15 +214,12 @@ export default function Im() {
 
   //옆 사이드바 아이콘을 클릭 했을 경우 url을 옮겨줄 hanndler
   const handleDashboardClick = () => {
-    console.log("Dashboard was clicked");
     // Dashboard 클릭 시 수행할 동작
     navigate("/im");
   };
 
   const handleMyMeetingClick = () => {
-    console.log("My Meeting was clicked");
     // My Meeting 클릭 시 수행할 동작
-    // window.location.href = "https://localhost:8080";
     navigate("/im/mylist");
   };
 
@@ -372,13 +361,24 @@ export default function Im() {
         {modalStatus.MMListModal && (
           <MMListModal
             handleClose={() => handleModalClose("MMListModal")}
-            handleStartMeeting={handleStartMeeting}
+            // handleStartMeeting={() =>
+            //   handleStartMeeting(
+            //     selectedGroup,
+            //     selectedChannel,
+            //     selectedChannelId
+            //   )
+            // }
           />
         )}
 
-        {modalStatus.startMM && (
-          <StartMM handleClose={() => handleModalClose("startMM")} />
-        )}
+        {/* {modalStatus.startMM && (
+          <StartMM
+            handleClose={() => handleModalClose("startMM")}
+            groupName={selectedGroup}
+            channelName={selectedChannel}
+            channelId={selectedChannelId}
+          />
+        )} */}
         {modalStatus.PrivateModal && (
           <PrivateModal
             show={modalStatus.PrivateModal}

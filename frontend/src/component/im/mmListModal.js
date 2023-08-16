@@ -11,14 +11,22 @@ import Typography from "@mui/material/Typography";
 
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
-  // const [groupData, setGroupData] = useState([]);
+// store conference
+import {
+  setActiveSessionId,
+  setActiveSessionName,
+} from "../../store/reducers/conference";
+
+const MMListModal = ({ handleClose, handleStartMeeting }) => {
   const [groupData, setGroupData] = useState([]);
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const accessToken = useSelector((state) => state.user.accessToken);
   const inintMMList = () => {
     axios({
@@ -57,27 +65,41 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
   }, []);
 
   const [selectedGroup, setSelectedGroup] = React.useState("");
-  const [selectedNames, setSelectedNames] = React.useState([]);
+  const [selectedChannel, setSelectedChannel] = React.useState("");
+  const [selectedChannelId, setSelectedChannelId] = React.useState("");
 
-  const handleGroupChange = (group) => {
-    setSelectedGroup(group);
-    setSelectedNames([]);
+  //큰 그룹을 선택했을때 보여주기 위한 코드
+  const handleGroupChange = (groupName) => {
+    setSelectedGroup(groupName);
+    setSelectedChannel([]);
   };
 
-  const handleNamesChange = (name) => {
-    setSelectedNames([name]);
+  const handleChannelChange = (channel) => {
+    setSelectedChannel(channel.name);
+    setSelectedChannelId(channel.identification);
   };
 
   const currentGroup = groupData.find((group) => group.name === selectedGroup);
-  const currentNames = currentGroup
-    ? currentGroup.channels.map((channel) => channel.name)
-    : [];
+  const currentChannel = useMemo(() => {
+    return currentGroup ? currentGroup.channels.map((channel) => channel) : [];
+  }, [currentGroup]);
 
+  useEffect(() => {
+  }, [selectedGroup, selectedChannel, selectedChannelId]);
+
+  const startMeeting = () => {
+    console.log("서버랑 통신 해서 sessionId받아와서 화면 넘기기");
+    dispatch(setActiveSessionId(selectedChannelId));
+    dispatch(
+      setActiveSessionName(`${selectedGroup} ${selectedChannel}의 미팅룸`)
+    );
+
+    navigate(`/meeting/${selectedChannelId}`);
+  };
   return (
     <div
       className={styles["modal"]}
       onClick={handleClose}
-      //   style={{ left: `calc(50% + ${sidebarOpen ? drawerWidth / 2 : 0}px)` }}
     >
       <div className={styles["modalBody"]} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -127,21 +149,19 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
               className={styles["selectField"]}
               style={{ fontFamily: "GmarketSans" }}
             >
-              {selectedNames.length > 0
-                ? selectedNames.join(", ")
-                : "MatterMost Channel"}
+              {selectedChannel ? selectedChannel : "MatterMost Channel"}
             </Typography>
             <List className={styles["textFieldInput"]}>
-              {currentNames.map((name) => (
+              {currentChannel.map((channel) => (
                 <ListItem
-                  key={name}
+                  key={channel.name}
                   button
-                  onClick={() => handleNamesChange(name)}
+                  onClick={() => handleChannelChange(channel)}
                 >
                   <ListItemText
                     primary={
                       <Typography sx={{ fontFamily: "GmarketSans" }}>
-                        {name}
+                        {channel.name}
                       </Typography>
                     }
                   />
@@ -151,7 +171,7 @@ const MMListModal = ({ handleClose, handleStartMeeting, sidebarOpen }) => {
           </Grid>
         </Grid>
         <Grid container justifyContent="flex-end">
-          <Button variant="contained" onClick={handleStartMeeting}>
+          <Button variant="contained" onClick={startMeeting}>
             Start Private Meeting
           </Button>
         </Grid>

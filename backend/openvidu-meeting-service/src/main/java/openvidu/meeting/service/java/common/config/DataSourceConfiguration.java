@@ -1,7 +1,6 @@
-package com.weffy.common.config;
+package openvidu.meeting.service.java.common.config;
 
-import com.weffy.common.kms.KmsService;
-import lombok.RequiredArgsConstructor;
+import openvidu.meeting.service.java.common.kms.KmsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;

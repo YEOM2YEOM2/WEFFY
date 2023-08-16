@@ -16,16 +16,7 @@
   padding: 10px;
   flex-direction: column;
 
-  /* position: fixed;
-  right: 12px;
-  bottom: 50px;
-  width: 295px;
-  height: 292px;
-  background-color: black;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start; */
+  z-index: 99999;
 }
 
 .modal h2 {
@@ -49,7 +40,9 @@
 }
 
 .upload {
-  border: 2px dotted gray;
+  border: 2px dashed #adb5bd;
+  border-radius: 10px;
+  padding: 10px;
 }
 
 .hidden-input {
@@ -86,3 +79,23 @@
   cursor: pointer;
   font-size: 18px;
 } */
+
+.fileInfo {
+  display: flex;
+}
+
+.button {
+  padding: 0 !important;
+  min-width: 0 !important;
+  height: auto;
+}
+
+.arrowContainer button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.uploadBtn {
+  margin-top: 10px;
+}
