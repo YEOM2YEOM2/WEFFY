@@ -41,6 +41,8 @@ const MyList = (props) => {
     console.log(url);
     let lastUrl = url.split("/").pop();
 
+    
+
     console.log(lastUrl);
     // do something
     try {
