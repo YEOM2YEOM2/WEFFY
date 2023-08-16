@@ -25,8 +25,6 @@ import {
 const MMListModal = ({ handleClose, handleStartMeeting }) => {
   const [groupData, setGroupData] = useState([]);
 
-  console.log(handleStartMeeting);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const accessToken = useSelector((state) => state.user.accessToken);
@@ -87,10 +85,6 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
   }, [currentGroup]);
 
   useEffect(() => {
-    console.log("mmList에서 출력");
-    console.log(selectedGroup);
-    console.log(selectedChannel);
-    console.log(selectedChannelId);
   }, [selectedGroup, selectedChannel, selectedChannelId]);
 
   const startMeeting = () => {
@@ -106,7 +100,6 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
     <div
       className={styles["modal"]}
       onClick={handleClose}
-      //   style={{ left: `calc(50% + ${sidebarOpen ? drawerWidth / 2 : 0}px)` }}
     >
       <div className={styles["modalBody"]} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>

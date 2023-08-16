@@ -57,21 +57,17 @@ const PrivateModal = ({ handleClose }) => {
 
   const handleMicStatusToggle = () => {
     dispatch(toggleMicStatus());
-    console.log("Mic Status: ", micStatus);
   };
 
   const handleCameraStatusToggle = () => {
     dispatch(toggleCameraStatus());
-    console.log("Camera Status: ", cameraStatus);
   };
 
   useEffect(() => {
-    console.log();
     dispatch(setActiveSessionId(userId));
 
     OV.getDevices()
       .then((devices) => {
-        console.log(devices);
         const filteredMicList = devices.filter(
           (device) => device.kind === "audioinput"
         );
@@ -94,18 +90,15 @@ const PrivateModal = ({ handleClose }) => {
   }, []);
 
   useEffect(() => {
-    console.log("Mic Status: ", micStatus);
   }, [micStatus]);
 
   useEffect(() => {
-    console.log("Camera Status: ", cameraStatus);
   }, [cameraStatus]);
 
   const handleSelectMicrophone = (event) => {
     const newMicId = parseInt(event.target.value, 10);
 
     dispatch(setSelectedMic(newMicId)); // 인덱스만 전달
-    console.log(`mic Id = ${newMicId}`);
   };
 
   const handleNicknameChange = (e) => {
@@ -129,7 +122,6 @@ const PrivateModal = ({ handleClose }) => {
   const handleSelectCamera = (event) => {
     const newCamId = parseInt(event.target.value, 10);
     dispatch(setSelectedCam(newCamId)); // 인덱스만 전달
-    console.log(`cam Id = ${newCamId}`);
   };
 
   return (

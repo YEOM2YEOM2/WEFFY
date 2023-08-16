@@ -22,10 +22,8 @@ import Row from 'react-bootstrap/Row';
 // hook
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 
 // store user 함수
-import { setIdentification, setAccessToken, setRefreshToken, setCsrfToken } from '../../store/reducers/user';
 
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
@@ -33,7 +31,6 @@ const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 function SignupWide() {
     
     let navigate = useNavigate();
-    let dispatch = useDispatch();
 
     let [email, setEmail] = useState("");
     let [pw, setPw] = useState("");
@@ -144,17 +141,13 @@ function SignupWide() {
     }
 
     const [showPassword, setShowPassword] = React.useState(false);
-    const [showPasswordRe, setShowPasswordRe] = React.useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
-    const handleClickShowPasswordRe = () => setShowPasswordRe((show) => !show);
 
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
-    const handleMouseDownPasswordRe = (event) => {
-        event.preventDefault();
-    };
+
 
     return (
     <div className={styles.wide}>
