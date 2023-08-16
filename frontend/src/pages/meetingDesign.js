@@ -353,8 +353,25 @@ class Conference extends Component {
     );
   }
 
-  leaveSession() {
+  async leaveSession() {
     const mySession = this.state.session;
+
+    // const { activeSessionId } = this.props;
+    // const { identification } = this.props;
+    // console.log("activeSessionId: ", activeSessionId);
+    // console.log("identification: ", identification);
+    // const response = await axios.post(
+    //   APPLICATION_SERVER_URL +
+    //     `conferences/${activeSessionId}/${identification}`
+    // );
+
+    // const { status, data } = response;
+    // console.log(data.data)
+    // if (data.status === 200) {
+    //   console.log(data.message);
+    // } else {
+    //   console.error(data.message);
+    // }
 
     if (mySession) {
       mySession.disconnect();
