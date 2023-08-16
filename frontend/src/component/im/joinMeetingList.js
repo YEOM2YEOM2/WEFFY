@@ -31,8 +31,6 @@ const recentList = [
 
 const JoinMeetingList = ({ handleClose, sidebarOpen }) => {
   const [text, setText] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
-  const listRef = useRef(null);
 
   const handleEnter = (event) => {
     if (event.key === "Enter") {
