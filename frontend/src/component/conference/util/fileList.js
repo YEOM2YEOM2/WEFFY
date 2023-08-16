@@ -9,7 +9,8 @@ import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import CloseIcon from "@mui/icons-material/Close";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
-import { useFetcher } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
 
 function FileList(props) {
   const accessToken = useSelector((state) => state.user.accessToken);
@@ -17,77 +18,45 @@ function FileList(props) {
     (state) => state.conference.activeSessionId
   );
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [files, setFiles] = useState([]);
 
-  const [uploadFile, setUploadFile] = useState(null);
-  const [isHovered, setIsHovered] = useState(false);
+  const [files, setFiles] = useState([
+    {
+      fileUrl:
+        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
+      fileName: "fileName.PNG",
+    },
+    {
+      fileUrl:
+        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
+      fileName: "fileName.PNG",
+    },
+    {
+      fileUrl:
+        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
+      fileName: "fileName.PNG",
+    },
+    {
+      fileUrl:
+        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
+      fileName: "fileName.PNG",
+    },
+    {
+      fileUrl:
+        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
+      fileName: "fileName.PNG",
+    },
+    {
+      fileUrl:
+        "https://weffy-conference.s3.ap-northeast-2.amazonaws.com/fileUrl.PNG",
+      fileName: "fileName.PNG",
+    },
+  ]);
 
-  const conferenceId = "conferenceId";
-  const type = "type?";
+  let currentPage = Math.ceil(currentIndex / 4) + 1;
+  let totalPages = Math.ceil(files.length / 4);
 
-  const handleFileChange = (e) => {
-    // Logic remains the same
-    setUploadFile(e.target.files[0]);
-  };
-
-  useEffect(() => {
-    console.log(uploadFile);
-  }, [uploadFile]);
-
-  const handleUploadClick = async () => {
-    if (!uploadFile) return;
-
-    const formData = new FormData();
-    formData.append("file", uploadFile);
-
-    console.log("업로드 될 파일 정보");
-    console.log(uploadFile);
-
-    axios({
-      method: "post",
-      url: `http://3.39.223.169:8081/api/v1/files/${activeSessionId}`,
-      // url: `http://i9d107.p.ssafy.io:8081/api/v1/files/sessionB`,
-      headers: {
-        accept: "application/json",
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      data: formData,
-    })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-        // Set the message state to the error message you want to display.
-        // this.setState({ message: "파일 전송에 실패했습니다" }, () => {
-        //   this.sendMessage();
-        //   this.setState({ message: "" });
-        // });
-      });
-
-    // try {
-    //   // 업로드 파일 여기에 API맞춰서 하면 됩니당
-    //   const response = await axios.post(
-    //     `http://localhost:8081/${conferenceId}`,
-    //     formData,
-    //     {
-    //       headers: {
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //       params: { type },
-    //     }
-    //   );
-
-    //   if (response.data.success) {
-    //     alert("File uploaded successfully");
-    //   } else {
-    //     alert("Failed to upload file");
-    //   }
-    // } catch (error) {
-    //   console.error("There was an error while uploading files:", error);
-    // }
-  };
+  let displayText = `${currentPage}/${totalPages}`;
+  console.log(files);
 
   const handlePrev = () => {
     if (currentIndex > 0) {
@@ -101,33 +70,40 @@ function FileList(props) {
     }
   };
 
-  // 들어오자마자 백에 요청해서 db에서 file들 가져오는 코드입니다용
-  // useEffect(() => {
-  //   async function fetchFiles() {
-  //     try {
-  //       const url = "http://localhost:8081/api/v1/files";
+  const downloadFileClick = (title, key) => {
+    axios({
+      method: "get",
+      url: `http://i9d107.p.ssafy.io:8081/api/v1/files/download?objectKey=${key}&title=${title}`,
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err.response);
+      });
+  };
 
-  //       const requestData = {
-  //         conferenceId: conferenceId,
-  //         start: "시작시간",
-  //         end: "종료시간",
-  //       };
-
-  //       const response = await axios.post(url, { data: requestData });
-  //       if (
-  //         response.data &&
-  //         response.data.data &&
-  //         Array.isArray(response.data.data.getFileDto)
-  //       ) {
-  //         setFiles(response.data.data.getFileDto.map((file) => file.fileName));
-  //       }
-  //     } catch (error) {
-  //       console.error("Error : " + error);
-  //     }
-  //   }
-
-  //   fetchFiles();
-  // }, []);
+  const initFileList = () => {
+    axios({
+      method: "get",
+      url: `http://i9d107.p.ssafy.io:8081/api/v1/files?conferenceId=${activeSessionId}`,
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <div className={styles.modal}>
@@ -141,115 +117,46 @@ function FileList(props) {
           fontFamily: "GmarketSans",
         }}
       >
-        <h2>Files</h2>
-
-        <CloseIcon onClick={props.onClose} style={{ color: "red" }} />
+        <p className={styles["title"]}>파일 목록</p>
+        <IconButton>
+          <CloseIcon onClick={props.onClose} style={{ color: "gray", position: "relative", bottom: "5px", left: "9px" }} />
+        </IconButton>
       </div>
-
       <div>
-        <ul style={{ padding: 0 }}>
-          {files.slice(currentIndex, currentIndex + 4).map((file, index) => (
-            <li
-              className="divider"
-              style={{
-                borderBottom: "1px solid gray",
-                listStyle: "none",
-                textAlign: "left",
-                paddingTop: "15px",
-              }}
-              key={index}
-            >
-              {file}
-            </li>
-          ))}
-        </ul>
+        {files.slice(currentIndex, currentIndex + 4).map((file, index) => (
+          <div className={styles["downloadContainer"]}>
+            <IconButton className="downloadText">
+              <SimCardDownloadIcon
+                style={{
+                  color: "blueviolet",
+                }}
+                onClick={downloadFileClick(file.fileName, file.fileUrl)}
+              />
+              {file.fileName}
+            </IconButton>
+            <div className={styles.divider} />
+          </div>
+        ))}
       </div>
-      <div
-        className="132"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "100%",
-          fontFamily: "GmarketSans",
-          height: "30px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-
-            fontSize: "15px",
-          }}
-        >
-          <p>Showing 4 of 11 items</p>
-          <p>1 of 3</p>
-        </div>
+      <div className={styles["fileController"]}>
         <div className={styles["arrowContainer"]}>
-          <Button
+          <IconButton
             onClick={handlePrev}
             size="small"
             className={styles["button"]}
           >
             <ArrowCircleLeftIcon />
-          </Button>
-          <Button
+          </IconButton>
+          {displayText}
+          <IconButton
             onClick={handleNext}
             size="small"
             styles={{ width: "5px" }}
             className={styles["button"]}
           >
             <ArrowCircleRightIcon />
-          </Button>
+          </IconButton>
         </div>
-      </div>
-
-      <div className={styles["upload"]}>
-        {/* <Button variant="outlined" startIcon={<AttachFileIcon />}>
-          Choose File
-          <input
-            type="file"
-            className="hidden-input"
-            id="fileInput"
-            multiple
-            onChange={handleFileChange}
-            style={{ display: "none" }}
-          />
-          <label
-            htmlFor="fileInput"
-            className="custom-file-label"
-            style={labelStyles}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          />
-        </Button> */}
-        <label style={{ position: "relative", display: "inline-block" }}>
-          <Button variant="outlined">
-            {uploadFile === null ? "파일 선택" : uploadFile.name}
-          </Button>
-          <input
-            type="file"
-            className="hidden-input"
-            id="fileInput"
-            multiple
-            onChange={handleFileChange}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              opacity: 0,
-            }}
-          />
-        </label>
-
-        {uploadFile && (
-          <div className={styles["uploadBtn"]}>
-            <Button variant="contained" onClick={handleUploadClick}>
-              Upload
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
