@@ -30,8 +30,8 @@ import java.nio.file.StandardOpenOption;
 @RestController
 public class StreamController {
     private Logger logger = LoggerFactory.getLogger(StreamController.class);
-    private StringBuilder totalZipFilePath = new StringBuilder().append("C:\\recording\\TotalZipFile\\");
-    private StringBuilder totalTextFilePath = new StringBuilder().append("C:\\recording\\TotalTextFile\\");
+    private String totalZipFilePath = "C:\\recording\\TotalZipFile\\";
+    private String totalTextFilePath = "C:\\recording\\TotalTextFile\\";
 
     // streamId를 txt 파일에 저장한다.
     @PostMapping("/{class_id}/{stream_id}")
@@ -39,22 +39,26 @@ public class StreamController {
             @PathVariable(name = "class_id")String classId,
             @PathVariable(name = "stream_id")String streamId) throws IOException {
 
+        logger.info("answer : "+classId+'/'+streamId);
 
         // connectionId 구분하기
         String[] temp = streamId.split("[_.]");
 
         String connectionId = new StringBuilder().append(temp[3]).append("_").append(temp[4]).toString();
 
-        if( OpenviduDB.getHostConnectionId().get(classId).equals(connectionId)){
+        if(OpenviduDB.getHostConnectionId().get(classId).equals(connectionId)){
             // 파일 경로 C:\recording\TotalTextFile\classId.txt
             String newFilePath = new StringBuilder().append(totalTextFilePath).append(classId).append(".txt").toString();
 
             Path streamFilePath = Paths.get(newFilePath);
 
+
             // 존재하지 않는 txt 파일이면 만든다.
             if(!Files.exists(streamFilePath)){
                 Files.createFile(streamFilePath);
             }
+
+
 
             try{
                 FileWriter writer = new FileWriter(newFilePath, true);
@@ -71,10 +75,6 @@ public class StreamController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, "Host의 StreamId가 아닙니다"));
         }
 
-
-
-
-
-
     }
+
 }

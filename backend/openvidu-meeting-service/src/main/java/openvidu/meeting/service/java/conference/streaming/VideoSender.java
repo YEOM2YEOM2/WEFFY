@@ -39,15 +39,15 @@ public class VideoSender {
             HttpClient httpClient = HttpClients.createDefault();
 
             // "?type=lecture"
-            HttpPost postRequest = new HttpPost("http://i9d107.p.ssafy.io:8081/api/v1/files/" + classId );
+            HttpPost postRequest = new HttpPost("http://i9d107.p.ssafy.io:8081/api/v1/files/" + classId + "?type=lecture" );
 
             postRequest.addHeader("Authorization", "Bearer " + accessToken);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
-            Path file = Paths.get(recordingFileUrl + classId + ".webm");
+            Path file = Paths.get(recordingFileUrl + classId + ".mp4");
 
-            logger.info(recordingFileUrl + classId + ".webm");
+            logger.info(recordingFileUrl + classId + ".mp4");
 
             // System.out.println("문장 : "+ file.toString());
             builder.addBinaryBody("file", Files.newInputStream(file), ContentType.APPLICATION_OCTET_STREAM, file.getFileName().toString());

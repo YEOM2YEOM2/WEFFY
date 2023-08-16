@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -29,6 +31,7 @@ public class VideoCombine {
 
         textFileUrl.append(classId+".txt");
 
+
         // 파일을 합친다.
         String command = "ffmpeg -f concat -safe 0 -i "+textFileUrl.toString()+" -c copy "+recordingFileUrl.toString();
         ProcessBuilder processBuilder1 = new ProcessBuilder(command.split(" "));
@@ -36,7 +39,15 @@ public class VideoCombine {
         Process process1 = processBuilder1.start();
         process1.waitFor();
 
-        System.out.println("VideoCombine come!!!");
+
+        // 파일을 합친다.
+//        String command = "ffmpeg -f concat -safe 0 -i "+textFileUrl.toString()+" -c copy "+recordingFileUrl.toString();
+//        ProcessBuilder processBuilder1 = new ProcessBuilder(command.split(" "));
+//        processBuilder1.redirectErrorStream(true);
+//        Process process1 = processBuilder1.start();
+//        process1.waitFor();
+//
+//        System.out.println("VideoCombine come!!!");
 
         // 해상도 조절
 //        String combineCommand = "ffmpeg -i "+recordingFileUrl.toString()+" -vf \"scale=1920:1080\" "+recordingFileUrl.toString();
