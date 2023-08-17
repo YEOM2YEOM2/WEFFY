@@ -67,7 +67,7 @@ class WaitThread extends Thread{
     @Override
     public void run(){
         try{
-            Thread.sleep(60000); // 테스트 : 5분 300000
+            Thread.sleep(30000); // 테스트 : 5분 300000
             if(Thread.interrupted() || !sharedResource.isTotalStatue()){
                 return;
             }
