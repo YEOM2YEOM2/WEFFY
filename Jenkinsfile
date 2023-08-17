@@ -196,6 +196,15 @@ pipeline {
             }
         }
 
+        stage('Install Docker Compose') {
+            steps {
+                sh '''#!/bin/bash
+                    curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                    chmod +x /usr/local/bin/docker-compose
+                '''
+            }
+        }
+
 
         stage('Docker Compose Up') {
             steps {
@@ -208,7 +217,7 @@ pipeline {
                     sh """
                         export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                        /usr/local/bin/docker-compose -f docker-compose.yml up -d
+                        docker-compose -f docker-compose.yml up -d
                     """
                 }
             }
