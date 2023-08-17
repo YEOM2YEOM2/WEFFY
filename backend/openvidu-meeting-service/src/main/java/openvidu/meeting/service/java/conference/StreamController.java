@@ -30,6 +30,8 @@ import java.nio.file.StandardOpenOption;
 @RestController
 public class StreamController {
     private Logger logger = LoggerFactory.getLogger(StreamController.class);
+
+    private String totaRecordingFilePath = "C:\\recording\\RecordingFile\\";
     private String totalZipFilePath = "C:\\recording\\TotalZipFile\\";
     private String totalTextFilePath = "C:\\recording\\TotalTextFile\\";
 
@@ -56,6 +58,21 @@ public class StreamController {
             // 존재하지 않는 txt 파일이면 만든다.
             if(!Files.exists(streamFilePath)){
                 Files.createFile(streamFilePath);
+                logger.info("make file-1");
+
+                logger.info(new StringBuilder().append(totaRecordingFilePath)
+                        .append(classId).append(".webm").toString());
+
+                if(Files.exists(Paths.get(new StringBuilder().append(totaRecordingFilePath)
+                        .append(classId).append(".webm").toString()))){
+
+                    FileWriter w1 = new FileWriter(newFilePath , true);
+                    w1.write(new StringBuilder().append("file \'").append(totaRecordingFilePath)
+                            .append(classId).append(".webm\'\n").toString());
+                    w1.close();
+                    logger.info("make file-2");
+                }
+
             }
 
 
