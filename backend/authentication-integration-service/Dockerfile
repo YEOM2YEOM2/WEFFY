@@ -1,8 +1,8 @@
 # Use Ubuntu as base image
 FROM ubuntu:20.04
 
-# Install OpenJDK 17
-RUN apt-get update && \
+# Update Ubuntu repositories and Install OpenJDK 17
+RUN apt-get update -y && apt-get upgrade -y && \
     apt-get install -y openjdk-17-jdk && \
     rm -rf /var/lib/apt/lists/*
 

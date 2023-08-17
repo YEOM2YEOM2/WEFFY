@@ -66,9 +66,6 @@ pipeline {
 
 
         stage('Build and Test for authentication-integration-service') {
-            tools {
-                jdk 'openjdk-17' 
-            }
             agent {
                 docker {
                     image 'authentication-integration-service'
@@ -82,9 +79,6 @@ pipeline {
         }
 
         stage('Build and Test for openvidu-content-service') {
-            tools {
-                jdk 'openjdk-17' 
-            }
             agent {
                 docker {
                     image 'openvidu-content-service'
@@ -97,9 +91,6 @@ pipeline {
             }
         }
         stage('Build and Test for mattermost-content-service') {
-            tools {
-                jdk 'openjdk-17' 
-            }
             agent {
                 docker {
                     image 'mattermost-content-service'
