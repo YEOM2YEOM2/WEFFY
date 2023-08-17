@@ -7,6 +7,9 @@ pipeline {
                 script {
                     withCredentials([
                         usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS'),
+                        file(credentialsId: 'auth-application-dev.properties', variable: 'AUTH_FILE'),
+                        file(credentialsId: 'ov-content-application-dev.properties', variable: 'OV_CONTENT_FILE'),
+                        file(credentialsId: 'ov-meeting-application-dev.properties', variable: 'OV_MEETING_FILE'),
                         [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']
                     ]) {
                         env.DOCKER_HUB_USER = DOCKER_HUB_USER
