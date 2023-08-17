@@ -15,23 +15,21 @@ pipeline {
             }
         }
 
-        stage('Prepare credentials') {
+         stage('Prepare credentials') {
             agent any
             steps {
                 withCredentials([
                     file(credentialsId: 'auth-application-dev.properties', variable: 'AUTH_FILE'),
                     file(credentialsId: 'ov-content-application-dev.properties', variable: 'OV_CONTENT_FILE'),
-                    file(credentialsId: 'ov-meeting-application-dev.properties', variable: 'OV_MEETING_FILE'),
-                    usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS'),
-                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']
+                    file(credentialsId: 'ov-meeting-application-dev.properties', variable: 'OV_MEETING_FILE')
                 ]) {
-                    sh 'cp $AUTH_FILE backend/authentication-integration-service/src/main/resources/application-dev.properties'
-                    sh 'cp $OV_CONTENT_FILE backend/openvidu-content-service/src/main/resources/application-dev.properties'
-                    sh 'cp $OV_MEETING_FILE backend/openvidu-meeting-service/src/main/resources/application-dev.properties'
+                    sh "cp $AUTH_FILE backend/authentication-integration-service/src/main/resources/application-dev.properties"
+                    sh "cp $OV_CONTENT_FILE backend/openvidu-content-service/src/main/resources/application-dev.properties"
+                    sh "cp $OV_MEETING_FILE backend/openvidu-meeting-service/src/main/resources/application-dev.properties"
                 }
             }
-
         }
+
 
         stage('Set Execute Permission for Gradlew') {
             steps {
