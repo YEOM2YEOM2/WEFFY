@@ -77,7 +77,6 @@ class ChatComponent extends Component {
   }
 
   fileDownload(key, title) {
-
     const fileKey = encodeURIComponent(key);
     const fileTitle = encodeURIComponent(title);
 
@@ -144,7 +143,7 @@ class ChatComponent extends Component {
       this.setState({ fileData: formData });
       axios({
         method: "post",
-        url: `http://i9d107.p.ssafy.io:8081/api/v1/files/${this.props.activeSessionId}?type=null`,
+        url: `http://i9d107.p.ssafy.io:8081/api/v1/files/upload/${this.props.activeSessionId}`,
         headers: {
           accept: "application/json",
           "Content-Type": "multipart/form-data",
@@ -153,7 +152,6 @@ class ChatComponent extends Component {
         data: formData,
       })
         .then((res) => {
-
           const fileInfo = {
             objectKey: res.data.data.objectKey,
             title: res.data.data.title,
