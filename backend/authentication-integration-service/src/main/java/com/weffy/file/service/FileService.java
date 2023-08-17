@@ -22,5 +22,5 @@ public interface FileService {
 
     List<GetFileDto> getFiles(FileReqDto fileReqDto);
 
-    ResponseEntity<byte[]> downloadFile(String objectKey, String filename);
+    ResponseEntity<byte[]> downloadFile(String objectKey, String filename) throws IOException;
 }
