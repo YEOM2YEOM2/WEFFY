@@ -1,6 +1,9 @@
 pipeline {
-    agent any
-
+    agent {
+        docker {
+            image 'node:14.17.0' 
+        }
+    }
     stages {
         
         stage('Cleanup Workspace') {
@@ -39,6 +42,14 @@ pipeline {
                 sh 'chmod +x backend/openvidu-meeting-service/gradlew'
                 sh 'chmod +x backend/openvidu-content-service/gradlew'
                 sh 'chmod +x backend/mattermost-content-service/gradlew'
+            }
+        }
+
+        stage('Build and Test frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                }
             }
         }
 
@@ -85,14 +96,6 @@ pipeline {
             steps {
                 sh 'chmod +x backend/mattermost-content-service/gradlew'
                 sh 'cd backend/mattermost-content-service && ./gradlew clean build -x test'
-            }
-        }
-
-        stage('Build and Test frontend') {
-            steps {
-                dir('frontend') {
-                    sh 'npm install'
-                }
             }
         }
 
