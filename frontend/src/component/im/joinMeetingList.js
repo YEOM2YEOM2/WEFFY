@@ -35,7 +35,7 @@ const JoinMeetingList = ({ handleClose }) => {
   const recentListHandler = () => {
     axios({
       method: "get",
-      url: `http://localhost:8082/conferences/visited?identification=${identification}`,
+      url: `http://i9d107.p.ssafy.io:8082/conferences/visited?identification=${identification}`,
     })
       .then((res) => {
         const tempMyList = [];
@@ -49,7 +49,7 @@ const JoinMeetingList = ({ handleClose }) => {
 
         setRecentList(tempMyList);
       })
-      .catch((err) => {
+      .catch(() => {
         console.log("최근 목록 불러오기 실패");
       });
   };
@@ -89,9 +89,7 @@ const JoinMeetingList = ({ handleClose }) => {
           <List>
             {recentList.map((item, index) => (
               <React.Fragment key={index}>
-                <ListItem
-                  className={styles["meetingItem"]}
-                >
+                <ListItem className={styles["meetingItem"]}>
                   <CustomListItemText
                     className={styles["item-text"]}
                     primary={item.title}
@@ -115,8 +113,7 @@ const JoinMeetingList = ({ handleClose }) => {
           </List>
         </div>
 
-        <Grid container justifyContent="flex-end">
-        </Grid>
+        <Grid container justifyContent="flex-end"></Grid>
       </div>
     </div>
   );
