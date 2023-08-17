@@ -3,7 +3,7 @@ version: '3.7'
 services:
   jenkins:
           image: jenkins/jenkins
-          container_name: jenkins
+          container_name: weffy_jenkins
           volumes:
               - /var/run/docker.sock:/var/run/docker.sock
               - /jenkins:/var/jenkins_home
