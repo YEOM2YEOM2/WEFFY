@@ -10,7 +10,7 @@ services:
           ports:
               - "8080:8080"
           privileged: true
-          user: weffy
+          user: root
   frontend:
     image: kathyleesh/frontend:latest
     ports:
@@ -71,6 +71,7 @@ services:
       - openvidu-meeting-service
       - openvidu-content-service
       - mattermost-content-service
+      - jenkins
       - frontend
 
 networks:
