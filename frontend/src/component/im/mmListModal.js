@@ -16,13 +16,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import {
+  toggleMicStatus,
+  toggleCameraStatus,
+} from "../../store/reducers/setting.js";
+
 // store conference
 import {
   setActiveSessionId,
   setActiveSessionName,
 } from "../../store/reducers/conference";
 
-const MMListModal = ({ handleClose, handleStartMeeting }) => {
+const MMListModal = ({ handleClose }) => {
   const [groupData, setGroupData] = useState([]);
 
   const dispatch = useDispatch();
@@ -62,6 +67,8 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
   };
 
   useEffect(() => {
+    toggleCameraStatus(false);
+    toggleMicStatus(false);
     inintMMList();
   }, []);
 
@@ -85,8 +92,7 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
     return currentGroup ? currentGroup.channels.map((channel) => channel) : [];
   }, [currentGroup]);
 
-  useEffect(() => {
-  }, [selectedGroup, selectedChannel, selectedChannelId]);
+  useEffect(() => {}, [selectedGroup, selectedChannel, selectedChannelId]);
 
   const startMeeting = async () => {
     try {
@@ -109,7 +115,6 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
 
       if (status === 200) {
         console.log(data.data); // This will log "success" if everything is OK
-        return data.data;
       } else {
         console.error("Error:", data.data); // This will log the error message returned by the server
         throw new Error(data.data);
@@ -127,10 +132,7 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
     navigate(`/meeting/${selectedChannelId}`);
   };
   return (
-    <div
-      className={styles["modal"]}
-      onClick={handleClose}
-    >
+    <div className={styles["modal"]} onClick={handleClose}>
       <div className={styles["modalBody"]} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h3 className={styles["modalHeader"]} style={{ fontFamily: "Mogra" }}>

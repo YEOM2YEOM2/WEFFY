@@ -15,6 +15,7 @@ import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import openvidu.meeting.service.java.conference.streaming.VideoRecorder;
+import openvidu.meeting.service.java.conference.streaming.VideoSender;
 import openvidu.meeting.service.java.conference.streaming.ZipFileDownloader;
 import openvidu.meeting.service.java.exception.ExceptionEnum;
 import openvidu.meeting.service.java.history.dto.request.HistoryReqDto;
@@ -75,8 +76,10 @@ public class ConferenceController {
     @Value("${local.recording.path}")
     private String recordingFilePath;
 
+    private String meetingUrl = "http://localhost:3000/meeting/";
+
     @PostConstruct
-    public void init() throws OpenViduJavaClientException, OpenViduHttpException {
+    public void init() throws OpenViduJavaClientException, OpenViduHttpException, IOException {
         openvidu = OpenviduDB.getOpenvidu();
         sessionHostList = new ConcurrentHashMap<>();
         sessionParticipantList = new ConcurrentHashMap<>();
@@ -105,7 +108,11 @@ public class ConferenceController {
         SessionProperties properties;
         Session session;
         for (Conference conference : roomList) {
-            properties = new SessionProperties.Builder().customSessionId(conference.getClassId()).build();
+            properties = new SessionProperties.Builder()
+                    .customSessionId(conference.getClassId())
+                    .mediaMode(MediaMode.ROUTED)
+                    .build();
+
             session = openvidu.createSession(properties);
             // 방의 호스트를 저장한다.
             sessionHostList.put(conference.getClassId(), conference.getIdentification());
@@ -116,15 +123,15 @@ public class ConferenceController {
         Path recordingPath, totalTextFile, totalZipFile;
         try{
             if(Files.isDirectory(Paths.get(recordingFilePath+"RecordingFile"))){
-                zipFileDownloader.removeFolder(recordingFilePath,"RecordingFile", false);
+                zipFileDownloader.removeFolder(recordingFilePath,"RecordingFile", true);
             }
 
             if(Files.isDirectory(Paths.get(recordingFilePath+"TotalTextFile"))){
-                zipFileDownloader.removeFolder(recordingFilePath,"TotalTextFile", false);
+                zipFileDownloader.removeFolder(recordingFilePath,"TotalTextFile", true);
             }
 
             if(Files.isDirectory(Paths.get(recordingFilePath+"TotalZipFile"))){
-                zipFileDownloader.removeFolder(recordingFilePath,"TotalZipFile", false);
+                zipFileDownloader.removeFolder(recordingFilePath,"TotalZipFile", true);
             }
 
 
@@ -160,15 +167,18 @@ public class ConferenceController {
 
         // Openvidu에서 방(세션)을 생성함
         try {
-            SessionProperties properties = new SessionProperties.Builder().customSessionId(reqDto.getClassId()).build();
+            SessionProperties properties = new SessionProperties.Builder()
+                    .customSessionId(reqDto.getClassId())
+                    .mediaMode(MediaMode.ROUTED)
+                    .build();
+
             Session session = openvidu.createSession(properties);
 
             // DB에 방(세션)을 저장함
             ConferenceCreateResDto resDto = ConferenceCreateResDto.builder()
                     .identification(reqDto.getIdentification())
                     .classId(reqDto.getClassId()).title(reqDto.getTitle())
-                    .description(reqDto.getDescription())
-                    .conferenceUrl(root + reqDto.getClassId())
+                    .conferenceUrl(meetingUrl + reqDto.getClassId())
                     .active(reqDto.isActive()).build();
 
             // 새롭게 생성한 방을 DB에 저장한다.
@@ -235,6 +245,7 @@ public class ConferenceController {
 
         Session session = openvidu.getActiveSession(classId);
 
+
         // 존재하지 않는 방인 경우
         if (session == null) {
             return new ResponseEntity<>("방이 없음", HttpStatus.NOT_FOUND);
@@ -271,13 +282,17 @@ public class ConferenceController {
                 // accessToken을 받아서 저장한다.
                 String accessToken = request.getHeader("Authorization");
                 OpenviduDB.getHostToken().put(identification, accessToken);
+                logger.info(identification+"////-> "+ accessToken);
 
                 // 녹화를 시작한다.
                 currentRecordingList.put(classId, new VideoRecorder(classId, identification));
 
                 // 해당 세션을 스레드로 시작한다.
                 executorService.submit(() -> currentRecordingList.get(classId).recordingMethod());
+
             }
+
+            logger.info("userInfo : "+ classId+","+identification);
 
             // 어디 방에 들어간 사람인지 구분하기 위함(참가자 리스트에 추가함)
             sessionParticipantList.get(classId).add(identification);
@@ -357,6 +372,7 @@ public class ConferenceController {
                 // openvidu와 연결을 해제
                 String connectionId = OpenviduDB.getSessionConnectionList().get(classId).get(identification);
                 openvidu.getActiveSession(classId).forceDisconnect(connectionId);
+
 
                 // sessionConnectionList에서 삭제함
                 OpenviduDB.getSessionConnectionList().get(classId).remove(identification);
@@ -470,6 +486,7 @@ public class ConferenceController {
 //            videoRecorder.recordingStop();
 
             // 로컬의 녹화 파일들 삭제하기
+            // 로컬의 녹화 파일들 삭제하기
 //            zipFileDownloader.removeFolder(recordingFilePath,classId,false);
 
             //history DELETE
@@ -522,37 +539,41 @@ public class ConferenceController {
     public ResponseEntity<? extends BaseResponseBody> stopRecording(
             @ApiParam(value = "녹화를 중지할 회의의 식별자 class_id", required = true)
             @PathVariable(name = "class_id") String classId) throws IOException, OpenViduJavaClientException, OpenViduHttpException {
-      try{
-          // 녹화를 중지하기
-          VideoRecorder videoRecorder = currentRecordingList.get(classId);
-          videoRecorder.recordingStop();
+        try{
+//            List<Recording> list = this.openvidu.listRecordings();
+//            for(Recording rec : list){
+//                this.openvidu.deleteRecording(rec.getId());
+//            }
 
-          // 로컬의 녹화 파일들 삭제하기
-          zipFileDownloader.removeFolder(recordingFilePath,classId,false);
+            // 녹화를 중지하기
+            VideoRecorder videoRecorder = currentRecordingList.get(classId);
+            videoRecorder.recordingStop();
 
-          // 녹화 기능을 목록에서 삭제한다.
-          currentRecordingList.remove(classId);
+            // 로컬의 녹화 파일들 삭제하기
+            //zipFileDownloader.removeFolder(recordingFilePath,classId,false);
 
-          // 이전의 녹화기록 삭제하기
+            // 녹화 기능을 목록에서 삭제한다.
+            currentRecordingList.remove(classId);
 
+            // 이전의 녹화기록 삭제하기
 //        List<Recording> list = this.openvidu.listRecordings();
 //        for(Recording rec : list){
 //            this.openvidu.deleteRecording(rec.getId());
 //        }
 //
 
-          logger.info("녹화를 중지하고 삭제함");
+            logger.info("녹화를 중지하고 삭제함");
 
-          //history REC_END
-          HistoryReqDto dto = new HistoryReqDto();
-          Conference nowConference = conferenceRepository.findByClassId(classId);
-          dto.setConference_id(nowConference.getId());
-          dto.setIdentification(nowConference.getIdentification());
-          historyService.createHistory(dto, "REC_END");
-          return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "성공!!!"));
-      }catch(Exception e){
-          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4004, ExceptionEnum.CONFERENCE_HOST_RECORDING_NOT_TERMINATED));
-      }
+            //history REC_END
+            HistoryReqDto dto = new HistoryReqDto();
+            Conference nowConference = conferenceRepository.findByClassId(classId);
+            dto.setConference_id(nowConference.getId());
+            dto.setIdentification(nowConference.getIdentification());
+            historyService.createHistory(dto, "REC_END");
+            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "성공!!!"));
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4004, ExceptionEnum.CONFERENCE_HOST_RECORDING_NOT_TERMINATED));
+        }
 
 
     }
