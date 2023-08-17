@@ -96,7 +96,7 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             script {
-                                def imageNameWithTag = "kathyleesh/weffy/authentication-integration-service:latest"
+                                def imageNameWithTag = "kathyleesh/weffy:authentication-integration-service:latest"
                                 dir('backend/authentication-integration-service') {    
                                     sh 'docker build -t $imageNameWithTag .'
                                     sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
@@ -113,11 +113,11 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             script {
-                                def imageNameWithTag = "kathyleesh/weffy/openvidu-meeting-service:latest"
+                                def imageNameWithTag = "kathyleesh/weffy:openvidu-meeting-service:latest"
                                 dir('backend/openvidu-meeting-service') {
                                     sh 'docker build -t $imageNameWithTag .'
                                     sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                    sh "docker push $imageNameWithTag"
+                                    sh 'docker push $imageNameWithTag'
                                 }
                             }
                         }
@@ -130,11 +130,11 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             script {
-                                def imageNameWithTag = "kathyleesh/weffy/openvidu-content-service:latest"
+                                def imageNameWithTag = "kathyleesh/weffy:openvidu-content-service:latest"
                                 dir('backend/openvidu-content-service') {
                                     sh 'docker build -t $imageNameWithTag .'
                                     sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                    sh "docker push $imageNameWithTag"
+                                    sh 'docker push $imageNameWithTag'
                                 }
                             }
                         }
@@ -147,11 +147,11 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             script {
-                                def imageNameWithTag = "kathyleesh/weffy/mattermost-content-service:latest"
+                                def imageNameWithTag = "kathyleesh/weffy:mattermost-content-service:latest"
                                 dir('backend/mattermost-content-service') {
                                     sh 'docker build -t $imageNameWithTag .'
                                     sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                    sh "docker push $imageNameWithTag"
+                                    sh 'docker push $imageNameWithTag'
                                 }
                             }
                         }
