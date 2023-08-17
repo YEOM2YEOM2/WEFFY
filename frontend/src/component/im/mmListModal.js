@@ -109,7 +109,7 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
 
       if (status === 200) {
         console.log(data.data); // This will log "success" if everything is OK
-        return data.data;
+        // return data.data;
       } else {
         console.error("Error:", data.data); // This will log the error message returned by the server
         throw new Error(data.data);
