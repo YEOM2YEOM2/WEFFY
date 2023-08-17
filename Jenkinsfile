@@ -208,7 +208,7 @@ pipeline {
                     sh """
                         export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-                        docker-compose -f docker-compose.yml up -d
+                        /usr/local/bin/docker-compose -f docker-compose.yml up -d
                     """
                 }
             }
