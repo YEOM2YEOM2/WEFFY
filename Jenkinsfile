@@ -6,8 +6,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([
-                        string(credentialsId: 'docker-hub', variable: 'DOCKER_HUB_USER'),
-                        string(credentialsId: 'docker-hub-pass', variable: 'DOCKER_HUB_PASS'),
+                        usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS'),
                         string(credentialsId: 'aws-id', variable: 'AWS_ACCESS_KEY_ID'),
                         string(credentialsId: 'aws-secret', variable: 'AWS_SECRET_ACCESS_KEY')
                     ]) {
