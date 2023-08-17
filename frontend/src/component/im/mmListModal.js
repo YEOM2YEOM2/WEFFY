@@ -62,7 +62,7 @@ const MMListModal = ({ handleClose }) => {
       })
       .catch((err) => {
         // Handle the error here.
-        console.log(err);
+        console.log("채널 목록 가져오기 실패");
       });
   };
 
@@ -96,7 +96,6 @@ const MMListModal = ({ handleClose }) => {
 
   const startMeeting = async () => {
     try {
-      console.log("selectedChannelId+ " + selectedChannelId);
       const formData = new FormData();
       formData.append("channelId", selectedChannelId);
 
@@ -110,11 +109,10 @@ const MMListModal = ({ handleClose }) => {
           },
         }
       );
-      console.log(response.data);
       const { status, data } = response;
 
       if (status === 200) {
-        console.log(data.data); // This will log "success" if everything is OK
+        console.log("mm채널 연결 미팅 생성"); // This will log "success" if everything is OK
       } else {
         console.error("Error:", data.data); // This will log the error message returned by the server
         throw new Error(data.data);
@@ -123,7 +121,6 @@ const MMListModal = ({ handleClose }) => {
       console.error("Error making header link:", error);
     }
 
-    console.log("서버랑 통신 해서 sessionId받아와서 화면 넘기기");
     dispatch(setActiveSessionId(selectedChannelId));
     dispatch(
       setActiveSessionName(`${selectedGroup} ${selectedChannel}의 미팅룸`)

@@ -36,16 +36,7 @@ const Setting = (props) => {
   };
 
 
-  // const handleImageChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     setNewProfileImage(URL.createObjectURL(file));
-  //     setSelectedFile(file); // Store the actual file
-  //   }
-  // };
-
   const accessToken = useSelector((state) => state.user.accessToken);
-  const csrfToken = useSelector((state) => state.user.csrfToken);
   //reduxt값 수정 + db값 수정
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,12 +50,6 @@ const Setting = (props) => {
     formData.append("profileImg", blob);
     formData.append("nickName", newNickName);
 
-
-    for (var pair of formData.entries()) {
-        console.log(pair[0]+ ', ' + pair[1]); 
-    }
-
-    //서버와 통신하기
     axios({
       method: "patch",
       url: "http://i9d107.p.ssafy.io:8081/api/v1/users/me",
@@ -77,19 +62,17 @@ const Setting = (props) => {
       data: formData,
     })
       .then((res) => {
-        console.log(res.data);
         dispatch(setProfileImg(newProfileImage));
         dispatch(setNickname(newNickName));
       })
       .catch((err) => {
-        console.log(err);
+        console.log("프로필 불러오기");
       });
   };
 
   const inputFile = React.useRef(null);
 
   const onImageIconClick = () => {
-    // trigger the click event of the hidden input file
     inputFile.current.click();
   };
 
@@ -98,7 +81,6 @@ const Setting = (props) => {
     setNewNickname(nickname);
   };
 
-  //변경이 되면 같이 뿅 바뀐다
   useEffect(() => {
     setNewProfileImage(profileImg);
     setNewNickname(nickname);

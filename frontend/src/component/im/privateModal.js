@@ -224,8 +224,6 @@ const PrivateModal = ({ handleClose }) => {
           >
             Start Private Meeting
           </Button>
-
-          {/* <Link to={`conferece/${sessionB}`}>Start Private Meeting</Link> */}
         </Grid>
       </div>
     </div>
