@@ -14,8 +14,8 @@ RUN apt-get update && \
     apt-get install -y openjdk-11-jdk wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Gradle 9.0
-RUN wget https://services.gradle.org/distributions/gradle-9.0-bin.zip -P /tmp && \
+# Install Gradle
+RUN wget https://services.gradle.org/distributions/gradle-8.2-bin.zip -P /tmp && \
     unzip -d /opt/gradle /tmp/gradle-*.zip && \
     rm -rf /tmp/*
 
