@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Route, Routes, Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -16,7 +16,6 @@ import {
 //CSS
 import styles from "../pages/im.module.css";
 
-//mui 라이브라리
 //mui 라이브라리
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -101,7 +100,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
@@ -154,7 +152,6 @@ export default function Im() {
   const navigate = useNavigate();
   const identification = useSelector((state) => state.user.identification);
 
-  // accesToken null일 경우 다시 /로 빽~!
   useEffect(() => {
     if (!identification) {
       navigate("/");
@@ -190,30 +187,7 @@ export default function Im() {
     MMListModal: false,
   });
 
-  const [selectedChannelId, setSelectedChannelId] = useState(null);
-  const [selectedChannel, setSelectedChannel] = useState(null);
-  const [selectedGroup, setSelectedGroup] = useState(null);
 
-  // //mm연동 미팅 시작 핸들링
-  // const handleStartMeeting = (groupName, channelName, channelId) => {
-  //   setSelectedGroup(groupName);
-  //   setSelectedChannel(channelName);
-  //   setSelectedChannelId(channelId);
-
-  //   console.log("startMeeting 클릭 완료!", groupName, channelName, channelId);
-
-  //   setModalStatus({
-  //     ...modalStatus,
-  //     startMM: true, // MmModal을 보여주고
-  //     MMListModal: false, // MMListModal은 숨깁니다.
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   console.log(selectedChannelId);
-  //   console.log(selectedChannel);
-  //   console.log(selectedGroup);
-  // }, [selectedChannelId, selectedChannel, selectedGroup]);
 
   const handleModalOpen = (modalName) => {
     //modalName에 맞는 modal true로 변경
@@ -237,26 +211,21 @@ export default function Im() {
 
   //옆 사이드바 아이콘을 클릭 했을 경우 url을 옮겨줄 hanndler
   const handleDashboardClick = () => {
-    console.log("Dashboard was clicked");
     // Dashboard 클릭 시 수행할 동작
     navigate("/im");
   };
 
   const handleMyMeetingClick = () => {
-    console.log("My Meeting was clicked");
     // My Meeting 클릭 시 수행할 동작
-    // window.location.href = "https://localhost:8080";
     navigate("/im/mylist");
   };
 
   const handleSettingClick = () => {
-    console.log("Setting was clicked");
     // Profile 클릭 시 수행할 동작
     navigate("/im/setting");
   };
 
   const handleLogoutClick = () => {
-    console.log("Logout was clicked");
     // Profile 클릭 시 수행할 동작
     dispatch(setIdentification(null));
     dispatch(setAccessToken(null));
@@ -387,24 +356,9 @@ export default function Im() {
         {modalStatus.MMListModal && (
           <MMListModal
             handleClose={() => handleModalClose("MMListModal")}
-            // handleStartMeeting={() =>
-            //   handleStartMeeting(
-            //     selectedGroup,
-            //     selectedChannel,
-            //     selectedChannelId
-            //   )
-            // }
           />
         )}
 
-        {/* {modalStatus.startMM && (
-          <StartMM
-            handleClose={() => handleModalClose("startMM")}
-            groupName={selectedGroup}
-            channelName={selectedChannel}
-            channelId={selectedChannelId}
-          />
-        )} */}
         {modalStatus.PrivateModal && (
           <PrivateModal
             show={modalStatus.PrivateModal}

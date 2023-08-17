@@ -1,7 +1,9 @@
 package openvidu.meeting.service.java.conference;
 
 import lombok.extern.slf4j.Slf4j;
+import openvidu.meeting.service.java.OpenviduDB;
 import openvidu.meeting.service.java.common.dto.BaseResponseBody;
+import org.apache.tools.ant.taskdefs.condition.Http;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,42 +29,69 @@ import java.nio.file.StandardOpenOption;
 @RequestMapping("/stream")
 @RestController
 public class StreamController {
-
     private Logger logger = LoggerFactory.getLogger(StreamController.class);
 
-    private StringBuilder totalZipFilePath = new StringBuilder().append("C:\\recording\\TotalZipFile\\");
-    private StringBuilder totalTextFilePath = new StringBuilder().append("C:\\recording\\TotalTextFile\\");
+    private String totaRecordingFilePath = "C:\\recording\\RecordingFile\\";
+    private String totalZipFilePath = "C:\\recording\\TotalZipFile\\";
+    private String totalTextFilePath = "C:\\recording\\TotalTextFile\\";
 
+    // streamId를 txt 파일에 저장한다.
     @PostMapping("/{class_id}/{stream_id}")
     public ResponseEntity<? extends BaseResponseBody>getStreamId(
             @PathVariable(name = "class_id")String classId,
             @PathVariable(name = "stream_id")String streamId) throws IOException {
 
-        // streamId를 txt 파일에 저장한다.
+        logger.info("answer : "+classId+'/'+streamId);
 
-        // 파일 경로 C:\recording\TotalTextFile\classId.txt
-        String newFilePath = new StringBuilder().append(totalTextFilePath).append(classId).append(".txt").toString();
+        // connectionId 구분하기
+        String[] temp = streamId.split("[_.]");
 
-        Path streamFilePath = Paths.get(newFilePath);
+        String connectionId = new StringBuilder().append(temp[3]).append("_").append(temp[4]).toString();
 
-        // 존재하지 않는 txt 파일이면 만든다.
-        if(!Files.exists(streamFilePath)){
-            Files.createFile(streamFilePath);
+        if(OpenviduDB.getHostConnectionId().get(classId).equals(connectionId)){
+            // 파일 경로 C:\recording\TotalTextFile\classId.txt
+            String newFilePath = new StringBuilder().append(totalTextFilePath).append(classId).append(".txt").toString();
+
+            Path streamFilePath = Paths.get(newFilePath);
+
+
+            // 존재하지 않는 txt 파일이면 만든다.
+            if(!Files.exists(streamFilePath)){
+                Files.createFile(streamFilePath);
+                logger.info("make file-1");
+
+                logger.info(new StringBuilder().append(totaRecordingFilePath)
+                        .append(classId).append(".webm").toString());
+
+                if(Files.exists(Paths.get(new StringBuilder().append(totaRecordingFilePath)
+                        .append(classId).append(".webm").toString()))){
+
+                    FileWriter w1 = new FileWriter(newFilePath , true);
+                    w1.write(new StringBuilder().append("file \'").append(totaRecordingFilePath)
+                            .append(classId).append(".webm\'\n").toString());
+                    w1.close();
+                    logger.info("make file-2");
+                }
+
+            }
+
+
+
+            try{
+                FileWriter writer = new FileWriter(newFilePath, true);
+                writer.write(new StringBuilder().append("file \'").append(totalZipFilePath).append(classId).append("\\").append(streamId).append(".webm\'\n").toString());
+                writer.close();
+                logger.info("파일에 내용을 추가함");
+                return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "파일에 내용을 추가함"));
+            }catch (Exception e){
+                e.printStackTrace();
+                logger.info("파일에 스트림 ID를 추가할 수 없음");
+                return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(404, "파일에 스트림 ID를 추가할 수 없음"));
+            }
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(404, "Host의 StreamId가 아닙니다"));
         }
-
-        try{
-            FileWriter writer = new FileWriter(newFilePath, true);
-            writer.write(new StringBuilder().append("file \'").append(totalZipFilePath).append(classId).append("\\").append(streamId).append(".webm\'\n").toString());
-            writer.close();
-            logger.info("파일에 내용을 추가함");
-            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(202, "파일에 내용을 추가함"));
-        }catch (Exception e){
-            e.printStackTrace();
-            logger.info("파일에 스트림 ID를 추가할 수 없음");
-            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(404, "파일에 스트림 ID를 추가할 수 없음"));
-        }
-
-
 
     }
+
 }

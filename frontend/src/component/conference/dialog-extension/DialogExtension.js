@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -15,7 +14,6 @@ export default class DialogExtensionComponent extends Component {
         super(props);
         this.openviduExtensionUrl =
             'https://chrome.google.com/webstore/detail/openvidu-screensharing/lfcgfepafnobdloecchnfaclibenjold';
-        //isInstalled: boolean;
 
         this.state = {
             isInstalled: false,
@@ -30,7 +28,6 @@ export default class DialogExtensionComponent extends Component {
     componentDidMount() {}
 
     onNoClick() {
-        // this.cancel.emit();
         this.props.cancelClicked();
     }
 

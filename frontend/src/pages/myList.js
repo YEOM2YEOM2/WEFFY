@@ -1,78 +1,59 @@
 import React, { useState, useEffect } from "react";
 import styles from "../pages/myList.module.css";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 //mui component
-import Button from "@mui/material/Button"; // Button imported
-import Divider from "@mui/material/Divider"; // Divider imported
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 
-//image
-import defaultImg from "../assets/images/defualt_image.png";
-
-const itemData = [
-  {
-    id: 1,
-    img: defaultImg,
-    text: "nickname1",
-    url: "url1",
-  },
-  {
-    id: 2,
-    img: defaultImg,
-    text: "nickname2",
-    url: "url2",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-  {
-    id: 3,
-    img: defaultImg,
-    text: "nickname3",
-    url: "url3",
-  },
-];
-
 const MyList = (props) => {
-  const handleButtonClick = () => {
-    // do something
+  const [itemData, setItemData] = useState([]);
+  const identification = useSelector((state) => state.user.identification);
+  const fetchConferenceList = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8082/conferences?identification=${identification}`
+      );
+      const formattedData = response.data.data.map((item) => ({
+        text: item.title,
+        url: item.conferenceUrl,
+      }));
+
+      setItemData(formattedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchConferenceList();
+  }, []);
+
+  const handleButtonClick = async (url) => {
+    let lastUrl = url.split("/").pop();
+
+    try {
+      const response = await axios.patch(
+        `http://localhost:8082/conferences/${lastUrl}/status`,
+        null,
+        {
+          params: {
+            identification: identification,
+          },
+        }
+      );
+      if (response.status === 200) {
+        fetchConferenceList();
+      } else {
+        console.error("Error");
+      }
+    } catch (error) {
+      console.error("Error");
+    }
   };
 
   return (
@@ -89,26 +70,16 @@ const MyList = (props) => {
                   className={styles["listItem"]}
                   alignItems="flex-start"
                 >
-                  <ListItemAvatar
-                    className={styles["private-modal-list-item-avatar"]}
-                  >
-                    <Avatar alt={item.text} src={item.img} />
-                  </ListItemAvatar>
                   <Typography className={styles["listItemText"]}>
-                    {" "}
-                    {/* Updated class */}
                     {item.text}
-                    <br />
-                    {item.url}
                   </Typography>
                   <div className={styles["buttonContainer"]}>
                     {" "}
-                    {/* New div */}
                     <Button
                       variant="contained"
                       color="error"
                       className={styles["list-item-button"]}
-                      onClick={handleButtonClick}
+                      onClick={() => handleButtonClick(item.url)}
                     >
                       비활성화
                     </Button>

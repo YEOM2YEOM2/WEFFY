@@ -10,8 +10,6 @@ import {
   toggleCameraStatus,
 } from "../../store/reducers/setting.js";
 
-import { setActiveSessionId } from "../../store/reducers/conference.js";
-
 import { OpenVidu } from "openvidu-browser";
 
 import Avatar from "@mui/material/Avatar";
@@ -30,12 +28,14 @@ import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { IconButton } from "@mui/material";
 
 // store conference
-import { setClassId } from "../../store/reducers/conference.js";
+import {
+  setActiveSessionId,
+  setActiveSessionName,
+} from "../../store/reducers/conference.js";
 
 const PrivateModal = ({ handleClose }) => {
   const micStatus = useSelector((state) => state.setting.micStatus);
   const cameraStatus = useSelector((state) => state.setting.cameraStatus);
-
   const selectedMic = useSelector((state) => state.setting.selectedMic);
   const selectedCam = useSelector((state) => state.setting.selectedCam);
 
@@ -45,8 +45,6 @@ const PrivateModal = ({ handleClose }) => {
   const userId = useSelector((state) => state.user.id);
 
   const [localNickname, setLocalNickname] = useState(nickname);
-
-  const [sessionId, setSessionId] = useState("sessionB");
 
   useEffect(() => {
     setLocalNickname(nickname);
@@ -59,22 +57,17 @@ const PrivateModal = ({ handleClose }) => {
 
   const handleMicStatusToggle = () => {
     dispatch(toggleMicStatus());
-    console.log("Mic Status: ", micStatus);
   };
 
   const handleCameraStatusToggle = () => {
     dispatch(toggleCameraStatus());
-    console.log("Camera Status: ", cameraStatus);
   };
 
   useEffect(() => {
-    dispatch(setActiveSessionId(sessionId));
-
-    console.log();
+    dispatch(setActiveSessionId(userId));
 
     OV.getDevices()
       .then((devices) => {
-        console.log(devices);
         const filteredMicList = devices.filter(
           (device) => device.kind === "audioinput"
         );
@@ -97,18 +90,15 @@ const PrivateModal = ({ handleClose }) => {
   }, []);
 
   useEffect(() => {
-    console.log("Mic Status: ", micStatus);
   }, [micStatus]);
 
   useEffect(() => {
-    console.log("Camera Status: ", cameraStatus);
   }, [cameraStatus]);
 
   const handleSelectMicrophone = (event) => {
     const newMicId = parseInt(event.target.value, 10);
 
     dispatch(setSelectedMic(newMicId)); // 인덱스만 전달
-    console.log(`mic Id = ${newMicId}`);
   };
 
   const handleNicknameChange = (e) => {
@@ -121,22 +111,17 @@ const PrivateModal = ({ handleClose }) => {
   };
 
   const navigate = useNavigate();
+
   const startPrivateMeeting = () => {
-    dispatch(setActiveSessionId(sessionId));
     dispatch(setParticipateName(localNickname));
-    dispatch(setClassId(userId));
+    dispatch(setActiveSessionName(`${userId}의 개인룸`));
 
-    console.log("start Meeting!");
-    // let ecodedSessionId = decodeURIComponent(sessionId);
-
-    // navigate(`/conference/${nickname}`);
-    navigate(`/conference/${userId}`);
+    navigate(`/meeting/${userId} `);
   };
 
   const handleSelectCamera = (event) => {
     const newCamId = parseInt(event.target.value, 10);
     dispatch(setSelectedCam(newCamId)); // 인덱스만 전달
-    console.log(`cam Id = ${newCamId}`);
   };
 
   return (
@@ -239,8 +224,6 @@ const PrivateModal = ({ handleClose }) => {
           >
             Start Private Meeting
           </Button>
-
-          {/* <Link to={`conferece/${sessionB}`}>Start Private Meeting</Link> */}
         </Grid>
       </div>
     </div>

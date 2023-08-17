@@ -1,7 +1,7 @@
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import React, { Component } from "react";
-import { connect, useSelector } from "react-redux";
+import { connect } from "react-redux";
 import ChatComponent from "./../component/conference/chat/ChatComponent.js";
 import QuestionChat from "./../component/conference/chat/QuestionChat.js";
 
@@ -18,14 +18,13 @@ const APPLICATION_SERVER_URL =
   process.env.NODE_ENV === "production" ? "" : "http://localhost:8082/";
 
 const mapStateToProps = (state) => {
-  console.log(state.setting.selectedMic);
-  console.log(state.setting.participateName);
   return {
     selectedMic: state.setting.selectedMic,
     selectedCam: state.setting.selectedCam,
     accessToken: state.user.accessToken,
     identification: state.user.identification,
-    classId: state.conference.classId,
+    activeSessionId: state.conference.activeSessionId,
+    activeSessionName: state.conference.activeSessionName,
   };
 };
 
@@ -38,8 +37,6 @@ class VideoRoomComponent extends Component {
     this.hasBeenUpdated = false;
     this.layout = new OpenViduLayout();
     let sessionName = decodeURIComponent(sessionIdFromUrl);
-    console.log(sessionName);
-    console.log(this.props.selectedMic);
     let userName = this.props.user
       ? this.props.user
       : "WEFFY_User" + Math.floor(Math.random() * 100);
@@ -127,12 +124,10 @@ class VideoRoomComponent extends Component {
 
   async connectToSession() {
     if (this.props.token !== undefined) {
-      console.log("token received: ", this.props.token);
       this.connect(this.props.token);
     } else {
       try {
         var token = await this.getToken();
-        console.log(token);
         this.connect(token);
       } catch (error) {
         console.error(
@@ -168,12 +163,8 @@ class VideoRoomComponent extends Component {
             status: error.status,
           });
         }
-        alert("There was an error connecting to the session:", error.message);
-        console.log(
-          "There was an error connecting to the session:",
-          error.code,
-          error.message
-        );
+        alert("There was an error connecting to the session");
+        console.log("There was an error connecting to the session");
       });
   }
 
@@ -229,7 +220,6 @@ class VideoRoomComponent extends Component {
         });
       }
     );
-    console.log(this.props.selectedMic);
   }
 
   updateSubscribers() {
@@ -351,7 +341,6 @@ class VideoRoomComponent extends Component {
       remoteUsers.forEach((user) => {
         if (user.getConnectionId() === event.from.connectionId) {
           const data = JSON.parse(event.data);
-          console.log("EVENTO REMOTE: ", event.data);
           if (data.isAudioActive !== undefined) {
             user.setAudioActive(data.isAudioActive);
           }
@@ -542,7 +531,6 @@ class VideoRoomComponent extends Component {
     if (display === "block") {
       this.setState({ chatDisplay: display, messageReceived: false });
     } else {
-      console.log("chat", display);
       this.setState({ chatDisplay: display });
     }
     this.updateLayout();
@@ -557,7 +545,6 @@ class VideoRoomComponent extends Component {
     if (display === "block") {
       this.setState({ QuestionDisplay: display, QuestionReceived: false });
     } else {
-      console.log("Question", display);
       this.setState({ QuestionDisplay: display });
     }
     this.updateLayout();
@@ -693,42 +680,43 @@ class VideoRoomComponent extends Component {
    * more about the integration of OpenVidu in your application server.
    */
   async getToken() {
-    // console.log("들어왔음!");
     const { accessToken } = this.props;
     const { identification } = this.props;
     const { classId } = this.props;
-    console.log("classId", classId);
+    const { conferenceName } = this.props;
     let encoSessionId = encodeURI(this.state.mySessionIds);
     const sessionId = await this.createSession(
       identification,
       classId,
-      "임시_제목",
+      conferenceName,
       "임시_설명"
     );
     return await this.createToken(identification, classId, accessToken);
   }
 
   async createSession(identification, classId, title, description) {
-    console.log(identification);
-
-    const response = await axios.post(
-      APPLICATION_SERVER_URL + "conferences",
-      {
-        identification: identification,
-        classId: classId,
-        title: title,
-        description: description,
-        active: true,
-      },
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    return response.data; // The sessionId
+    try {
+      const response = await axios.post(
+        APPLICATION_SERVER_URL + "conferences",
+        {
+          identification: identification,
+          classId: classId,
+          title: title,
+          description: description,
+          active: true,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      // return response.data; // The sessionId
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 
   async createToken(identification, classId, accessToken) {
-    console.log(accessToken);
     const response = await axios.post(
       APPLICATION_SERVER_URL +
         "conferences/connection/" +
