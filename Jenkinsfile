@@ -42,32 +42,6 @@ pipeline {
             }
         }
 
-        stage('Build and Test Projects') {
-            parallel {
-                stage('Build and Test authentication-integration-service') {
-                    steps {
-                        dir('backend/authentication-integration-service') {
-                            sh './gradlew clean build -x test'
-                        }
-                    }
-                }
-                stage('Build and Test openvidu-content-service') {
-                    steps {
-                        dir('backend/openvidu-content-service') {
-                            sh './gradlew clean build -x test'
-                        }
-                    }
-                }
-                stage('Build and Test mattermost-content-service') {
-                    steps {
-                        dir('backend/mattermost-content-service') {
-                            sh './gradlew clean build -x test'
-                        }
-                    }
-                }
-            }
-        }
-
         stage('Build and Test openvidu-meeting-service') {
             steps {
                 dir('backend/openvidu-meeting-service') {
@@ -76,6 +50,40 @@ pipeline {
             }
         }
 
+        stage('Build and Test for authentication-integration-service') {
+            agent {
+                docker {
+                    image 'authentication-integration-service'
+                    args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
+                }
+            }
+            steps {
+                sh 'cd backend/authentication-integration-service && ./gradlew clean build -x test'
+            }
+        }
+
+        stage('Build and Test for openvidu-content-service') {
+            agent {
+                docker {
+                    image 'openvidu-content-service'
+                    args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
+                }
+            }
+            steps {
+                sh 'cd backend/openvidu-content-service && ./gradlew clean build -x test'
+            }
+        }
+        stage('Build and Test for mattermost-content-service') {
+            agent {
+                docker {
+                    image 'mattermost-content-service'
+                    args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
+                }
+            }
+            steps {
+                sh 'cd backend/mattermost-content-service && ./gradlew clean build -x test'
+            }
+        }
 
         stage('Docker build and push') {
             parallel {
