@@ -37,10 +37,8 @@ RUN ./gradlew clean build --no-daemon -x test
 # Expose the port the app runs in
 EXPOSE 8082
 
-# Change the working directory to the build directory (optional)
-# WORKDIR /app/build/libs
+# Change the working directory to the build directory
+WORKDIR /app/build/libs
 
-# You should check the exact name of your JAR file after the build
-# and replace "openvidu-meeting-service-2.28.0.jar" with the correct name, if necessary.
-ENTRYPOINT ["java", "-jar", "/app/build/libs/openvidu-meeting-service-2.28.0.jar"]
-
+# Use the correct JAR filename (replace with the actual filename)
+ENTRYPOINT ["java", "-jar", "openvidu-meeting-service-2.28.0.jar"]
