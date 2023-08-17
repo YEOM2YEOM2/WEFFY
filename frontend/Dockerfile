@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y curl
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 
 # Node.js 14.17.0 설치
-RUN apt-get install -y nodejs=14.17.0-1nodesource1 && apt-mark hold nodejs
+RUN apt-get install -y nodejs && apt-mark hold nodejs
 
 # 앱 디렉터리 설정
 WORKDIR /app
