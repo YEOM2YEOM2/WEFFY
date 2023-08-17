@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
 import styles from "./fileList.module.css";
 import axios from "axios";
+import { Button, accordionActionsClasses } from "@mui/material";
 import { useSelector } from "react-redux";
 
 //mui 버튼
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import CloseIcon from "@mui/icons-material/Close";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 import IconButton from "@mui/material/IconButton";
 import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
+import { Today } from "@mui/icons-material";
 
 function FileList(props) {
   const accessToken = useSelector((state) => state.user.accessToken);
@@ -19,6 +22,9 @@ function FileList(props) {
 
   const [files, setFiles] = useState([]);
 
+  // const dateNow = new Date();
+  // const today = dateNow.toISOString().slice(0, 10);
+  // const curDate = const curDate = new Date().toISOString().split('T')[0];
   const curDate = new Date().toISOString().split("T")[0];
 
   console.log(curDate);
