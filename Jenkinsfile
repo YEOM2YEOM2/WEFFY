@@ -58,6 +58,7 @@ pipeline {
                 }
             }
             steps {
+                sh 'chmod +x backend/authentication-integration-service/gradlew'
                 sh 'cd backend/authentication-integration-service && ./gradlew clean build -x test'
             }
         }
@@ -70,6 +71,7 @@ pipeline {
                 }
             }
             steps {
+                sh 'chmod +x backend/openvidu-content-service/gradlew'
                 sh 'cd backend/openvidu-content-service && ./gradlew clean build -x test'
             }
         }
@@ -81,6 +83,7 @@ pipeline {
                 }
             }
             steps {
+                sh 'chmod +x backend/mattermost-content-service/gradlew'
                 sh 'cd backend/mattermost-content-service && ./gradlew clean build -x test'
             }
         }
