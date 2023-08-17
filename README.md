@@ -89,6 +89,8 @@ SSAFY 교육 과정 중에 다양한 외부 프로그램의 의존성이 높아�
  <td align="center">패키지 매니저</td>
  <td>
     <img src="https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white">
+    <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
+
   </td>
 </tr>
 <tr>
@@ -98,6 +100,9 @@ SSAFY 교육 과정 중에 다양한 외부 프로그램의 의존성이 높아�
   <img src="https://img.shields.io/badge/amazonaws-232F3E?style=for-the-badge&logo=amazonaws&logoColor=ffffff"/>
   <img src="https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=ffffff"/>
   <img src="https://img.shields.io/badge/amazonec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=ffffff"/>
+  <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=ffffff"/>
+  <img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=ffffff"/>
+  
 </tr>
 <tr>
  <td align="center">포맷팅</td>
