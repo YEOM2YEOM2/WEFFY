@@ -51,7 +51,6 @@ import Dropdown from "react-bootstrap/Dropdown";
 
 // Swal
 import Swal from "sweetalert2";
-import { ConnectingAirportsOutlined } from "@mui/icons-material";
 
 //redux
 import { setActiveSessionId } from "../store/reducers/conference";
@@ -254,12 +253,10 @@ class Conference extends Component {
 
   async connectToSession() {
     if (this.props.token !== undefined) {
-      console.log("token received: ", this.props.token);
       this.connect(this.props.token);
     } else {
       try {
         var token = await this.getToken();
-        console.log(token);
         this.connect(token);
       } catch (error) {
         console.error(
@@ -514,7 +511,6 @@ class Conference extends Component {
       remoteUsers.forEach((user) => {
         if (user.getConnectionId() === event.from.connectionId) {
           const data = JSON.parse(event.data);
-          console.log("EVENTO REMOTE: ", event.data);
           if (data.isAudioActive !== undefined) {
             user.setAudioActive(data.isAudioActive);
           }
@@ -678,7 +674,13 @@ class Conference extends Component {
             headers: {
               accept: "application/json",
               "Content-Type": "application/json",
-            },
+            }
+          })
+          .then((res) => {
+            console.log("화면공유 axios Success")
+          })
+          .catch((err) => {
+            console.log("화면공유 axios Error")
           })
             .then((res) => {
               console.log("화면공유 aixos결과!!!!", res);
@@ -1135,7 +1137,7 @@ class Conference extends Component {
                       <Dropdown.Item onClick={this.showFileList}>
                         파일 목록
                       </Dropdown.Item>
-                      <Dropdown.Item href="#/action-2">스트리밍</Dropdown.Item>
+                      <Dropdown.Item href="https://weffy-conference.s3.ap-northeast-2.amazonaws.com/09e04a4b-cacd-4c07-9f9d-f896a1e0f850_output.webm">스트리밍</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                   {this.state.isFileListVisible && (
@@ -1213,10 +1215,6 @@ class Conference extends Component {
     const { accessToken } = this.props;
     const { identification } = this.props;
     const { activeSessionName } = this.props;
-    console.log("activeSessionId", activeSessionId);
-    console.log("accessToken", accessToken);
-    console.log("identification", identification);
-    console.log("activeSessionName", activeSessionName);
     await this.createSession(
       identification,
       activeSessionId,
