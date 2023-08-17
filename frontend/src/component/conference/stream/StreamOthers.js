@@ -3,7 +3,6 @@ import styles from './StreamOthers.module.css';
 import OvVideoComponent from './OvVideo';
 
 import MicOffIcon from '@mui/icons-material/MicOff';
-import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import FormControl from '@mui/material/FormControl';
@@ -40,7 +39,6 @@ export default class StreamComponent extends Component {
 
     handlePressKey(event) {
         if (event.key === 'Enter') {
-            console.log(this.state.nickname);
             if (this.state.nickname.length >= 3 && this.state.nickname.length <= 20) {
                 this.props.handleNickname(this.state.nickname);
                 this.toggleNicknameForm();

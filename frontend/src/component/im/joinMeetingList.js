@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./joinMeetingList.module.css";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -39,7 +39,6 @@ const JoinMeetingList = ({ handleClose }) => {
     })
       .then((res) => {
         const tempMyList = [];
-        console.log(res);
 
         res.data.data.map((val) => {
           let temp = { url: "", title: "" };
@@ -51,21 +50,18 @@ const JoinMeetingList = ({ handleClose }) => {
         setRecentList(tempMyList);
       })
       .catch((err) => {
-        console.log(err);
+        console.log("최근 목록 불러오기 실패");
       });
   };
 
   useEffect(() => {
     recentListHandler();
-    // console.log(recentList);
   }, []);
 
   //Join Button이 눌리면 해당 url로 이동
   const handleButtonClick = (url) => {
     window.location.href = url;
   };
-
-  //pagination 을 하기 위한 것들
 
   return (
     <div className={styles["modal"]} onClick={handleClose}>
@@ -95,7 +91,6 @@ const JoinMeetingList = ({ handleClose }) => {
               <React.Fragment key={index}>
                 <ListItem
                   className={styles["meetingItem"]}
-                  // alignItems="flex-start"
                 >
                   <CustomListItemText
                     className={styles["item-text"]}
@@ -121,7 +116,6 @@ const JoinMeetingList = ({ handleClose }) => {
         </div>
 
         <Grid container justifyContent="flex-end">
-          {/* <Button variant="contained">Start Private Meeting</Button> */}
         </Grid>
       </div>
     </div>

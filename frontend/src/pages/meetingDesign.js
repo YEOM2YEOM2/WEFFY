@@ -55,7 +55,6 @@ import Swal from "sweetalert2";
 //redux
 import { setActiveSessionId } from "../store/reducers/conference";
 
-import { withRouter } from "react-router-dom";
 
 const drawerWidth = 320;
 
@@ -379,29 +378,22 @@ class Conference extends Component {
   }
 
   async leaveSession() {
-    console.log("그만 들어와");
-    console.log(this.hasLeftSession);
 
     if (this.hasLeftSession) {
-      console.log("무시 ㄱㄱ");
       return;
     }
 
     this.hasLeftSession = true;
-    console.log(this.hasLeftSession);
     const mySession = this.state.session;
 
     const { activeSessionId } = this.props;
     const { identification } = this.props;
-    console.log("activeSessionId: ", activeSessionId);
-    console.log("identification: ", identification);
     const response = await axios.post(
       APPLICATION_SERVER_URL +
         `conferences/${activeSessionId}/${identification}`
     );
 
-    const { status, data } = response;
-    console.log(data.data);
+    const { data } = response;
     if (data.status === 200) {
       console.log(data.message);
     } else {
@@ -409,9 +401,7 @@ class Conference extends Component {
     }
 
     if (mySession) {
-      console.log("1");
       mySession.disconnect();
-      console.log("2");
     }
 
     // Empty all properties...
@@ -424,10 +414,8 @@ class Conference extends Component {
       myUserName: "WEEFY_User" + Math.floor(Math.random() * 100),
       localUser: undefined,
     });
-    console.log("3");
 
     if (this.props.leaveSession) {
-      console.log("4");
       this.props.leaveSession();
     }
   }
@@ -472,7 +460,6 @@ class Conference extends Component {
   subscribeToStreamCreated() {
     this.state.session.on("streamCreated", (event) => {
       const subscriber = this.state.session.subscribe(event.stream, undefined);
-      // var subscribers = this.state.subscribers;
       subscriber.on("streamPlaying", (e) => {
         this.checkSomeoneShareScreen();
         subscriber.videos[0].video.parentElement.classList.remove(
@@ -682,16 +669,9 @@ class Conference extends Component {
           .catch((err) => {
             console.log("화면공유 axios Error")
           })
-            .then((res) => {
-              console.log("화면공유 aixos결과!!!!", res);
-            })
-            .catch((err) => {
-              console.log("화면공유 axios 에러!!!", err);
-            });
         });
       });
     });
-    console.log("화면공유", publisher);
     publisher.on("streamPlaying", () => {
       publisher.videos[0].video.parentElement.classList.remove("custom-class");
     });
