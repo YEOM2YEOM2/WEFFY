@@ -16,13 +16,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import {
+  toggleMicStatus,
+  toggleCameraStatus,
+} from "../../store/reducers/setting.js";
+
 // store conference
 import {
   setActiveSessionId,
   setActiveSessionName,
 } from "../../store/reducers/conference";
 
-const MMListModal = ({ handleClose, handleStartMeeting }) => {
+const MMListModal = ({ handleClose }) => {
   const [groupData, setGroupData] = useState([]);
 
   const dispatch = useDispatch();
@@ -62,6 +67,8 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
   };
 
   useEffect(() => {
+    toggleCameraStatus(false);
+    toggleMicStatus(false);
     inintMMList();
   }, []);
 
