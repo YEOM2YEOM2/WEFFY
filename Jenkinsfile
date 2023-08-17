@@ -24,7 +24,7 @@ pipeline {
                     file(credentialsId: 'ov-meeting-application-dev.properties', variable: 'OV_MEETING_FILE')
                 ]) {
                     script{
-                        echo "AUTH_FILE: \S{AUTH_FILE}"
+                        echo "AUTH_FILE: \${AUTH_FILE}"
 
 
                         sh 'cp $AUTH_FILE backend/authentication-integration-service/src/main/resources/application-dev.properties'
