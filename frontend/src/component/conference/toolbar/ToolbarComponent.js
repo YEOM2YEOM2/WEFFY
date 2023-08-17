@@ -10,7 +10,6 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
-import SwitchCameraIcon from '@mui/icons-material/SwitchCamera';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare';
@@ -116,10 +115,6 @@ export default class ToolbarComponent extends Component {
                                     <StopScreenShareIcon style={{ color: "red" }} />
                                 </IconButton>
                             )}
-                        {/* 카메라 스위치 버튼 
-                        <IconButton color="inherit" className="navButton" onClick={this.switchCamera}>
-                            <SwitchCameraIcon />
-                        </IconButton> */}
                         <IconButton color="inherit" className="navButton" onClick={this.toggleFullscreen}>
                             {localUser !== undefined && this.state.fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
                         </IconButton>
@@ -133,7 +128,7 @@ export default class ToolbarComponent extends Component {
                             </Tooltip>
                         </IconButton>
                         <IconButton color="inherit" onClick={this.toggleQuestion} >
-                            {this.props.showQuestion && <div id="point" className="" />}
+                            {this.props.showQuestion && <div id="point" />}
                             <Tooltip title="질문">
                                 <QuestionAnswerIcon />
                             </Tooltip>

@@ -3,15 +3,9 @@ import styles from './GridStream.module.css';
 import GridVideo from './GridVideo.js'
 
 import MicOffIcon from '@mui/icons-material/MicOff';
-import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
-import FormControl from '@mui/material/FormControl';
-import Input from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import FormHelperText from '@mui/material/FormHelperText';
 
 export default class StreamComponent extends Component {
     constructor(props) {

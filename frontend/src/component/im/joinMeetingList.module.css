@@ -38,11 +38,12 @@
 
 .textArea {
   width: 80%;
-  margin-top: 20px;
+  margin-top: 10px;
+  padding-left: 10px;
   height: 60px;
   align-self: center;
   font-family: "GmarketSans";
-  font-size: 10px;
+  font-size: 6 px;
   background-color: #f1f3f5;
   border-radius: 10px;
   font-size: 20px;
@@ -86,7 +87,7 @@
   align-items: center;
   height: 80px;
   display: flex;
-  background-color: #ffffff;
+  background-color: whitesmoke;
   border-radius: 10px;
   margin-bottom: 15px;
   overflow-y: scroll;

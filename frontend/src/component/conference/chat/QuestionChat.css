@@ -13,8 +13,6 @@
   font-size: 14px;
   text-align: center;
   padding-top: 4px;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
   color: #ffffff;
 }
 
@@ -96,7 +94,7 @@
 }
 
 .msg-detail {
-  width: calc(100% - 65px);
+  width: 320px;
   display: inline-block;
   /* background-color: #000000; */
 }
@@ -130,15 +128,14 @@
 }
 
 .message .msg-detail .msg-info {
-  text-align: left !important;
-  align-items: flex-end;
+  text-align: right !important;
+  align-items: flex-start;
 }
 
 .message .msg-detail .msg-content {
-  background-color: #7eee83;
-  float: left;
+  background-color: #97cc9a;
+  float: right;
   display: flex;
-  justify-content: flex-start;
   align-items: center;
   padding: 5px;
 }
@@ -153,8 +150,6 @@
   text-align: center;
   padding: 10px 0px;
   height: 45px;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
 }
 
 #messageInput input {
@@ -197,14 +192,12 @@
 .timeStamp {
   font-size: 10px;
   bottom: 5px; /* 메시지 박스와의 거리 */
-  margin-top: 10px !important;
   color: whitesmoke;
   font-family: "GmarketSans" !important;
   align-content: flex-start;
   align-items: center;
   display: flex;
-  margin-left: 10px !important; /* 메시지와의 간격 */
-  margin-right: 10px; /* 메시지와의 간격 */
+  margin: 0 10px 0 0; /* 메시지와의 간격 */
 }
 
 .content-with-timestamp {
@@ -214,6 +207,7 @@
 
 .message .content-with-timestamp {
   justify-content: flex-start;
+  flex-direction: row-reverse;
 }
 
 .downloadText {

@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,16 +61,10 @@ public class FileController {
             @ApiResponse(responseCode = "4008", description =  "CHANNEL_NOT_FOUND", content = @Content(examples = @ExampleObject(value = "{\"status\": 4008, \"data\": \"채널이 존재하지 않습니다.\"}"))),
             @ApiResponse(responseCode = "4009", description =  "CANNOT_CREATE_ROOM", content = @Content(examples = @ExampleObject(value = "{\"status\": 4009, \"data\": \"해당 채널에서 weffy를 생성할 권한이 없습니다.\"}"))),
     })
-    @PostMapping("/{conference_id}")
+    @PostMapping("/upload/{conference_id}")
     public ResponseEntity<? extends BaseResponseBody> upload(@RequestPart MultipartFile file,
-                                                             @PathVariable(name = "conference_id", required = false) String conferenceId,
-                                                             @RequestParam(name = "type", required = false) String type) {
-        String bucketName = "weffy";
-        if(conferenceId != null) {
-            if (type.equals("lecture")) bucketName = "weffy-lecture" ;
-            else bucketName = "weffy-conference";
-        }
-
+                                                             @PathVariable(name = "conference_id", required = false) String conferenceId) {
+        String bucketName = (conferenceId == null) ? "weffy" : "weffy-conference";
         FileResDto fileResDto = fileService.uploadFile(file, conferenceId, bucketName);
         return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(201, fileResDto));
     }
@@ -96,13 +91,13 @@ public class FileController {
                             "}"))),
             @ApiResponse(responseCode = "4006", description =  "FILE_NOT_FOUND", content = @Content(examples = @ExampleObject(value = "{\"status\": 4006, \"data\": \"파일이 존재하지 않습니다.\"}")))
     })
-    @PostMapping("")
+    @PostMapping("/list")
     public ResponseEntity<? extends BaseResponseBody> getFiles(@RequestBody FileReqDto fileReqDto) {
         String authorizedMember = SecurityUtil.getAuthorizedMember();
         WeffyUser weffyUser = userService.findByEmail(authorizedMember);
         String sessionToken = mattermostService.findByWeffyUser(weffyUser);
         List<GetFileDto> getFileDto = fileService.getFiles(fileReqDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(BaseResponseBody.of(200, new UploadResDto().of(sessionToken, fileReqDto.getConferenceId(), getFileDto)));
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, new UploadResDto().of(sessionToken, fileReqDto.getConferenceId(), getFileDto)));
     }
 
     @Operation(summary = "file 다운로드", description = "s3에 저장된 파일 다운로드 \n\n" +
@@ -118,8 +113,8 @@ public class FileController {
             @ApiResponse(responseCode = "4008", description =  "CANNOT_DOWNLOAD_FILE", content = @Content(examples = @ExampleObject(value = "{\"status\": 4008, \"data\": \"파일 다운로드 실패하였습니다.\"}")))
     })
     @GetMapping("/download")
-    public ResponseEntity<? extends BaseResponseBody> downloadFile(@RequestParam String objectKey, @RequestParam String title) {
-        fileService.downloadFile(objectKey, title);
-        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "SUCCESS"));
+    public ResponseEntity<byte[]> downloadFile(@RequestParam String objectKey, @RequestParam String title) throws IOException {
+        return fileService.downloadFile(objectKey, title);
+        //return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "SUCCESS"));
     }
 }

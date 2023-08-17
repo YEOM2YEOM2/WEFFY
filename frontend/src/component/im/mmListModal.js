@@ -13,15 +13,27 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 
 import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const MMListModal = ({ handleClose, handleStartMeeting }) => {
-  // const [groupData, setGroupData] = useState([]);
+import {
+  toggleMicStatus,
+  toggleCameraStatus,
+} from "../../store/reducers/setting.js";
+
+// store conference
+import {
+  setActiveSessionId,
+  setActiveSessionName,
+} from "../../store/reducers/conference";
+
+const MMListModal = ({ handleClose }) => {
   const [groupData, setGroupData] = useState([]);
 
-  console.log(handleStartMeeting);
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const accessToken = useSelector((state) => state.user.accessToken);
+
   const inintMMList = () => {
     axios({
       method: "get",
@@ -50,11 +62,13 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
       })
       .catch((err) => {
         // Handle the error here.
-        console.log(err);
+        console.log("채널 목록 가져오기 실패");
       });
   };
 
   useEffect(() => {
+    toggleCameraStatus(false);
+    toggleMicStatus(false);
     inintMMList();
   }, []);
 
@@ -78,22 +92,44 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
     return currentGroup ? currentGroup.channels.map((channel) => channel) : [];
   }, [currentGroup]);
 
-  useEffect(() => {
-    console.log("mmList에서 출력");
-    console.log(selectedGroup);
-    console.log(selectedChannel);
-    console.log(selectedChannelId);
-  }, [selectedGroup, selectedChannel, selectedChannelId]);
+  useEffect(() => {}, [selectedGroup, selectedChannel, selectedChannelId]);
 
-  const startMeeting = () => {
-    console.log("서버랑 통신 해서 sessionId받아와서 화면 넘기기");
+  const startMeeting = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("channelId", selectedChannelId);
+
+      const response = await axios.post(
+        "http://i9d107.p.ssafy.io:8081/api/v1/mattermost/header",
+        formData,
+        {
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const { status, data } = response;
+
+      if (status === 200) {
+        console.log("mm채널 연결 미팅 생성"); // This will log "success" if everything is OK
+      } else {
+        console.error("Error:", data.data); // This will log the error message returned by the server
+        throw new Error(data.data);
+      }
+    } catch (error) {
+      console.error("Error making header link:", error);
+    }
+
+    dispatch(setActiveSessionId(selectedChannelId));
+    dispatch(
+      setActiveSessionName(`${selectedGroup} ${selectedChannel}의 미팅룸`)
+    );
+
+    navigate(`/meeting/${selectedChannelId}`);
   };
   return (
-    <div
-      className={styles["modal"]}
-      onClick={handleClose}
-      //   style={{ left: `calc(50% + ${sidebarOpen ? drawerWidth / 2 : 0}px)` }}
-    >
+    <div className={styles["modal"]} onClick={handleClose}>
       <div className={styles["modalBody"]} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h3 className={styles["modalHeader"]} style={{ fontFamily: "Mogra" }}>
