@@ -1,6 +1,16 @@
 version: '3.7'
 
 services:
+  jenkins:
+          image: jenkins/jenkins
+          container_name: jenkins
+          volumes:
+              - /var/run/docker.sock:/var/run/docker.sock
+              - /jenkins:/var/jenkins_home
+          ports:
+              - "8080:8080"
+          privileged: true
+          user: weffy
   frontend:
     image: kathyleesh/frontend:latest
     ports:
