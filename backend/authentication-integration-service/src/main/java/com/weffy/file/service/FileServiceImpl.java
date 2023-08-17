@@ -8,6 +8,7 @@ import com.weffy.file.dto.response.FileResDto;
 import com.weffy.file.dto.response.GetFileDto;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.weffy.file.repository.JpaFileRepository;
@@ -20,6 +21,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 
 import javax.imageio.ImageIO;
@@ -114,7 +116,7 @@ public class FileServiceImpl implements FileService {
 
     private String bucketName = "weffy-conference";
     @Override
-    public ResponseEntity<byte[]> downloadFile(String objectKey, String filename) {
+    public ResponseEntity<byte[]> downloadFile(String objectKey, String filename) throws IOException {
         try {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)
@@ -140,6 +142,5 @@ public class FileServiceImpl implements FileService {
             throw new RuntimeException("파일 다운로드 실패", e);
         }
     }
-
 }
 
