@@ -17,7 +17,6 @@ import {
 import styles from "../pages/im.module.css";
 
 //mui 라이브라리
-//mui 라이브라리
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
@@ -101,7 +100,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
@@ -154,7 +152,6 @@ export default function Im() {
   const navigate = useNavigate();
   const identification = useSelector((state) => state.user.identification);
 
-  // accesToken null일 경우 다시 /로 빽~!
   useEffect(() => {
     if (!identification) {
       navigate("/");
@@ -224,13 +221,11 @@ export default function Im() {
   };
 
   const handleSettingClick = () => {
-    console.log("Setting was clicked");
     // Profile 클릭 시 수행할 동작
     navigate("/im/setting");
   };
 
   const handleLogoutClick = () => {
-    console.log("Logout was clicked");
     // Profile 클릭 시 수행할 동작
     dispatch(setIdentification(null));
     dispatch(setAccessToken(null));
@@ -361,24 +356,9 @@ export default function Im() {
         {modalStatus.MMListModal && (
           <MMListModal
             handleClose={() => handleModalClose("MMListModal")}
-            // handleStartMeeting={() =>
-            //   handleStartMeeting(
-            //     selectedGroup,
-            //     selectedChannel,
-            //     selectedChannelId
-            //   )
-            // }
           />
         )}
 
-        {/* {modalStatus.startMM && (
-          <StartMM
-            handleClose={() => handleModalClose("startMM")}
-            groupName={selectedGroup}
-            channelName={selectedChannel}
-            channelId={selectedChannelId}
-          />
-        )} */}
         {modalStatus.PrivateModal && (
           <PrivateModal
             show={modalStatus.PrivateModal}
