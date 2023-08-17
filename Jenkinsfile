@@ -88,6 +88,14 @@ pipeline {
             }
         }
 
+        stage('Build and Test frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
         stage('Docker build and push') {
             parallel {
                 stage('Docker build and push authentication-integration-service') {
@@ -116,13 +124,6 @@ pipeline {
                                 sh 'docker tag openvidu-meeting-service:latest kathyleesh/openvidu-meeting-service:latest'
                                 sh 'docker push kathyleesh/openvidu-meeting-service:latest'
                             }
-                        }
-                    }
-                }
-                stage('Build and Test frontend') {
-                    steps {
-                        dir('frontend') {
-                            sh 'npm install'
                         }
                     }
                 }
