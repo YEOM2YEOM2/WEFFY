@@ -97,7 +97,7 @@ pipeline {
                         ]) {
                             dir('backend/authentication-integration-service') {
                                 sh 'docker build -t authentication-integration-service:latest .'
-                                sh "docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS"
+                                sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
                                 sh 'docker push authentication-integration-service:latest'
                             }
                         }
@@ -110,7 +110,7 @@ pipeline {
                         ]) {
                             dir('backend/openvidu-meeting-service') {
                                 sh 'docker build -t openvidu-meeting-service:latest .'
-                                sh "docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS"
+                                sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
                                 sh 'docker push openvidu-meeting-service:latest'
                             }
                         }
@@ -123,7 +123,7 @@ pipeline {
                         ]) {
                             dir('backend/openvidu-content-service') {
                                 sh 'docker build -t openvidu-content-service:latest .'
-                                sh "docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS"
+                                sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
                                 sh 'docker push openvidu-content-service:latest'
                             }
                         }
@@ -136,7 +136,7 @@ pipeline {
                         ]) {
                             dir('backend/mattermost-content-service') {
                                 sh 'docker build -t mattermost-content-service:latest .'
-                                sh "docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS"
+                                sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
                                 sh 'docker push mattermost-content-service:latest'
                             }
                         }
