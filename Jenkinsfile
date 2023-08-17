@@ -98,7 +98,7 @@ pipeline {
                             dir('backend/authentication-integration-service') {
                                 sh 'docker build -t authentication-integration-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh 'docker tag kathyleesh/authentication-integration-service:latest authentication-integration-service:latest'
+                                sh 'docker tag authentication-integration-service:latest kathyleesh/authentication-integration-service:latest'
                                 sh 'docker push kathyleesh/authentication-integration-service:latest'
                             }
                         }
@@ -113,7 +113,7 @@ pipeline {
                             dir('backend/openvidu-meeting-service') {
                                 sh 'docker build -t openvidu-meeting-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh 'docker tag kathyleesh/openvidu-meeting-service:latest openvidu-meeting-service:latest'
+                                sh 'docker tag openvidu-meeting-service:latest kathyleesh/openvidu-meeting-service:latest'
                                 sh 'docker push kathyleesh/openvidu-meeting-service:latest'
                             }
                         }
@@ -128,7 +128,7 @@ pipeline {
                             dir('backend/openvidu-content-service') {
                                 sh 'docker build -t openvidu-content-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh 'docker tag kathyleesh/openvidu-content-service:latest openvidu-content-service:latest'
+                                sh 'docker tag openvidu-content-service:latest kathyleesh/openvidu-content-service:latest'
                                 sh 'docker push kathyleesh/openvidu-content-service:latest'
                             }
                         }
@@ -143,7 +143,7 @@ pipeline {
                             dir('backend/mattermost-content-service') {
                                 sh 'docker build -t mattermost-content-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh 'docker tag kathyleesh/mattermost-content-service:latest mattermost-content-service:latest'
+                                sh 'docker tag mattermost-content-service:latest kathyleesh/mattermost-content-service:latest'
                                 sh 'docker push kathyleesh/mattermost-content-service:latest'
                             }
                         }
