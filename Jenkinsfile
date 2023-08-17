@@ -92,37 +92,53 @@ pipeline {
             parallel {
                 stage('Docker build and push authentication-integration-service') {
                     steps {
-                        dir('backend/authentication-integration-service') {
-                            sh 'docker build -t authentication-integration-service:latest .'
-                            sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                            sh 'docker push authentication-integration-service:latest'
+                        withCredentials([
+                            usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
+                        ]) {
+                            dir('backend/authentication-integration-service') {
+                                sh 'docker build -t authentication-integration-service:latest .'
+                                sh "docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS"
+                                sh 'docker push authentication-integration-service:latest'
+                            }
                         }
                     }
                 }
                 stage('Docker build and push openvidu-meeting-service') {
                     steps {
-                        dir('backend/openvidu-meeting-service') {
-                            sh 'docker build -t openvidu-meeting-service:latest .'
-                            sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                            sh 'docker push openvidu-meeting-service:latest'
+                        withCredentials([
+                            usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
+                        ]) {
+                            dir('backend/openvidu-meeting-service') {
+                                sh 'docker build -t openvidu-meeting-service:latest .'
+                                sh "docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS"
+                                sh 'docker push openvidu-meeting-service:latest'
+                            }
                         }
                     }
                 }
                 stage('Docker build and push openvidu-content-service') {
                     steps {
-                        dir('backend/openvidu-content-service') {
-                            sh 'docker build -t openvidu-content-service:latest .'
-                            sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                            sh 'docker push openvidu-content-service:latest'
+                        withCredentials([
+                            usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
+                        ]) {
+                            dir('backend/openvidu-content-service') {
+                                sh 'docker build -t openvidu-content-service:latest .'
+                                sh "docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS"
+                                sh 'docker push openvidu-content-service:latest'
+                            }
                         }
                     }
                 }
                 stage('Docker build and push mattermost-content-service') {
                     steps {
-                        dir('backend/mattermost-content-service') {
-                            sh 'docker build -t mattermost-content-service:latest .'
-                            sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                            sh 'docker push mattermost-content-service:latest'
+                        withCredentials([
+                            usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
+                        ]) {
+                            dir('backend/mattermost-content-service') {
+                                sh 'docker build -t mattermost-content-service:latest .'
+                                sh "docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS"
+                                sh 'docker push mattermost-content-service:latest'
+                            }
                         }
                     }
                 }
