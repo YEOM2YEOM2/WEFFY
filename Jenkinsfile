@@ -119,6 +119,13 @@ pipeline {
                         }
                     }
                 }
+                stage('Build and Test frontend') {
+                    steps {
+                        dir('frontend') {
+                            sh 'npm install'
+                        }
+                    }
+                }
 
                 stage('Docker build and push openvidu-content-service') {
                     steps {
@@ -151,39 +158,88 @@ pipeline {
                 }
             }          
         }
-
-        stage('Docker run') {
-            parallel {
-                stage('Docker run authentication-integration-service') {
-                    steps {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
-                            sh "docker run -d -p 8081:8081 --name authentication-integration-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/authentication-integration-service:latest"
-                        }
-                    }
-                }
-                stage('Docker run openvidu-meeting-service') {
-                    steps {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
-                            sh "docker run -d -p 8082:8082 --name openvidu-meeting-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/openvidu-meeting-service:latest"
-                        }
-                    }
-                }
-                stage('Docker run openvidu-content-service') {
-                    steps {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
-                            sh "docker run -d -p 8083:8083 --name openvidu-content-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/openvidu-content-service:latest"
-                        }
-                    }
-                }
-                stage('Docker run mattermost-content-service') {
-                    steps {
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
-                            sh "docker run -d -p 8084:8084 --name mattermost-content-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/mattermost-content-service:latest"
-                        }
+        stage('Docker build and push frontend') {
+            steps {
+                withCredentials([
+                    usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
+                ]) {
+                    dir('frontend') {
+                        sh 'docker build -t frontend:latest .'
+                        sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                        sh 'docker tag frontend:latest kathyleesh/frontend:latest'
+                        sh 'docker push kathyleesh/frontend:latest'
                     }
                 }
             }
         }
+
+        stage('Docker build and push for Nginx') {
+            steps {
+                withCredentials([
+                    usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
+                ]) {
+                    dir('nginx') { 
+                        sh 'docker build -t nginx:latest .'
+                        sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                        sh 'docker tag nginx:latest kathyleesh/nginx:latest'
+                        sh 'docker push kathyleesh/nginx:latest'
+                    }
+                }
+            }
+        }
+
+
+        stage('Docker Compose Up') {
+            steps {
+                // AWS 자격 증명 및 Jenkins 환경 변수를 사용하여 docker-compose 실행
+                withCredentials([
+                    usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS'),
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']
+                ]) {
+                    // docker-compose up 실행 전에 필요한 환경 변수 설정
+                    sh """
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        docker-compose -f docker-compose.yml up -d
+                    """
+                }
+            }
+        }
+
+        
+
+        // stage('Docker run') {
+        //     parallel {
+        //         stage('Docker run authentication-integration-service') {
+        //             steps {
+        //                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
+        //                     sh "docker run -d -p 8081:8081 --name authentication-integration-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/authentication-integration-service:latest"
+        //                 }
+        //             }
+        //         }
+        //         stage('Docker run openvidu-meeting-service') {
+        //             steps {
+        //                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
+        //                     sh "docker run -d -p 8082:8082 --name openvidu-meeting-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/openvidu-meeting-service:latest"
+        //                 }
+        //             }
+        //         }
+        //         stage('Docker run openvidu-content-service') {
+        //             steps {
+        //                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
+        //                     sh "docker run -d -p 8083:8083 --name openvidu-content-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/openvidu-content-service:latest"
+        //                 }
+        //             }
+        //         }
+        //         stage('Docker run mattermost-content-service') {
+        //             steps {
+        //                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']]) {
+        //                     sh "docker run -d -p 8084:8084 --name mattermost-content-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/mattermost-content-service:latest"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
     }
 }

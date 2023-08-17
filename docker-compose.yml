@@ -1,0 +1,69 @@
+version: '3.7'
+
+services:
+  frontend:
+    image: kathyleesh/frontend:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - weffy
+
+  authentication-integration-service:
+    image: kathyleesh/authentication-integration-service:latest
+    ports:
+      - "8081:8081"
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    networks:
+      - weffy
+
+  openvidu-meeting-service:
+    image: kathyleesh/openvidu-meeting-service:latest
+    ports:
+      - "8082:8082"
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    networks:
+      - weffy
+
+  openvidu-content-service:
+    image: kathyleesh/openvidu-content-service:latest
+    ports:
+      - "8083:8083"
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    networks:
+      - weffy
+
+  mattermost-content-service:
+    image: kathyleesh/mattermost-content-service:latest
+    ports:
+      - "8084:8084"
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    networks:
+      - weffy
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - weffy
+    depends_on:
+      - authentication-integration-service
+      - openvidu-meeting-service
+      - openvidu-content-service
+      - mattermost-content-service
+      - frontend
+
+networks:
+  weffy:
+    driver: bridge
+
