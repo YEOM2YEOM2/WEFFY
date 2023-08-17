@@ -152,8 +152,8 @@ class ChatComponent extends Component {
       // console.log(this.props.activeSessionId);
       axios({
         method: "post",
-        // url: `http:/i9d107.p.ssafy.io:8081/api/v1/files/${this.props.activeSessionId}`,
-        url: `http://i9d107.p.ssafy.io:8081/api/v1/files/sessionB?type=null`,
+        url: `http://i9d107.p.ssafy.io:8081/api/v1/files/${this.props.activeSessionId}?type=null`,
+        // url: `http://i9d107.p.ssafy.io:8081/api/v1/files/sessionB?type=null`,
         headers: {
           accept: "application/json",
           "Content-Type": "multipart/form-data",
@@ -202,7 +202,10 @@ class ChatComponent extends Component {
   render() {
     return (
       <div id="chatContainer" style={{ position: "relative", bottom: "7px" }}>
-        <div id="chatComponent" style={{ margin: "0", height: "calc(100% + 15px)", width: "100%" }}>
+        <div
+          id="chatComponent"
+          style={{ margin: "0", height: "calc(100% + 15px)", width: "100%" }}
+        >
           <div id="chatToolbar">
             <span style={{ fontFamily: "Agro", fontWeight: "400" }}>
               일반 채팅
@@ -263,7 +266,9 @@ class ChatComponent extends Component {
                           </p>
                         </p>
                       </div>
-                      <span className="timeStamp" style={{ fontSize: "12px" }}>{data.timestamp}</span>
+                      <span className="timeStamp" style={{ fontSize: "12px" }}>
+                        {data.timestamp}
+                      </span>
                     </div>
                   </div>
                 </div>

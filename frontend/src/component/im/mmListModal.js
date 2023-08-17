@@ -85,8 +85,7 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
     return currentGroup ? currentGroup.channels.map((channel) => channel) : [];
   }, [currentGroup]);
 
-  useEffect(() => {
-  }, [selectedGroup, selectedChannel, selectedChannelId]);
+  useEffect(() => {}, [selectedGroup, selectedChannel, selectedChannelId]);
 
   const startMeeting = async () => {
     try {
@@ -109,7 +108,6 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
 
       if (status === 200) {
         console.log(data.data); // This will log "success" if everything is OK
-        return data.data;
       } else {
         console.error("Error:", data.data); // This will log the error message returned by the server
         throw new Error(data.data);
@@ -127,10 +125,7 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
     navigate(`/meeting/${selectedChannelId}`);
   };
   return (
-    <div
-      className={styles["modal"]}
-      onClick={handleClose}
-    >
+    <div className={styles["modal"]} onClick={handleClose}>
       <div className={styles["modalBody"]} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h3 className={styles["modalHeader"]} style={{ fontFamily: "Mogra" }}>

@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/io.openvidu.openvidu-meeting-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/io.openvidu.openvidu-meeting-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/openvidu-meeting-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/openvidu-meeting-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/openvidu-meeting-service.test.iml" filepath="$PROJECT_DIR$/.idea/modules/openvidu-meeting-service.test.iml" />
     </modules>
   </component>
 </project>
