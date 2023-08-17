@@ -51,13 +51,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Build and Test openvidu-meeting-service') {
-                    steps {
-                        dir('backend/openvidu-meeting-service') {
-                            sh './gradlew clean build -x test'
-                        }
-                    }
-                }
                 stage('Build and Test openvidu-content-service') {
                     steps {
                         dir('backend/openvidu-content-service') {
@@ -74,6 +67,15 @@ pipeline {
                 }
             }
         }
+
+        stage('Build and Test openvidu-meeting-service') {
+            steps {
+                dir('backend/openvidu-meeting-service') {
+                    sh './gradlew clean build -x test'
+                }
+            }
+        }
+
 
         stage('Docker build and push') {
             parallel {
