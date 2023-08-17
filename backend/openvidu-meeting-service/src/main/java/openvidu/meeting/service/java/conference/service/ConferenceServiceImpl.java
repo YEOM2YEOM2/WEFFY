@@ -4,6 +4,7 @@ import openvidu.meeting.service.java.conference.dto.response.ConferenceCreateRes
 import openvidu.meeting.service.java.conference.entity.Conference;
 import openvidu.meeting.service.java.conference.repository.ConferenceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConferenceServiceImpl implements ConferenceService{
 
+    @Autowired
     private final ConferenceRepository conferenceRepository;
 
     @Override
@@ -27,7 +29,6 @@ public class ConferenceServiceImpl implements ConferenceService{
                         .conferenceUrl(dto.getConferenceUrl())
                         .classId(dto.getClassId())
                         .title(dto.getTitle())
-                        .description(dto.getDescription())
                         .active(dto.isActive())
                         .build()
         );

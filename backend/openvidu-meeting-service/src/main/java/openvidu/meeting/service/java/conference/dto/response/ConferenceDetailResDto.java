@@ -10,14 +10,12 @@ import java.util.Date;
 @Setter
 public class ConferenceDetailResDto {
     private String title;
-  //  private String description;
     private boolean active;
     private Date updatedAt;
 
     @Builder
     public ConferenceDetailResDto(String title, boolean active, Date updatedAt) {
         this.title = title;
-     //   this.description = description;
         this.active = active;
         this.updatedAt = updatedAt;
     }
