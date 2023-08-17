@@ -16,7 +16,7 @@ const MyList = (props) => {
   const fetchConferenceList = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8082/conferences?identification=${identification}`
+        `http://i9d107.p.ssafy.io:8082/conferences?identification=${identification}`
       );
       const formattedData = response.data.data.map((item) => ({
         text: item.title,
@@ -38,7 +38,7 @@ const MyList = (props) => {
 
     try {
       const response = await axios.patch(
-        `http://localhost:8082/conferences/${lastUrl}/status`,
+        `http://i9d107.p.ssafy.io:8082/conferences/${lastUrl}/status`,
         null,
         {
           params: {
