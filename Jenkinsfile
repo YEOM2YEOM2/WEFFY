@@ -45,11 +45,16 @@ pipeline {
             }
         }
 
-        stage('Build and Test openvidu-meeting-service') {
-            steps {
-                dir('backend/openvidu-meeting-service') {
-                    sh './gradlew clean build -x test'
+        stage('Build and Test for openvidu-meeting-service') {
+            agent {
+                docker {
+                    image 'openvidu-meeting-service'
+                    args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
                 }
+            }
+            steps {
+                sh 'chmod +x backend/openvidu-meeting-service/gradlew'
+                sh 'cd backend/openvidu-meeting-service && ./gradlew clean build -x test'
             }
         }
 
