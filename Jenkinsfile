@@ -57,12 +57,12 @@ pipeline {
         }
 
         stage('Build and Test for openvidu-meeting-service') {
-            agent {
-                docker {
-                    image 'openvidu-meeting-service'
-                    args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
-                }
-            }
+            // agent {
+            //     docker {
+            //         image 'openvidu-meeting-service'
+            //         args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
+            //     }
+            // }
             steps {
                 sh 'cd backend/openvidu-meeting-service && ./gradlew clean build -x test'
             }
@@ -80,12 +80,12 @@ pipeline {
             }
         }
         stage('Build and Test for mattermost-content-service') {
-            // agent {
-            //     docker {
-            //         image 'mattermost-content-service'
-            //         args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
-            //     }
-            // }
+            agent {
+                docker {
+                    image 'mattermost-content-service'
+                    args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
+                }
+            }
             steps {
                 sh 'cd backend/mattermost-content-service && ./gradlew clean build -x test'
             }
