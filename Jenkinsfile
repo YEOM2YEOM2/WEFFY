@@ -2,25 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Setup Environment') {
-            steps {
-                script {
-                    withCredentials([
-                        usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS'),
-                        file(credentialsId: 'auth-application-dev.properties', variable: 'AUTH_FILE'),
-                        file(credentialsId: 'ov-content-application-dev.properties', variable: 'OV_CONTENT_FILE'),
-                        file(credentialsId: 'ov-meeting-application-dev.properties', variable: 'OV_MEETING_FILE'),
-                        [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']
-                    ]) {
-                        env.DOCKER_HUB_USER = DOCKER_HUB_USER
-                        env.DOCKER_HUB_PASS = DOCKER_HUB_PASS
-                        env.AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
-                        env.AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
-                    }
-                }
-            }
-        }
-    
+        
         stage('Cleanup Workspace') {
             steps {
                 sh 'rm -rf *'
@@ -34,11 +16,25 @@ pipeline {
         }
 
         stage('Prepare credentials') {
+            agent any
             steps {
-                sh 'cp $AUTH_FILE backend/authentication-integration-service/src/main/resources/application-dev.properties'
-                sh 'cp $OV_CONTENT_FILE backend/openvidu-content-service/src/main/resources/application-dev.properties'
-                sh 'cp $OV_MEETING_FILE backend/openvidu-meeting-service/src/main/resources/application-dev.properties'
+                withCredentials([
+                    file(credentialsId: 'auth-application-dev.properties', variable: 'AUTH_FILE'),
+                    file(credentialsId: 'ov-content-application-dev.properties', variable: 'OV_CONTENT_FILE'),
+                    file(credentialsId: 'ov-meeting-application-dev.properties', variable: 'OV_MEETING_FILE'),
+                    usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS'),
+                    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-id']
+                ]) {
+                    sh 'cp $AUTH_FILE backend/authentication-integration-service/src/main/resources/application-dev.properties'
+                    sh 'cp $OV_CONTENT_FILE backend/openvidu-content-service/src/main/resources/application-dev.properties'
+                    sh 'cp $OV_MEETING_FILE backend/openvidu-meeting-service/src/main/resources/application-dev.properties'
+                    env.DOCKER_HUB_USER = DOCKER_HUB_USER
+                    env.DOCKER_HUB_PASS = DOCKER_HUB_PASS
+                    env.AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
+                    env.AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
+                }
             }
+
         }
 
         stage('Set Execute Permission for Gradlew') {
