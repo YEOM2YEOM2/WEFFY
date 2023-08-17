@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import IconButton from "@mui/material/IconButton";
-import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
 
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -54,10 +53,8 @@ class ChatComponent extends Component {
       .stream.session.on("signal:chat", (event) => {
         const data = JSON.parse(event.data);
 
-        // console.log(data.timestamp);
         let messageList = this.state.messageList;
         messageList.push({
-          // isQuestion: false,
           connectionId: event.from.connectionId,
           nickname: data.nickname,
           message: data.message,
@@ -79,10 +76,6 @@ class ChatComponent extends Component {
   }
 
   fileDownload(key, title) {
-    console.log("다운로드 시도!");
-    console.log("Key:", key);
-    console.log("Title :", title);
-
     const fileKey = encodeURIComponent(key);
     const fileTitle = encodeURIComponent(title);
 
@@ -95,11 +88,11 @@ class ChatComponent extends Component {
         Authorization: `Bearer ${this.props.accessToken}`,
       },
     })
-      .then((res) => {
-        console.log(res);
+      .then(() => {
+        console.log("파일 다운로드 성공!");
       })
-      .catch((err) => {
-        console.log(err.response);
+      .catch(() => {
+        console.log("파일 다운로드 실패");
       });
   }
 
@@ -114,7 +107,6 @@ class ChatComponent extends Component {
             streamId: this.props.user.getStreamManager().stream.streamId,
             timestamp: this.getCurTimeStamp(),
           };
-          // console.log(data.timestamp);
           this.props.user.getStreamManager().stream.session.signal({
             data: JSON.stringify(data),
             type: "chat",
@@ -122,7 +114,6 @@ class ChatComponent extends Component {
         }
       }
     } else if (typeof this.state.message === "object") {
-      // console.log("sned1");
       if (this.props.user) {
         const data = {
           message: {
@@ -149,11 +140,9 @@ class ChatComponent extends Component {
       formData.append("file", file);
 
       this.setState({ fileData: formData });
-      // console.log(this.props.activeSessionId);
       axios({
         method: "post",
         url: `http://i9d107.p.ssafy.io:8081/api/v1/files/${this.props.activeSessionId}?type=null`,
-        // url: `http://i9d107.p.ssafy.io:8081/api/v1/files/sessionB?type=null`,
         headers: {
           accept: "application/json",
           "Content-Type": "multipart/form-data",
@@ -162,7 +151,7 @@ class ChatComponent extends Component {
         data: formData,
       })
         .then((res) => {
-          console.log(res.data.data);
+          console.log("파일 첨부 성공!");
 
           const fileInfo = {
             objectKey: res.data.data.objectKey,
@@ -170,14 +159,11 @@ class ChatComponent extends Component {
           };
 
           this.setState({ message: fileInfo }, () => {
-            // console.log("전송!");
             this.sendMessage();
             this.setState({ message: "" });
           });
         })
-        .catch((err) => {
-          console.log(err);
-          // Set the message state to the error message you want to display.
+        .catch(() => {
           this.setState({ message: "파일 전송에 실패했습니다" }, () => {
             this.sendMessage();
             this.setState({ message: "" });
@@ -314,7 +300,6 @@ class ChatComponent extends Component {
               >
                 <SendIcon style={{ color: "white" }} />
               </IconButton>
-              {/* </Tooltip> */}
             </div>
           </div>
         </div>
