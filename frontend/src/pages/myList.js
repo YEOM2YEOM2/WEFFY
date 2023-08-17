@@ -3,14 +3,13 @@ import styles from "../pages/myList.module.css";
 import { useSelector } from "react-redux";
 import axios from "axios";
 
-//mui component
-import Button from "@mui/material/Button"; // Button imported
-import Divider from "@mui/material/Divider"; // Divider imported
+import Button from "@mui/material/Button"; 
+import Divider from "@mui/material/Divider"; 
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Typography from "@mui/material/Typography";
 
-const MyList = (props) => {
+const MyList = () => {
   const [itemData, setItemData] = useState([]);
   const identification = useSelector((state) => state.user.identification);
   const fetchConferenceList = async () => {
@@ -25,7 +24,7 @@ const MyList = (props) => {
 
       setItemData(formattedData);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("내 미팅 리스트 조회 실패");
     }
   };
 
@@ -36,7 +35,6 @@ const MyList = (props) => {
   const handleButtonClick = async (url) => {
     let lastUrl = url.split("/").pop();
 
-    // do something
     try {
       const response = await axios.patch(
         `http://localhost:8082/conferences/${lastUrl}/status`,
@@ -49,11 +47,9 @@ const MyList = (props) => {
       );
       if (response.status === 200) {
         fetchConferenceList();
-      } else {
-        console.error("Error:" + response.data);
       }
     } catch (error) {
-      console.error("Error" + error);
+      console.error("미팅 비활성화 실패");
     }
   };
 
@@ -76,7 +72,6 @@ const MyList = (props) => {
                   </Typography>
                   <div className={styles["buttonContainer"]}>
                     {" "}
-                    {/* New div */}
                     <Button
                       variant="contained"
                       color="error"
