@@ -28,6 +28,8 @@ pipeline {
                     sh 'cp $AUTH_FILE backend/authentication-integration-service/src/main/resources/application-dev.properties'
                     sh 'cp $OV_CONTENT_FILE backend/openvidu-content-service/src/main/resources/application-dev.properties'
                     sh 'cp $OV_MEETING_FILE backend/openvidu-meeting-service/src/main/resources/application-dev.properties'
+                }
+                script {
                     env.DOCKER_HUB_USER = DOCKER_HUB_USER
                     env.DOCKER_HUB_PASS = DOCKER_HUB_PASS
                     env.AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
