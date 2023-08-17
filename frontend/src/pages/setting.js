@@ -35,7 +35,6 @@ const Setting = (props) => {
     setNewNickname(e.target.value);
   };
 
-
   const accessToken = useSelector((state) => state.user.accessToken);
   //reduxt값 수정 + db값 수정
   const handleSubmit = async (e) => {
@@ -44,8 +43,8 @@ const Setting = (props) => {
     const formData = new FormData();
 
     const blob = new Blob([JSON.stringify(newProfileImage)], {
-      type: 'application/json'
-    })
+      type: "application/json",
+    });
 
     formData.append("profileImg", blob);
     formData.append("nickName", newNickName);
@@ -57,15 +56,15 @@ const Setting = (props) => {
         accept: "application/json",
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${accessToken}`,
-        "X-CSRF-TOKEN": 'c138db3c-b48a-418f-b12a-28ead92c9c5b',
+        "X-CSRF-TOKEN": "c138db3c-b48a-418f-b12a-28ead92c9c5b",
       },
       data: formData,
     })
-      .then((res) => {
+      .then(() => {
         dispatch(setProfileImg(newProfileImage));
         dispatch(setNickname(newNickName));
       })
-      .catch((err) => {
+      .catch(() => {
         console.log("프로필 불러오기");
       });
   };

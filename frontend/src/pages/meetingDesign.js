@@ -55,7 +55,6 @@ import Swal from "sweetalert2";
 //redux
 import { setActiveSessionId } from "../store/reducers/conference";
 
-
 const drawerWidth = 320;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -105,7 +104,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
-  process.env.NODE_ENV === "production" ? "" : "http://localhost:8082/";
+  process.env.NODE_ENV === "production" ? "" : "http://i9d107.p.ssafy.io:8082/";
 
 const mapStateToProps = (state) => {
   return {
@@ -378,7 +377,6 @@ class Conference extends Component {
   }
 
   async leaveSession() {
-
     if (this.hasLeftSession) {
       return;
     }
@@ -657,18 +655,18 @@ class Conference extends Component {
           });
           axios({
             method: "post",
-            url: `http://localhost:8082/stream/${publisher.session.sessionId}/${publisher.stream.streamId}`,
+            url: `http://i9d107.p.ssafy.io:8082/stream/${publisher.session.sessionId}/${publisher.stream.streamId}`,
             headers: {
               accept: "application/json",
               "Content-Type": "application/json",
-            }
+            },
           })
-          .then((res) => {
-            console.log("화면공유 axios Success")
-          })
-          .catch((err) => {
-            console.log("화면공유 axios Error")
-          })
+            .then(() => {
+              console.log("화면공유 axios Success");
+            })
+            .catch(() => {
+              console.log("화면공유 axios Error");
+            });
         });
       });
     });
@@ -1117,7 +1115,9 @@ class Conference extends Component {
                       <Dropdown.Item onClick={this.showFileList}>
                         파일 목록
                       </Dropdown.Item>
-                      <Dropdown.Item href="https://weffy-conference.s3.ap-northeast-2.amazonaws.com/09e04a4b-cacd-4c07-9f9d-f896a1e0f850_output.webm">스트리밍</Dropdown.Item>
+                      <Dropdown.Item href="https://weffy-conference.s3.ap-northeast-2.amazonaws.com/09e04a4b-cacd-4c07-9f9d-f896a1e0f850_output.webm">
+                        스트리밍
+                      </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                   {this.state.isFileListVisible && (
