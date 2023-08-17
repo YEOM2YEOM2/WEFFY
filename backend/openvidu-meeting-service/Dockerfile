@@ -14,12 +14,12 @@ RUN apt-get update && \
     apt-get install -y openjdk-11-jdk wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Gradle 8.2
-RUN wget https://services.gradle.org/distributions/gradle-8.2-bin.zip -P /tmp && \
+# Install Gradle 9.0
+RUN wget https://services.gradle.org/distributions/gradle-9.0-bin.zip -P /tmp && \
     unzip -d /opt/gradle /tmp/gradle-*.zip && \
     rm -rf /tmp/*
 
-ENV GRADLE_HOME=/opt/gradle/gradle-8.2
+ENV GRADLE_HOME=/opt/gradle/gradle-9.0
 ENV PATH="$PATH:$GRADLE_HOME/bin"
 
 # Set the working directory
@@ -43,3 +43,4 @@ EXPOSE 8082
 # You should check the exact name of your JAR file after the build
 # and replace "openvidu-meeting-service-2.28.0.jar" with the correct name, if necessary.
 ENTRYPOINT ["java", "-jar", "/app/build/libs/openvidu-meeting-service-2.28.0.jar"]
+
