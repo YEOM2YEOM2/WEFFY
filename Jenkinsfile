@@ -109,7 +109,7 @@ pipeline {
                         withCredentials([
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
-                            dir('backend/openvidu-meeting-service') {}
+                            dir('backend/openvidu-meeting-service') {
                                 sh 'docker build -t kathyleesh/weffy:openvidu-meeting-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
                                 sh 'docker push kathyleesh/weffy:openvidu-meeting-service:latest'
@@ -145,8 +145,7 @@ pipeline {
                         }
                     }
                 }
-
-            }
+            }          
         }
 
         stage('Docker run') {
