@@ -138,9 +138,9 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             dir('backend/mattermost-content-service') {
-                                sh 'docker build -t kathyleesh/weffy/mattermost-content-service:latest .'
+                                sh 'docker build -t kathyleesh/weffy:mattermost-content-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh 'docker push kathyleesh/weffy/mattermost-content-service:latest'
+                                sh 'docker push kathyleesh/weffy:mattermost-content-service:latest'
                             }
                         }
                     }
