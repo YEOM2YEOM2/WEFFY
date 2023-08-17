@@ -96,9 +96,9 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             dir('backend/authentication-integration-service') {
-                                sh 'docker build -t kathyleesh/weffy:authentication-integration-service:latest .'
+                                sh 'docker build -t kathyleesh/weffy/authentication-integration-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh 'docker push kathyleesh/weffy:authentication-integration-service:latest'
+                                sh 'docker push kathyleesh/weffy/authentication-integration-service:latest'
                             }
                         }
                     }
@@ -110,9 +110,9 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             dir('backend/openvidu-meeting-service') {
-                                sh 'docker build -t kathyleesh/weffy:openvidu-meeting-service:latest .'
+                                sh 'docker build -t kathyleesh/weffy/openvidu-meeting-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh 'docker push kathyleesh/weffy:openvidu-meeting-service:latest'
+                                sh 'docker push kathyleesh/weffy/openvidu-meeting-service:latest'
                             }
                         }
                     }
@@ -124,9 +124,9 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             dir('backend/openvidu-content-service') {
-                                sh 'docker build -t kathyleesh/weffy:openvidu-content-service:latest .'
+                                sh 'docker build -t kathyleesh/weffy/openvidu-content-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh 'docker push kathyleesh/weffy:openvidu-content-service:latest'
+                                sh 'docker push kathyleesh/weffy/openvidu-content-service:latest'
                             }
                         }
                     }
@@ -138,9 +138,9 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             dir('backend/mattermost-content-service') {
-                                sh 'docker build -t kathyleesh/weffy:mattermost-content-service:latest .'
+                                sh 'docker build -t kathyleesh/weffy/mattermost-content-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh 'docker push kathyleesh/weffy:mattermost-content-service:latest'
+                                sh 'docker push kathyleesh/weffy/mattermost-content-service:latest'
                             }
                         }
                     }
@@ -152,22 +152,22 @@ pipeline {
             parallel {
                 stage('Docker run authentication-integration-service') {
                     steps {
-                        sh "docker run -d -p 8081:8081 --name authentication-integration-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/weffy:authentication-integration-service:latest"
+                        sh "docker run -d -p 8081:8081 --name authentication-integration-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/weffy/authentication-integration-service:latest"
                     }
                 }
                 stage('Docker run openvidu-meeting-service') {
                     steps {
-                        sh "docker run -d -p 8082:8082 --name openvidu-meeting-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/weffy:openvidu-meeting-service:latest"
+                        sh "docker run -d -p 8082:8082 --name openvidu-meeting-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/weffy/openvidu-meeting-service:latest"
                     }
                 }
                 stage('Docker run openvidu-content-service') {
                     steps {
-                        sh "docker run -d -p 8083:8083 --name openvidu-content-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/weffy:openvidu-content-service:latest"
+                        sh "docker run -d -p 8083:8083 --name openvidu-content-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/weffy/openvidu-content-service:latest"
                     }
                 }
                 stage('Docker run mattermost-content-service') {
                     steps {
-                        sh "docker run -d -p 8084:8084 --name mattermost-content-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/weffy:mattermost-content-service:latest"
+                        sh "docker run -d -p 8084:8084 --name mattermost-content-service -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} kathyleesh/weffy/mattermost-content-service:latest"
                     }
                 }
             }
