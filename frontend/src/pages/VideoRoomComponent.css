@@ -6,11 +6,12 @@
   min-width: 400px !important;
 }
 
-.toolbar {
+.toolbar{
   min-height: 40px !important;
+
 }
 
-#titleContent {
+#titleContent{
   max-width: 100px;
   background-color: #494949;
   margin: 5px -18px;
@@ -20,27 +21,28 @@
   text-overflow: ellipsis;
 }
 
-.buttonsContent {
-  height: 40px !important;
-  text-align: center;
-  margin: auto;
-  min-width: 400px;
+.buttonsContent{
+	height: 40px !important;
+	text-align: center;
+	margin: auto;
+    min-width: 400px;
 }
-.navButton {
-  height: 40px !important;
-  width: 40px !important;
+.navButton{
+	height: 40px !important;
+	width : 40px !important;
 }
 
-#navChatButton {
+#navChatButton{
   position: absolute;
   right: 0;
 }
 .stream-container {
-  padding: 0;
+    padding: 0;
 }
 
+
 .bounds {
-  background-color: #10161f;
+  background-color: #10161F;
   overflow: hidden;
   position: absolute;
   left: 0;
@@ -52,13 +54,14 @@
   width: inherit;
 }
 
+
 /*!
  * Copyright (c) 2017 TokBox, Inc.
  * Released under the MIT license
  * http://opensource.org/licenses/MIT
  */
 
-.custom-class {
+ .custom-class {
   min-height: 0px !important;
 }
 
@@ -96,7 +99,7 @@
   margin-left: auto;
 
   color: #fff;
-  font-family: "Didact Gothic", sans-serif;
+  font-family: 'Didact Gothic', sans-serif;
   font-size: 13px;
   line-height: 1.4;
 }
@@ -255,9 +258,9 @@
 .OT_subscriber {
   position: relative;
   min-width: 48px;
-  min-height: 48px;
-  width: 100%;
-  height: 100%;
+	min-height: 48px;
+	width: 100%;
+	height: 100%;
 }
 
 .OT_publisher .OT_video-element,
@@ -697,7 +700,7 @@
 
 .OT_audio-level-meter:before {
   /* makes the height of the container equals its width */
-  content: "";
+  content: '';
   display: block;
   padding-top: 100%;
 }
@@ -727,7 +730,7 @@
 
 .OT_audio-level-meter__audio-only-img:before {
   /* makes the height of the container equals its width */
-  content: "";
+  content: '';
   display: block;
   padding-top: 100%;
 }
@@ -735,11 +738,7 @@
 .OT_audio-level-meter__value {
   position: absolute;
   border-radius: 50%;
-  background-image: radial-gradient(
-    circle,
-    rgba(151, 206, 0, 1) 0%,
-    rgba(151, 206, 0, 0) 100%
-  );
+  background-image: radial-gradient(circle, rgba(151, 206, 0, 1) 0%, rgba(151, 206, 0, 0) 100%);
 }
 
 .OT_audio-level-meter.OT_mode-off {
@@ -866,7 +865,7 @@
 
 .OT_video-unsupported-img:before {
   /* makes the height of the container 93% of its width (90/97 px) */
-  content: "";
+  content: '';
   display: block;
   padding-top: 93%;
 }
@@ -885,3 +884,4 @@
   height: 100%;
   margin-top: 40px;
 }
+  

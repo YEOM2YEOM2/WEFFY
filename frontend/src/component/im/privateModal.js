@@ -27,6 +27,7 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import { IconButton } from "@mui/material";
 
+// store conference
 import {
   setActiveSessionId,
   setActiveSessionName,
@@ -38,6 +39,7 @@ const PrivateModal = ({ handleClose }) => {
   const selectedMic = useSelector((state) => state.setting.selectedMic);
   const selectedCam = useSelector((state) => state.setting.selectedCam);
 
+  //redux에서 값 가져오기
   const profileImg = useSelector((state) => state.user.profileImg);
   const nickname = useSelector((state) => state.user.nickname) || "";
   const userId = useSelector((state) => state.user.id);
@@ -84,17 +86,19 @@ const PrivateModal = ({ handleClose }) => {
           dispatch(setSelectedCam(0));
         }
       })
-      .catch(() => console.error("연결된 기기 가져오기 실패"));
+      .catch((error) => console.error(error));
   }, []);
 
-  useEffect(() => {}, [micStatus]);
+  useEffect(() => {
+  }, [micStatus]);
 
-  useEffect(() => {}, [cameraStatus]);
+  useEffect(() => {
+  }, [cameraStatus]);
 
   const handleSelectMicrophone = (event) => {
     const newMicId = parseInt(event.target.value, 10);
 
-    dispatch(setSelectedMic(newMicId)); 
+    dispatch(setSelectedMic(newMicId)); // 인덱스만 전달
   };
 
   const handleNicknameChange = (e) => {
