@@ -64,7 +64,6 @@ const QuestionChat = ({ user }) => {
         streamId: user.getStreamManager().stream.streamId,
         timestamp: getCurTimeStamp(),
       };
-      console.log("질문 채팅 user", user);
       user.getStreamManager().stream.session.signal({
         data: JSON.stringify(data),
         type: "chat",
@@ -89,10 +88,10 @@ const QuestionChat = ({ user }) => {
         data: postData,
       })
         .then((res) => {
-          // console.log(res);
+          console.log("채팅 메시지 전송 성공");
         })
         .catch((err) => {
-          console.log(err.response);
+          console.log("채팅 메시지 전송 실패");
         });
     }
   };
@@ -109,7 +108,6 @@ const QuestionChat = ({ user }) => {
     setAnonymousStatus((prevStatus) => !prevStatus);
   };
 
-  // const styleChat = { display: this.props.chatDisplay };
   return (
     <div id="chatContainer" style={{ position: "relative", bottom: "7px" }}>
       <div id="chatComponent" style={{ margin: "0", height: "calc(100% + 15px)", width: "100%" }}>
@@ -172,7 +170,6 @@ const QuestionChat = ({ user }) => {
             style={{ fontFamily: "GmarketSans" }}
           />
           <div style={{ display: "flex" }}>
-            {/* <Tooltip title="전송" placement="top"> */}
             <IconButton
               size="small"
               id="sendButton"

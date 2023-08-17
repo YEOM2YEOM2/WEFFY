@@ -64,7 +64,6 @@ function Participant(props) {
     }
   }
 
-  // Enter 키 눌렀을 때 해당 함수 실행
   const handleSubmit = (e) => {
     e.preventDefault();
 
