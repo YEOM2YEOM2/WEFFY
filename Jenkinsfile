@@ -26,8 +26,8 @@ pipeline {
                     sh "cp \$AUTH_FILE backend/authentication-integration-service/src/main/resources/application-dev.properties"
                     sh "cp \$OV_CONTENT_FILE backend/openvidu-content-service/src/main/resources/application-dev.properties"
                     sh "cp \$OV_MEETING_FILE backend/openvidu-meeting-service/src/main/resources/application-dev.properties"
-                }
             }
+            
         }
 
 
