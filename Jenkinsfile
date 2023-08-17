@@ -4,6 +4,9 @@ pipeline {
             image 'node:14.17.0' 
         }
     }
+    tools {
+        jdk 'openjdk-11.0.1'
+    }
     stages {
         
         stage('Cleanup Workspace') {
@@ -45,16 +48,11 @@ pipeline {
             }
         }
 
-        stage('Build and Test for openvidu-meeting-service') {
-            agent {
-                docker {
-                    image 'openvidu-meeting-service'
-                    args "-v gradle-${env.BUILD_TAG}:/root/.gradle"
-                }
-            }
+        stage('Build and Test openvidu-meeting-service') {
             steps {
-                sh 'chmod +x backend/openvidu-meeting-service/gradlew'
-                sh 'cd backend/openvidu-meeting-service && ./gradlew clean build -x test'
+                dir('backend/openvidu-meeting-service') {
+                    sh './gradlew clean build -x test'
+                }
             }
         }
 
