@@ -4,9 +4,6 @@ pipeline {
             image 'node:14.17.0' 
         }
     }
-    tools {
-        jdk 'openjdk-11.0.1'
-    }
     stages {
         
         stage('Cleanup Workspace') {
@@ -49,6 +46,9 @@ pipeline {
         }
 
         stage('Build and Test openvidu-meeting-service') {
+            tools {
+                jdk 'openjdk-11.0.1' 
+            }
             steps {
                 dir('backend/openvidu-meeting-service') {
                     sh './gradlew clean build -x test'
@@ -66,6 +66,9 @@ pipeline {
 
 
         stage('Build and Test for authentication-integration-service') {
+            tools {
+                jdk 'openjdk-17' 
+            }
             agent {
                 docker {
                     image 'authentication-integration-service'
@@ -79,6 +82,9 @@ pipeline {
         }
 
         stage('Build and Test for openvidu-content-service') {
+            tools {
+                jdk 'openjdk-17' 
+            }
             agent {
                 docker {
                     image 'openvidu-content-service'
@@ -91,6 +97,9 @@ pipeline {
             }
         }
         stage('Build and Test for mattermost-content-service') {
+            tools {
+                jdk 'openjdk-17' 
+            }
             agent {
                 docker {
                     image 'mattermost-content-service'
