@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import styles from "./fileList.module.css";
 import axios from "axios";
-import { Button, accordionActionsClasses } from "@mui/material";
 import { useSelector } from "react-redux";
 
 //mui 버튼
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import CloseIcon from "@mui/icons-material/Close";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
 import IconButton from "@mui/material/IconButton";
 import SimCardDownloadIcon from "@mui/icons-material/SimCardDownload";
 
@@ -21,11 +19,14 @@ function FileList(props) {
 
   const [files, setFiles] = useState([]);
 
+  const curDate = new Date().toISOString().split("T")[0];
+
+  console.log(curDate);
+
   let currentPage = Math.ceil(currentIndex / 4) + 1;
   let totalPages = Math.ceil(files.length / 4);
 
   let displayText = `${currentPage}/${totalPages}`;
-  console.log(files);
 
   const handlePrev = () => {
     if (currentIndex > 0) {
@@ -57,23 +58,22 @@ function FileList(props) {
 
   const initFileList = () => {
     axios({
-      method: "get",
-      url: `http://i9d107.p.ssafy.io:8081/api/v1/files?conferenceId=${activeSessionId}`,
+      method: "post",
+      url: `http://i9d107.p.ssafy.io:8081/api/v1/files`,
+      data: {
+        conferenceId: activeSessionId,
+        start: `${curDate}T00:00:00`,
+        end: `${curDate}T23:59:59`,
+      },
       headers: {
         accept: "application/json",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
     })
       .then((res) => {
         console.log(res);
-        const tempFiles = [];
-        res.map((val) => {
-          let temp = { fileName: "", fileUrl: "" };
-          temp.fileName = val.fileName;
-          temp.fileUrl = val.fileUrl;
-          tempFiles.push(temp);
-        });
-        setFiles(tempFiles);
+        // const tempFiles = [];
       })
       .catch((err) => {
         console.log(err);

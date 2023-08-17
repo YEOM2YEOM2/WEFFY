@@ -16,13 +16,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import {
+  toggleMicStatus,
+  toggleCameraStatus,
+} from "../../store/reducers/setting.js";
+
 // store conference
 import {
   setActiveSessionId,
   setActiveSessionName,
 } from "../../store/reducers/conference";
 
-const MMListModal = ({ handleClose, handleStartMeeting }) => {
+const MMListModal = ({ handleClose }) => {
   const [groupData, setGroupData] = useState([]);
 
   const dispatch = useDispatch();
@@ -40,6 +45,7 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
     })
       .then((res) => {
         const tempGroupData = [];
+        console.log("mattermost 채널 조회 성공");
 
         res.data.data.map((val) => {
           let temp = { name: "", channels: [] };
@@ -56,12 +62,13 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
         setGroupData(tempGroupData);
       })
       .catch((err) => {
-        // Handle the error here.
-        console.log(err);
+        console.log("mattermost 채널 조회 실패");
       });
   };
 
   useEffect(() => {
+    toggleCameraStatus(false);
+    toggleMicStatus(false);
     inintMMList();
   }, []);
 
@@ -85,8 +92,7 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
     return currentGroup ? currentGroup.channels.map((channel) => channel) : [];
   }, [currentGroup]);
 
-  useEffect(() => {
-  }, [selectedGroup, selectedChannel, selectedChannelId]);
+  useEffect(() => {}, [selectedGroup, selectedChannel, selectedChannelId]);
 
   const startMeeting = async () => {
     try {
@@ -108,17 +114,15 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
       const { status, data } = response;
 
       if (status === 200) {
-        console.log(data.data); // This will log "success" if everything is OK
-        // return data.data;
+        console.error("미팅 시작 성공");
       } else {
-        console.error("Error:", data.data); // This will log the error message returned by the server
+        console.error("카메라 연결 실패");
         throw new Error(data.data);
       }
     } catch (error) {
-      console.error("Error making header link:", error);
+      console.error("미팅 시작 실패");
     }
 
-    console.log("서버랑 통신 해서 sessionId받아와서 화면 넘기기");
     dispatch(setActiveSessionId(selectedChannelId));
     dispatch(
       setActiveSessionName(`${selectedGroup} ${selectedChannel}의 미팅룸`)
@@ -127,10 +131,7 @@ const MMListModal = ({ handleClose, handleStartMeeting }) => {
     navigate(`/meeting/${selectedChannelId}`);
   };
   return (
-    <div
-      className={styles["modal"]}
-      onClick={handleClose}
-    >
+    <div className={styles["modal"]} onClick={handleClose}>
       <div className={styles["modalBody"]} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h3 className={styles["modalHeader"]} style={{ fontFamily: "Mogra" }}>

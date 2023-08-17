@@ -55,6 +55,8 @@ import Swal from "sweetalert2";
 //redux
 import { setActiveSessionId } from "../store/reducers/conference";
 
+import { withRouter } from "react-router-dom";
+
 const drawerWidth = 320;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
@@ -122,6 +124,15 @@ const mapDispatchToProps = {
 };
 
 class Conference extends Component {
+  componentDidMount() {
+    this.unlisten = this.props.history.listen((location, action) => {
+      if (action === "POP") {
+        console.log("뒤로 가기 버튼이 눌렸습니다.");
+        this.leaveSession();
+      }
+    });
+  }
+
   constructor(props) {
     super(props);
     this.hasBeenUpdated = false;
@@ -137,6 +148,7 @@ class Conference extends Component {
     this.layout = new OpenViduLayout();
     let sessionName = decodeURIComponent(sessionIdFromUrl);
     this.props.setActiveSessionId(sessionName);
+    this.hasLeftSession = false;
 
     this.state = {
       mySessionId: sessionName,
@@ -163,6 +175,8 @@ class Conference extends Component {
 
       //file 모달창
       isFileListVisible: false,
+
+      //나갔는지 여부
     };
 
     this.joinSession = this.joinSession.bind(this);
@@ -365,27 +379,39 @@ class Conference extends Component {
   }
 
   async leaveSession() {
+    console.log("그만 들어와");
+    console.log(this.hasLeftSession);
+
+    if (this.hasLeftSession) {
+      console.log("무시 ㄱㄱ");
+      return;
+    }
+
+    this.hasLeftSession = true;
+    console.log(this.hasLeftSession);
     const mySession = this.state.session;
 
-    // const { activeSessionId } = this.props;
-    // const { identification } = this.props;
-    // console.log("activeSessionId: ", activeSessionId);
-    // console.log("identification: ", identification);
-    // const response = await axios.post(
-    //   APPLICATION_SERVER_URL +
-    //     `conferences/${activeSessionId}/${identification}`
-    // );
+    const { activeSessionId } = this.props;
+    const { identification } = this.props;
+    console.log("activeSessionId: ", activeSessionId);
+    console.log("identification: ", identification);
+    const response = await axios.post(
+      APPLICATION_SERVER_URL +
+        `conferences/${activeSessionId}/${identification}`
+    );
 
-    // const { status, data } = response;
-    // console.log(data.data)
-    // if (data.status === 200) {
-    //   console.log(data.message);
-    // } else {
-    //   console.error(data.message);
-    // }
+    const { status, data } = response;
+    console.log(data.data);
+    if (data.status === 200) {
+      console.log(data.message);
+    } else {
+      console.error(data.message);
+    }
 
     if (mySession) {
+      console.log("1");
       mySession.disconnect();
+      console.log("2");
     }
 
     // Empty all properties...
@@ -398,7 +424,10 @@ class Conference extends Component {
       myUserName: "WEEFY_User" + Math.floor(Math.random() * 100),
       localUser: undefined,
     });
+    console.log("3");
+
     if (this.props.leaveSession) {
+      console.log("4");
       this.props.leaveSession();
     }
   }
@@ -653,9 +682,16 @@ class Conference extends Component {
           .catch((err) => {
             console.log("화면공유 axios Error")
           })
+            .then((res) => {
+              console.log("화면공유 aixos결과!!!!", res);
+            })
+            .catch((err) => {
+              console.log("화면공유 axios 에러!!!", err);
+            });
         });
       });
     });
+    console.log("화면공유", publisher);
     publisher.on("streamPlaying", () => {
       publisher.videos[0].video.parentElement.classList.remove("custom-class");
     });

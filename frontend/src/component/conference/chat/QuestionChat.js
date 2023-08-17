@@ -64,13 +64,11 @@ const QuestionChat = ({ user }) => {
         streamId: user.getStreamManager().stream.streamId,
         timestamp: getCurTimeStamp(),
       };
-      console.log("질문 채팅 user", user);
       user.getStreamManager().stream.session.signal({
         data: JSON.stringify(data),
         type: "chat",
       });
       setMessage("");
-
       const postData = {
         senderId: data.nickname.toString(),
         conferenceId: "sessionB",
@@ -88,11 +86,11 @@ const QuestionChat = ({ user }) => {
         },
         data: postData,
       })
-        .then((res) => {
-          // console.log(res);
+        .then(() => {
+          console.log("메시지 전송 성공");
         })
-        .catch((err) => {
-          console.log(err.response);
+        .catch(() => {
+          console.log("메시지 전송 실패");
         });
     }
   };
@@ -108,11 +106,12 @@ const QuestionChat = ({ user }) => {
   const anonymousToggle = () => {
     setAnonymousStatus((prevStatus) => !prevStatus);
   };
-
-  // const styleChat = { display: this.props.chatDisplay };
   return (
     <div id="chatContainer" style={{ position: "relative", bottom: "7px" }}>
-      <div id="chatComponent" style={{ margin: "0", height: "calc(100% + 15px)", width: "100%" }}>
+      <div
+        id="chatComponent"
+        style={{ margin: "0", height: "calc(100% + 15px)", width: "100%" }}
+      >
         <div id="chatToolbar">
           <span style={{ fontFamily: "Agro", fontWeight: "400" }}>
             질문 채팅
@@ -136,7 +135,12 @@ const QuestionChat = ({ user }) => {
                         {data.message}
                       </p>
                     </div>
-                    <span className="timeStamp" style={{ margin: "0 10px 0 0", fontSize: "12px" }}>{data.timestamp}</span>
+                    <span
+                      className="timeStamp"
+                      style={{ margin: "0 10px 0 0", fontSize: "12px" }}
+                    >
+                      {data.timestamp}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -145,7 +149,19 @@ const QuestionChat = ({ user }) => {
         </div>
 
         <div id="fileContainer">
-          <span style={{ zIndex: "99999", color: "white", fontFamily: "NanumSquareNeo", fontSize: "13px", position: "absolute", top: "4.5px", right: "50px" }}>익명</span>
+          <span
+            style={{
+              zIndex: "99999",
+              color: "white",
+              fontFamily: "NanumSquareNeo",
+              fontSize: "13px",
+              position: "absolute",
+              top: "4.5px",
+              right: "50px",
+            }}
+          >
+            익명
+          </span>
           <Tooltip title="익명으로 질문하기" placement="top">
             <IconButton
               size="small"

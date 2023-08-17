@@ -8,7 +8,7 @@ import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
-const EditProfile = (props) => {
+const EditProfile = () => {
   return (
     <div children={styles["container"]}>
       <div className={styles["title"]}>Edit Profile</div>
@@ -25,7 +25,11 @@ const EditProfile = (props) => {
         />
       </div>
       <div className={styles["buttonContainer"]}>
-        <Button variant="outlined" className={styles["button"]} style={{ marginRight: "20px" }}>
+        <Button
+          variant="outlined"
+          className={styles["button"]}
+          style={{ marginRight: "20px" }}
+        >
           Cancle
         </Button>
         <Button variant="contained" className={styles["button"]}>
