@@ -112,9 +112,9 @@ const MMListModal = ({ handleClose }) => {
       const { status, data } = response;
 
       if (status === 200) {
-        console.log("mm채널 연결 미팅 생성"); // This will log "success" if everything is OK
+        console.log("mm채널 연결 미팅 생성");
       } else {
-        console.error("Error:", data.data); // This will log the error message returned by the server
+        console.error("Error:", data.data);
         throw new Error(data.data);
       }
     } catch (error) {

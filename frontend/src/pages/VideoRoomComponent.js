@@ -15,7 +15,7 @@ import ToolbarComponent from "./../component/conference/toolbar/ToolbarComponent
 
 var localUser = new UserModel();
 const APPLICATION_SERVER_URL =
-  process.env.NODE_ENV === "production" ? "" : "http://localhost:8082/";
+  process.env.NODE_ENV === "production" ? "" : "http://i9d107.p.ssafy.io:8082/";
 
 const mapStateToProps = (state) => {
   return {
