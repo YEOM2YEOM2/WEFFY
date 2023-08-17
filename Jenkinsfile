@@ -7,8 +7,7 @@ pipeline {
                 script {
                     withCredentials([
                         usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS'),
-                        string(credentialsId: 'aws-id', variable: 'AWS_ACCESS_KEY_ID'),
-                        string(credentialsId: 'aws-secret', variable: 'AWS_SECRET_ACCESS_KEY')
+                        awsCredentials(credentialsId: 'aws-id', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
                     ]) {
                         env.DOCKER_HUB_USER = DOCKER_HUB_USER
                         env.DOCKER_HUB_PASS = DOCKER_HUB_PASS
