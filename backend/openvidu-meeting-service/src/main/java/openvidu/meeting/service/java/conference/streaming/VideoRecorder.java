@@ -20,12 +20,13 @@ import java.util.List;
 @Getter
 @Setter
 class SharedResource{
+
     private OpenVidu openvidu;
     private String classId;
     private String identification;
     private String recordingId; // 녹화한 파일 이름 Ex) SessionA, SessionA~1, SessionA~2
     private ZipFileDownloader zipFileDownloader; // 녹화한 url
-    private int index; // 파일(classId)식별자  Ex) SessionA.mp4, SessionA1.mp4, SessionA2.mp4
+    // private int index; // 파일(classId)식별자  Ex) SessionA.mp4, SessionA1.mp4, SessionA2.mp4
 
     private boolean totalStatue;
 
@@ -33,7 +34,8 @@ class SharedResource{
 
     private Thread thread2;
 
-    private List<String> urlList = new ArrayList<>();
+    private List<String> sendUrlList = new ArrayList<>();
+    private List<String> sendRecordingIdList = new ArrayList<>();
 
     private Logger logger = LoggerFactory.getLogger(VideoRecorder.class);
 
@@ -43,16 +45,16 @@ class SharedResource{
         this.classId = classId;
         this.identification = identification;
         this.zipFileDownloader = new ZipFileDownloader(new RestTemplateBuilder());
-        this.index = 0;
+   //     this.index = 0;
         this.totalStatue = true;
         this.recordingStatus = true;
     }
     public void addUrl(String url){
-        urlList.add(url);
+        sendUrlList.add(url);
     }
 
     public void plusIndex(){
-        this.index++;
+    //    this.index++;
     }
 }
 
@@ -65,8 +67,7 @@ class WaitThread extends Thread{
     @Override
     public void run(){
         try{
-            Thread.sleep(150000); // 테스트 : 5분 300000
-
+            Thread.sleep(30000); // 테스트 : 5분 300000
             if(Thread.interrupted() || !sharedResource.isTotalStatue()){
                 return;
             }
@@ -140,7 +141,9 @@ class StartAndStopRecording extends Thread{
 
                 // 파일 다운로드 스레드 시작
 
-                sharedResource.getUrlList().add(recording.getUrl());
+                sharedResource.getSendUrlList().add(recording.getUrl());
+                sharedResource.getSendRecordingIdList().add(recording.getId());
+
                 if(sharedResource.getThread2().getState() != State.RUNNABLE){
                     sharedResource.setThread2(new Thread(new FileDownload(sharedResource)));
                     sharedResource.getThread2().start();
@@ -173,16 +176,16 @@ class FileDownload extends Thread{
     @Override
     public void run(){
         sharedResource.getLogger().info("====================FileDownload===================");
-        while(!sharedResource.getUrlList().isEmpty()){
-            String url = sharedResource.getUrlList().get(0);
+        while(!sharedResource.getSendUrlList().isEmpty()){
+            String url = sharedResource.getSendUrlList().get(0);
+            String conId = sharedResource.getSendRecordingIdList().get(0);
 
             sharedResource.getLogger().info("URL2 : "+ url);
 
-            // sharedResource.getIndex(),
             sharedResource.getZipFileDownloader().setZipFileSetting(url, sharedResource.getClassId(),
-                    sharedResource.getRecordingId(), sharedResource.getIdentification());
+                    conId, sharedResource.getIdentification());
 
-            sharedResource.plusIndex();
+           // sharedResource.plusIndex();
 
             try {
                 if (sharedResource.getZipFileDownloader().downloadRecording() != null) {
@@ -194,7 +197,8 @@ class FileDownload extends Thread{
                 throw new RuntimeException(e);
             }
 
-            sharedResource.getUrlList().remove(0);
+            sharedResource.getSendUrlList().remove(0);
+            sharedResource.getSendRecordingIdList().remove(0);
         }
 
 
