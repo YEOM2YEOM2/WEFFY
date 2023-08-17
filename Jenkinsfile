@@ -95,12 +95,13 @@ pipeline {
                         withCredentials([
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
-                            dir('backend/authentication-integration-service') {
+                            script {
                                 def imageNameWithTag = "kathyleesh/weffy/authentication-integration-service:latest"
-                                
-                                sh 'docker build -t $imageNameWithTag .'
-                                sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh 'docker push $imageNameWithTag'
+                                dir('backend/authentication-integration-service') {    
+                                    sh 'docker build -t $imageNameWithTag .'
+                                    sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                                    sh 'docker push $imageNameWithTag'
+                                }
                             }
                         }
                     }
@@ -111,12 +112,13 @@ pipeline {
                         withCredentials([
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
-                            dir('backend/openvidu-meeting-service') {
+                            script {
                                 def imageNameWithTag = "kathyleesh/weffy/openvidu-meeting-service:latest"
-                                
-                                sh 'docker build -t $imageNameWithTag .'
-                                sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh "docker push $imageNameWithTag"
+                                dir('backend/openvidu-meeting-service') {
+                                    sh 'docker build -t $imageNameWithTag .'
+                                    sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                                    sh "docker push $imageNameWithTag"
+                                }
                             }
                         }
                     }
@@ -127,12 +129,13 @@ pipeline {
                         withCredentials([
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
-                            dir('backend/openvidu-content-service') {
+                            script {
                                 def imageNameWithTag = "kathyleesh/weffy/openvidu-content-service:latest"
-                                
-                                sh 'docker build -t $imageNameWithTag .'
-                                sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh "docker push $imageNameWithTag"
+                                dir('backend/openvidu-content-service') {
+                                    sh 'docker build -t $imageNameWithTag .'
+                                    sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                                    sh "docker push $imageNameWithTag"
+                                }
                             }
                         }
                     }
@@ -143,12 +146,13 @@ pipeline {
                         withCredentials([
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
-                            dir('backend/mattermost-content-service') {
+                            script {
                                 def imageNameWithTag = "kathyleesh/weffy/mattermost-content-service:latest"
-                                
-                                sh 'docker build -t $imageNameWithTag .'
-                                sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
-                                sh "docker push $imageNameWithTag"
+                                dir('backend/mattermost-content-service') {
+                                    sh 'docker build -t $imageNameWithTag .'
+                                    sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                                    sh "docker push $imageNameWithTag"
+                                }
                             }
                         }
                     }
