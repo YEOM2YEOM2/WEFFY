@@ -16,20 +16,16 @@ pipeline {
         }
 
         stage('Prepare credentials') {
-            agent any
             steps {
                 withCredentials([
-                    file(credentialsId: 'auth-application-dev.properties', variable: 'AUTH_FILE'),
-                    file(credentialsId: 'ov-content-application-dev.properties', variable: 'OV_CONTENT_FILE'),
-                    file(credentialsId: 'ov-meeting-application-dev.properties', variable: 'OV_MEETING_FILE')
+                    file(credentialsId: 'auth-application-dev.properties', variable: 'AUTHFILE'),
+                    file(credentialsId: 'ov-content-application-dev.properties', variable: 'OVCONTENTFILE'),
+                    file(credentialsId: 'ov-meeting-application-dev.properties', variable: 'OVMEETINGFILE')
                 ]) {
                     script{
-                        echo "AUTH_FILE: \${AUTH_FILE}"
-
-
-                        sh 'cp $AUTH_FILE backend/authentication-integration-service/src/main/resources/application-dev.properties'
-                        sh 'cp $OV_CONTENT_FILE backend/openvidu-content-service/src/main/resources/application-dev.properties'
-                        sh 'cp $OV_MEETING_FILE backend/openvidu-meeting-service/src/main/resources/application-dev.properties'
+                        sh 'cp $AUTHFILE backend/authentication-integration-service/src/main/resources/application-dev.properties'
+                        sh 'cp $OVCONTENTFILE backend/openvidu-content-service/src/main/resources/application-dev.properties'
+                        sh 'cp $OVMEETINGFILE backend/openvidu-meeting-service/src/main/resources/application-dev.properties'
                     }
                 }
             }
