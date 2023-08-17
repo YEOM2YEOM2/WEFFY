@@ -96,8 +96,9 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             dir('backend/authentication-integration-service') {
-                                sh 'docker build -t kathyleesh/weffy/authentication-integration-service:latest .'
+                                sh 'docker build -t authentication-integration-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                                sh 'docker tag kathyleesh/weffy/authentication-integration-service:latest authentication-integration-service:latest'
                                 sh 'docker push kathyleesh/weffy/authentication-integration-service:latest'
                             }
                         }
@@ -110,8 +111,9 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             dir('backend/openvidu-meeting-service') {
-                                sh 'docker build -t kathyleesh/weffy/openvidu-meeting-service:latest .'
+                                sh 'docker build -t openvidu-meeting-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                                sh 'docker tag kathyleesh/weffy/openvidu-meeting-service:latest openvidu-meeting-service:latest'
                                 sh 'docker push kathyleesh/weffy/openvidu-meeting-service:latest'
                             }
                         }
@@ -124,8 +126,9 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             dir('backend/openvidu-content-service') {
-                                sh 'docker build -t kathyleesh/weffy/openvidu-content-service:latest .'
+                                sh 'docker build -t openvidu-content-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                                sh 'docker tag kathyleesh/weffy/openvidu-content-service:latest openvidu-content-service:latest'
                                 sh 'docker push kathyleesh/weffy/openvidu-content-service:latest'
                             }
                         }
@@ -138,8 +141,9 @@ pipeline {
                             usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PASS')
                         ]) {
                             dir('backend/mattermost-content-service') {
-                                sh 'docker build -t kathyleesh/weffy/mattermost-content-service:latest .'
+                                sh 'docker build -t mattermost-content-service:latest .'
                                 sh 'docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASS'
+                                sh 'docker tag kathyleesh/weffy/mattermost-content-service:latest mattermost-content-service:latest'
                                 sh 'docker push kathyleesh/weffy/mattermost-content-service:latest'
                             }
                         }
