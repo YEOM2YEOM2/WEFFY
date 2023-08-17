@@ -1,13 +1,25 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_HUB_USER = credentials('docker-hub').username
-        DOCKER_HUB_PASS = credentials('docker-hub').password
-        AWS_ACCESS_KEY_ID = credentials('aws-id').accessKeyId
-        AWS_SECRET_ACCESS_KEY = credentials('aws-id').secretAccessKey
+    stages {
+        stage('Setup Environment') {
+            steps {
+                script {
+                    withCredentials([
+                        string(credentialsId: 'docker-hub', variable: 'DOCKER_HUB_USER'),
+                        string(credentialsId: 'docker-hub-pass', variable: 'DOCKER_HUB_PASS'),
+                        string(credentialsId: 'aws-id', variable: 'AWS_ACCESS_KEY_ID'),
+                        string(credentialsId: 'aws-secret', variable: 'AWS_SECRET_ACCESS_KEY')
+                    ]) {
+                        env.DOCKER_HUB_USER = DOCKER_HUB_USER
+                        env.DOCKER_HUB_PASS = DOCKER_HUB_PASS
+                        env.AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
+                        env.AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
+                    }
+                }
+            }
+        }
     }
-
     stages {
         stage('Cleanup Workspace') {
             steps {
