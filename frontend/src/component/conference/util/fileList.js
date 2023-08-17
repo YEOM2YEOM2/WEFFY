@@ -19,7 +19,6 @@ function FileList(props) {
 
   const [files, setFiles] = useState([]);
 
-
   const curDate = new Date().toISOString().split("T")[0];
 
   let currentPage = Math.ceil(currentIndex / 4) + 1;
@@ -71,7 +70,17 @@ function FileList(props) {
       },
     })
       .then((res) => {
-        console.log("파일 목록 불러오기");
+        console.log(res);
+        const tempFiles = [];
+        res.data.data.files.map((val) => {
+          let tmpFile = { fileUrl: "", fileName: "" };
+          tmpFile.fileUrl = val.fileUrl;
+          tmpFile.fileName = val.fileName;
+
+          tempFiles.push(tmpFile);
+        });
+
+        setFiles(tempFiles);
       })
       .catch((err) => {
         console.log("파일 목록 불러오기 실패");
@@ -108,7 +117,7 @@ function FileList(props) {
         </IconButton>
       </div>
       <div>
-        {files.slice(currentIndex, currentIndex + 4).map((file, index) => (
+        {files.slice(currentIndex, currentIndex + 4).map((file) => (
           <div className={styles["downloadContainer"]}>
             <IconButton className="downloadText">
               <SimCardDownloadIcon

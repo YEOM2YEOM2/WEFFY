@@ -44,7 +44,7 @@ class VideoRoomComponent extends Component {
     this.remotes = [];
     this.localUserAccessAllowed = false;
     this.state = {
-      mySessionId: this.props.active,
+      mySessionId: sessionName,
       myUserName: userName,
       session: undefined,
       localUser: undefined,
@@ -164,9 +164,7 @@ class VideoRoomComponent extends Component {
           });
         }
         alert("There was an error connecting to the session");
-        console.log(
-          "There was an error connecting to the session",
-        );
+        console.log("There was an error connecting to the session");
       });
   }
 
