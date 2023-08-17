@@ -4,14 +4,17 @@ import axios from "axios";
 
 import { setNickname, setProfileImg } from "../store/reducers/user";
 
+//img
 import defaultImg from "../assets/images/defualt_image.png";
 
+//외부라이브러리
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import Button from "@mui/material/Button";
 
+//style
 import styles from "../pages/setting.module.css";
 
-const Setting = () => {
+const Setting = (props) => {
   const dispatch = useDispatch();
 
   const profileImg =
@@ -27,23 +30,41 @@ const Setting = () => {
     }
   };
 
+  //닉네임 변경 로직 => redux에는 반영X
   const handleNicknameChange = (e) => {
     setNewNickname(e.target.value);
   };
 
+
+  // const handleImageChange = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     setNewProfileImage(URL.createObjectURL(file));
+  //     setSelectedFile(file); // Store the actual file
+  //   }
+  // };
+
   const accessToken = useSelector((state) => state.user.accessToken);
+  const csrfToken = useSelector((state) => state.user.csrfToken);
+  //reduxt값 수정 + db값 수정
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
 
     const blob = new Blob([JSON.stringify(newProfileImage)], {
-      type: "application/json",
-    });
+      type: 'application/json'
+    })
 
     formData.append("profileImg", blob);
     formData.append("nickName", newNickName);
 
+
+    for (var pair of formData.entries()) {
+        console.log(pair[0]+ ', ' + pair[1]); 
+    }
+
+    //서버와 통신하기
     axios({
       method: "patch",
       url: "http://i9d107.p.ssafy.io:8081/api/v1/users/me",
@@ -51,23 +72,24 @@ const Setting = () => {
         accept: "application/json",
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${accessToken}`,
-        "X-CSRF-TOKEN": "c138db3c-b48a-418f-b12a-28ead92c9c5b",
+        "X-CSRF-TOKEN": 'c138db3c-b48a-418f-b12a-28ead92c9c5b',
       },
       data: formData,
     })
-      .then(() => {
-        console.log("프로필 변경 성공");
+      .then((res) => {
+        console.log(res.data);
         dispatch(setProfileImg(newProfileImage));
         dispatch(setNickname(newNickName));
       })
-      .catch(() => {
-        console.log("프로필 변경 실패");
+      .catch((err) => {
+        console.log(err);
       });
   };
 
   const inputFile = React.useRef(null);
 
   const onImageIconClick = () => {
+    // trigger the click event of the hidden input file
     inputFile.current.click();
   };
 
@@ -76,6 +98,7 @@ const Setting = () => {
     setNewNickname(nickname);
   };
 
+  //변경이 되면 같이 뿅 바뀐다
   useEffect(() => {
     setNewProfileImage(profileImg);
     setNewNickname(nickname);

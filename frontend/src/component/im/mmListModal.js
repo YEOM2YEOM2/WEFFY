@@ -45,7 +45,6 @@ const MMListModal = ({ handleClose }) => {
     })
       .then((res) => {
         const tempGroupData = [];
-        console.log("mattermost 채널 조회 성공");
 
         res.data.data.map((val) => {
           let temp = { name: "", channels: [] };
@@ -62,7 +61,8 @@ const MMListModal = ({ handleClose }) => {
         setGroupData(tempGroupData);
       })
       .catch((err) => {
-        console.log("mattermost 채널 조회 실패");
+        // Handle the error here.
+        console.log(err);
       });
   };
 
@@ -114,15 +114,16 @@ const MMListModal = ({ handleClose }) => {
       const { status, data } = response;
 
       if (status === 200) {
-        console.error("미팅 시작 성공");
+        console.log(data.data); // This will log "success" if everything is OK
       } else {
-        console.error("카메라 연결 실패");
+        console.error("Error:", data.data); // This will log the error message returned by the server
         throw new Error(data.data);
       }
     } catch (error) {
-      console.error("미팅 시작 실패");
+      console.error("Error making header link:", error);
     }
 
+    console.log("서버랑 통신 해서 sessionId받아와서 화면 넘기기");
     dispatch(setActiveSessionId(selectedChannelId));
     dispatch(
       setActiveSessionName(`${selectedGroup} ${selectedChannel}의 미팅룸`)

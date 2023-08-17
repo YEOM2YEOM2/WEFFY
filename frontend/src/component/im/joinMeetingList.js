@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "./joinMeetingList.module.css";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -28,7 +28,7 @@ const JoinMeetingList = ({ handleClose }) => {
   };
   const CustomListItemText = styled(ListItemText)({
     "& .MuiListItemText-primary": {
-      fontFamily: "GmarketSans",
+      fontFamily: "GmarketSans", // specify your font name here
     },
   });
 
@@ -39,7 +39,7 @@ const JoinMeetingList = ({ handleClose }) => {
     })
       .then((res) => {
         const tempMyList = [];
-        console.log("최근 미팅 목록 조회 성공");
+        console.log(res);
 
         res.data.data.map((val) => {
           let temp = { url: "", title: "" };
@@ -51,17 +51,21 @@ const JoinMeetingList = ({ handleClose }) => {
         setRecentList(tempMyList);
       })
       .catch((err) => {
-        console.log("최근 미팅 목록 조회 실패");
+        console.log(err);
       });
   };
 
   useEffect(() => {
     recentListHandler();
+    // console.log(recentList);
   }, []);
 
+  //Join Button이 눌리면 해당 url로 이동
   const handleButtonClick = (url) => {
     window.location.href = url;
   };
+
+  //pagination 을 하기 위한 것들
 
   return (
     <div className={styles["modal"]} onClick={handleClose}>
@@ -79,9 +83,9 @@ const JoinMeetingList = ({ handleClose }) => {
         <input
           type="text"
           className={styles["textArea"]}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={handleEnter}
+          value={text} // 추가
+          onChange={(e) => setText(e.target.value)} // 추가
+          onKeyDown={handleEnter} // 추가
           placeholder="참여할 화상 회의 링크를 입력해주세요."
         />
 
@@ -89,7 +93,10 @@ const JoinMeetingList = ({ handleClose }) => {
           <List>
             {recentList.map((item, index) => (
               <React.Fragment key={index}>
-                <ListItem className={styles["meetingItem"]}>
+                <ListItem
+                  className={styles["meetingItem"]}
+                  // alignItems="flex-start"
+                >
                   <CustomListItemText
                     className={styles["item-text"]}
                     primary={item.title}
@@ -113,7 +120,9 @@ const JoinMeetingList = ({ handleClose }) => {
           </List>
         </div>
 
-        <Grid container justifyContent="flex-end"></Grid>
+        <Grid container justifyContent="flex-end">
+          {/* <Button variant="contained">Start Private Meeting</Button> */}
+        </Grid>
       </div>
     </div>
   );
