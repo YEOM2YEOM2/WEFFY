@@ -3,7 +3,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-//리덕스
 import {
   setIdentification,
   setAccessToken,
@@ -13,11 +12,8 @@ import {
   setNickname,
 } from "../store/reducers/user.js";
 
-//CSS
 import styles from "../pages/im.module.css";
 
-//mui 라이브라리
-//mui 라이브라리
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
@@ -35,19 +31,16 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
-// Icons
 import GridViewIcon from "@mui/icons-material/GridView";
 import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-// Images
 import defaultImg from "../assets/images/defualt_image.png";
 import newMM from "../assets/images/newMM.png";
 import newPrivate from "../assets/images/newPrivate.png";
 import participate from "../assets/images/participate.png";
 
-//Modal js
 import MMListModal from "../component/im/mmListModal";
 import PrivateModal from "../component/im/privateModal.js";
 import JoinMeetingModal from "../component/im/joinMeetingList.js";
@@ -58,10 +51,8 @@ const buttons = [
   { name: "JoinMeetingModal", src: participate },
 ];
 
-//mui icon
 const drawerWidth = 240;
 
-//옆 사이드 바의 메뉴
 const icons = [
   { name: "DashBoard", src: <GridViewIcon /> },
   { name: "MyList", src: <MoveToInboxIcon /> },
@@ -69,7 +60,6 @@ const icons = [
   { name: "Logout", src: <LogoutIcon /> },
 ];
 
-//사이드 바가 열렸을 경우
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -80,7 +70,6 @@ const openedMixin = (theme) => ({
   backgroundColor: "rgba(46, 46, 72, 0.7)",
 });
 
-//사이드 바가 닫혔을 경우
 const closedMixin = (theme) => ({
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
@@ -92,16 +81,14 @@ const closedMixin = (theme) => ({
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
 
-  backgroundColor: "rgba(65, 65, 112, 0.8)", // 열렸을경우
+  backgroundColor: "rgba(65, 65, 112, 0.8)",
 });
 
-//맨 위 header가 움직이도록 구성
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
 
@@ -146,7 +133,6 @@ export default function Im() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
-  //redux에서 사진, 닉네임 가져오기
   const profileImg =
     useSelector((state) => state.user.profileImg) || defaultImg;
   const nickname = useSelector((state) => state.user.nickname) || "WEBBY";
@@ -154,7 +140,6 @@ export default function Im() {
   const navigate = useNavigate();
   const identification = useSelector((state) => state.user.identification);
 
-  // accesToken null일 경우 다시 /로 빽~!
   useEffect(() => {
     if (!identification) {
       navigate("/");
@@ -182,7 +167,6 @@ export default function Im() {
     });
   }, [location]);
 
-  // 모달 상태 선언
   const [modalStatus, setModalStatus] = useState({
     startMM: false,
     newPrivate: false,
@@ -190,10 +174,7 @@ export default function Im() {
     MMListModal: false,
   });
 
-
-
   const handleModalOpen = (modalName) => {
-    //modalName에 맞는 modal true로 변경
     setModalStatus({
       ...modalStatus,
       [modalName]: true,
@@ -201,7 +182,6 @@ export default function Im() {
   };
 
   const handleModalClose = (modalName) => {
-    //modalName에 맞는 modal false 변경
     setModalStatus({
       ...modalStatus,
       [modalName]: false,
@@ -212,20 +192,15 @@ export default function Im() {
     (status) => status === true
   );
 
-  //옆 사이드바 아이콘을 클릭 했을 경우 url을 옮겨줄 hanndler
   const handleDashboardClick = () => {
-    // Dashboard 클릭 시 수행할 동작
     navigate("/im");
   };
 
   const handleMyMeetingClick = () => {
-    // My Meeting 클릭 시 수행할 동작
     navigate("/im/mylist");
   };
 
   const handleSettingClick = () => {
-    console.log("Setting was clicked");
-    // Profile 클릭 시 수행할 동작
     navigate("/im/setting");
   };
 
@@ -359,26 +334,9 @@ export default function Im() {
         )}
 
         {modalStatus.MMListModal && (
-          <MMListModal
-            handleClose={() => handleModalClose("MMListModal")}
-            // handleStartMeeting={() =>
-            //   handleStartMeeting(
-            //     selectedGroup,
-            //     selectedChannel,
-            //     selectedChannelId
-            //   )
-            // }
-          />
+          <MMListModal handleClose={() => handleModalClose("MMListModal")} />
         )}
 
-        {/* {modalStatus.startMM && (
-          <StartMM
-            handleClose={() => handleModalClose("startMM")}
-            groupName={selectedGroup}
-            channelName={selectedChannel}
-            channelId={selectedChannelId}
-          />
-        )} */}
         {modalStatus.PrivateModal && (
           <PrivateModal
             show={modalStatus.PrivateModal}
@@ -390,7 +348,7 @@ export default function Im() {
           <JoinMeetingModal
             show={modalStatus.ParticipateModal}
             handleClose={() => handleModalClose("JoinMeetingModal")}
-            sidebarOpen={open} // Add this line
+            sidebarOpen={open}
           />
         )}
       </Box>
