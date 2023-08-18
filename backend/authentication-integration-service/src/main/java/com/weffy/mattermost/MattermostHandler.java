@@ -159,7 +159,7 @@ public class MattermostHandler {
         jsonObject.put("name", name);
         jsonObject.put("display_name", display_name);
         jsonObject.put("purpose", purpose);
-        jsonObject.put("header", header + "|[ :weffy_logo:  Start WEFFY](https://i9d107.p.ssafy.io/meeting/" + channelId + ")");
+        jsonObject.put("header", header + "|[ :weffy_logo:  Start WEFFY](http://ssafy-weffy.s3-website.ap-northeast-2.amazonaws.com/meeting/" + channelId + ")");
 
         String requestBodyData = jsonObject.toString();
 
