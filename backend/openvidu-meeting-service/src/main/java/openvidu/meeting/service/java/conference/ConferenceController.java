@@ -75,8 +75,8 @@ public class ConferenceController {
 
     @Value("${local.recording.path}")
     private String recordingFilePath;
-
-    private String meetingUrl = "http://localhost:3000/meeting/";
+    // i9d107.p.ssafy.io
+    private String meetingUrl = "http://i9d107.p.ssafy.io:3000/meeting/";
 
     @PostConstruct
     public void init() throws OpenViduJavaClientException, OpenViduHttpException, IOException {
@@ -98,6 +98,19 @@ public class ConferenceController {
 
         // 로컬에 폴더를 생성한다.
         fileOrDirectorySetting();
+
+        // 이전에 남아있는 녹화 기록을 모두 지운다
+        List<Recording> recordings = this.openvidu.listRecordings();
+        for(Recording rec : recordings){
+            try{
+                this.openvidu.stopRecording(rec.getId());
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            this.openvidu.deleteRecording(rec.getId());
+        }
+
+
     }
 
 

@@ -52,7 +52,6 @@ public class VideoCombine {
 
 
         if(ischeck){
-            logger.info("come!!!!!!!!!!!!");
      //        폴더의 classId.webm 파일 삭제
             File folder = new File(recordingFileUrl.toString());
             if(folder.isDirectory()){
