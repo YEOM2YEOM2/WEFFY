@@ -22,9 +22,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -116,5 +119,39 @@ public class FileController {
     public ResponseEntity<byte[]> downloadFile(@RequestParam String objectKey, @RequestParam String title) throws IOException {
         return fileService.downloadFile(objectKey, title);
         //return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "SUCCESS"));
+    }
+
+    @PostMapping("/uploadMM")
+    public ResponseEntity<? extends BaseResponseBody> uploadMM(@RequestBody FileReqDto fileReqDto) throws JSONException {
+        String authorizedMember = SecurityUtil.getAuthorizedMember();
+        WeffyUser weffyUser = userService.findByEmail(authorizedMember);
+        String sessionToken = mattermostService.findByWeffyUser(weffyUser);
+        List<GetFileDto> getFileDto = fileService.getFiles(fileReqDto);
+
+        // Set up RestTemplate and data to send
+        RestTemplate restTemplate = new RestTemplate();
+        String targetUrl = "http://i9d107.p.ssafy.io:8084/api/v4/files/uploadFilesToMattermost";
+
+        UploadResDto resDto = new UploadResDto();
+        resDto.setSessionToken(sessionToken);
+        resDto.setClassId(fileReqDto.getConferenceId());
+        resDto.setFiles(getFileDto);
+
+//        // Create JSONObject for the request body
+//        JSONObject postBody = new JSONObject();
+//        postBody.put("sessionToken", sessionToken);
+//        postBody.put("classId", fileReqDto.getConferenceId());
+//        postBody.put("files", new JSONArray(getFileDto));  // Assuming getFileDto can be converted directly to JSONArray
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);  // Setting the Content-Type to JSON
+
+        HttpEntity<UploadResDto> entity = new HttpEntity<>(resDto, headers);
+
+        // Send POST request to the other server
+        restTemplate.postForEntity(targetUrl, entity, String.class);
+
+        return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, new UploadResDto().of(sessionToken, fileReqDto.getConferenceId(), getFileDto)));
+
     }
 }
