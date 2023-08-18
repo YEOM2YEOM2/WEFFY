@@ -122,7 +122,7 @@ public class FileController {
     }
 
     @PostMapping("/uploadMM")
-    public ResponseEntity<? extends BaseResponseBody> uploadMM(@RequestBody FileReqDto fileReqDto) throws JSONException {
+    public ResponseEntity<? extends BaseResponseBody> uploadMM(@RequestBody FileReqDto fileReqDto)  {
         String authorizedMember = SecurityUtil.getAuthorizedMember();
         WeffyUser weffyUser = userService.findByEmail(authorizedMember);
         String sessionToken = mattermostService.findByWeffyUser(weffyUser);
@@ -136,12 +136,6 @@ public class FileController {
         resDto.setSessionToken(sessionToken);
         resDto.setClassId(fileReqDto.getConferenceId());
         resDto.setFiles(getFileDto);
-
-//        // Create JSONObject for the request body
-//        JSONObject postBody = new JSONObject();
-//        postBody.put("sessionToken", sessionToken);
-//        postBody.put("classId", fileReqDto.getConferenceId());
-//        postBody.put("files", new JSONArray(getFileDto));  // Assuming getFileDto can be converted directly to JSONArray
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);  // Setting the Content-Type to JSON
