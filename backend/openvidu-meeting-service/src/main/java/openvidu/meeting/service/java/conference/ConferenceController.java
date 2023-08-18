@@ -130,6 +130,16 @@ public class ConferenceController {
             // 방의 호스트를 저장한다.
             sessionHostList.put(conference.getClassId(), conference.getIdentification());
         }
+        // 이전에 남아있는 녹화 기록을 모두 지운다
+//        List<Recording> recordings = this.openvidu.listRecordings();
+//        for(Recording rec : recordings){
+//            try{
+//                this.openvidu.stopRecording(rec.getId());
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
+//            this.openvidu.deleteRecording(rec.getId());
+//        }
     }
 
     public void fileOrDirectorySetting(){
@@ -142,6 +152,7 @@ public class ConferenceController {
             if(Files.isDirectory(Paths.get(recordingFilePath+"TotalTextFile"))){
                 zipFileDownloader.removeFolder(recordingFilePath,"TotalTextFile", true);
             }
+
 
             if(Files.isDirectory(Paths.get(recordingFilePath+"TotalZipFile"))){
                 zipFileDownloader.removeFolder(recordingFilePath,"TotalZipFile", true);
@@ -298,10 +309,10 @@ public class ConferenceController {
                 logger.info(identification+"////-> "+ accessToken);
 
                 // 녹화를 시작한다.
-                currentRecordingList.put(classId, new VideoRecorder(classId, identification));
+                //currentRecordingList.put(classId, new VideoRecorder(classId, identification));
 
                 // 해당 세션을 스레드로 시작한다.
-                executorService.submit(() -> currentRecordingList.get(classId).recordingMethod());
+                //executorService.submit(() -> currentRecordingList.get(classId).recordingMethod());
 
             }
 
@@ -327,6 +338,7 @@ public class ConferenceController {
     }
 
     // 사용자가 방을 나가는 경우 => connection에서 삭제, participant 비우고 host 에서도 삭제
+    // 사용자가 방을 나가는 경우 => connection에서 삭제, participant 비우고 host 에서도 삭제
     @ApiOperation(value = "방 연결 해제", notes = "제공된 class ID와 identification을 기반으로 특정 회의에서 사용자 연결 해제")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = BaseResponseBody.class),
@@ -344,70 +356,132 @@ public class ConferenceController {
 
             throws OpenViduJavaClientException, OpenViduHttpException
     {
+        Session session = openvidu.getActiveSession(classId);
+        if(session == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(500, "해당 방이 없습니다."));
+        }
+        Conference nowConference = conferenceRepository.findByClassId(classId);
 
         // Host가 회의 종료를 누른 경우
         if(identification.equals(sessionHostList.get(classId))){
             try {
-                // 회의에 참가하고 있는 사용자 전체 삭제
-                sessionParticipantList.remove(classId);
+                for(String participantId : sessionParticipantList.get(classId)){
+                    String participantConnectionId = OpenviduDB.getSessionConnectionList().get(classId).get(participantId);
+                    session.forceDisconnect(participantConnectionId);
 
-                // connectionId 삭제
-                OpenviduDB.getHostConnectionId().remove(classId);
-
-                // 호스트 토큰 삭제
-                OpenviduDB.getHostToken().remove(classId);
-
-                // openvidu에서 session과 연결되어있는 connection을 모두 삭제함
-                Session session = openvidu.getActiveSession(classId);
-                for(String conId : OpenviduDB.getSessionConnectionList().get(classId).keySet()){
-                    session.forceDisconnect(conId);
+                    HistoryReqDto dto = new HistoryReqDto();
+                    log.info("1++"+nowConference.getId()+"/"+participantId);
+                    dto.setConference_id(nowConference.getId());
+                    dto.setIdentification(participantId);
+                    historyService.createHistory(dto, "EXIT");
                 }
 
-                // 회의에 참가하고 있는 connectionId 전부 삭제
+                sessionParticipantList.remove(classId);
+
                 OpenviduDB.getSessionConnectionList().remove(classId);
 
-                // videoRecorder 연결 끊기
-                currentRecordingList.get(classId).recordingStop();
-                currentRecordingList.remove(classId);
+                HistoryReqDto dto = new HistoryReqDto();
+                dto.setConference_id(nowConference.getId());
+                dto.setIdentification(identification);
+                historyService.createHistory(dto, "LEAVE");
+
+
+//                // 회의에 참가하고 있는 사용자 전체 삭제
+//                sessionParticipantList.remove(classId);
+//
+//                // connectionId 삭제
+//                OpenviduDB.getHostConnectionId().remove(classId);
+//
+//                // 호스트 토큰 삭제
+//                OpenviduDB.getHostToken().remove(classId);
+//
+//                // openvidu에서 session과 연결되어있는 connection을 모두 삭제함
+//                Session session = openvidu.getActiveSession(classId);
+//
+//
+////                log.info(session.getActiveConnections())
+//                log.info("1+ "+OpenviduDB.getSessionConnectionList().get(classId).keySet());
+//                for(Connection c :session.getActiveConnections()){
+//                    log.info("rrr"+c.toString());
+//                }
+//                for(String conId : OpenviduDB.getSessionConnectionList().get(classId).keySet()){
+//                    log.info("2+ "+ conId);
+//
+//                    try {
+//                        session.forceDisconnect(conId);
+//                    } catch (Exception e) {
+//                        e.printStackTrace();  // 이를 통해 오류 메시지를 확인할 수 있습니다.
+//                    }
+//                }
+//
+//                log.info("3");
+//
+//                // 회의에 참가하고 있는 connectionId 전부 삭제
+//                OpenviduDB.getSessionConnectionList().remove(classId);
+//
+//                // videoRecorder 연결 끊기
+////                currentRecordingList.get(classId).recordingStop();
+////                currentRecordingList.remove(classId);
 
                 return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "호스트가 회의를 종료했습니다."));
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_HOST_NOT_TERMINATED));
             }
         }
-
-        // 사용자가 회의 종료를 누른 경우
-        for (String id : sessionParticipantList.get(classId)) {
-            if (id.equals(identification)) {
-                // 참가자 목록에서 삭제함
-                sessionParticipantList.remove(id);
-
-                // openvidu와 연결을 해제
+        else{ // 호스트 아님
+            try{
                 String connectionId = OpenviduDB.getSessionConnectionList().get(classId).get(identification);
-                openvidu.getActiveSession(classId).forceDisconnect(connectionId);
+                if(connectionId == null){
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4002, ExceptionEnum.CONFERENCE_HISTORY_FAILED));
+                }
 
+                session.forceDisconnect(connectionId);
 
-                // sessionConnectionList에서 삭제함
+                sessionParticipantList.get(classId).remove(identification);
                 OpenviduDB.getSessionConnectionList().get(classId).remove(identification);
-                break;
+
+                HistoryReqDto dto = new HistoryReqDto();
+                dto.setConference_id(nowConference.getId());
+                dto.setIdentification(identification);
+                historyService.createHistory(dto, "EXIT");
+
+                return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "사용자가 회의를 종료했습니다."));
+            }catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_HOST_NOT_TERMINATED));
             }
         }
 
-        try {
-            //history exit/leave
-            HistoryReqDto dto = new HistoryReqDto();
-            Conference nowConference = conferenceRepository.findByClassId(classId);
-            dto.setConference_id(nowConference.getId());
-            dto.setIdentification(identification);
-            historyService.createHistory(dto, "EXIT");
-            //방을 나갔는데 모두 나가게 되어서 LEAVE
-            if(OpenviduDB.getSessionConnectionList().get(classId).size() == 0){
-                historyService.createHistory(dto,"LEAVE");
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "사용자가 회의를 종료했습니다."));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4002, ExceptionEnum.CONFERENCE_HISTORY_FAILED));
-        }
+//        // 사용자가 회의 종료를 누른 경우
+//        for (String id : sessionParticipantList.get(classId)) {
+//            if (id.equals(identification)) {
+//                // 참가자 목록에서 삭제함
+//                sessionParticipantList.remove(id);
+//
+//                // openvidu와 연결을 해제
+//                String connectionId = OpenviduDB.getSessionConnectionList().get(classId).get(identification);
+//                openvidu.getActiveSession(classId).forceDisconnect(connectionId);
+//
+//                // sessionConnectionList에서 삭제함
+//                OpenviduDB.getSessionConnectionList().get(classId).remove(identification);
+//                break;
+//            }
+//        }
+
+//        try {
+//            //history exit/leave
+//            HistoryReqDto dto = new HistoryReqDto();
+//            Conference nowConference = conferenceRepository.findByClassId(classId);
+//            dto.setConference_id(nowConference.getId());
+//            dto.setIdentification(identification);
+//            historyService.createHistory(dto, "EXIT");
+//            //방을 나갔는데 모두 나가게 되어서 LEAVE
+//            if(OpenviduDB.getSessionConnectionList().get(classId).size() == 0){
+//                historyService.createHistory(dto,"LEAVE");
+//            }
+//            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "사용자가 회의를 종료했습니다."));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4002, ExceptionEnum.CONFERENCE_HISTORY_FAILED));
+//        }
     }
 
     // 회의 상세 보기(1개)
