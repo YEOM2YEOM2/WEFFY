@@ -26,7 +26,8 @@ class SharedResource{
     private String identification;
     private String recordingId; // 녹화한 파일 이름 Ex) SessionA, SessionA~1, SessionA~2
     private ZipFileDownloader zipFileDownloader; // 녹화한 url
-    // private int index; // 파일(classId)식별자  Ex) SessionA.mp4, SessionA1.mp4, SessionA2.mp4
+
+    private int index; // 파일(classId)식별자  Ex) SessionA.mp4, SessionA1.mp4, SessionA2.mp4
 
     private boolean totalStatue;
 
@@ -45,7 +46,7 @@ class SharedResource{
         this.classId = classId;
         this.identification = identification;
         this.zipFileDownloader = new ZipFileDownloader(new RestTemplateBuilder());
-   //     this.index = 0;
+        this.index = 0;
         this.totalStatue = true;
         this.recordingStatus = true;
     }
@@ -54,7 +55,7 @@ class SharedResource{
     }
 
     public void plusIndex(){
-    //    this.index++;
+        this.index++;
     }
 }
 
@@ -67,7 +68,7 @@ class WaitThread extends Thread{
     @Override
     public void run(){
         try{
-            Thread.sleep(30000); // 테스트 : 5분 300000
+            Thread.sleep(300000); // 테스트 : 5분 300000
             if(Thread.interrupted() || !sharedResource.isTotalStatue()){
                 return;
             }
@@ -183,9 +184,9 @@ class FileDownload extends Thread{
             sharedResource.getLogger().info("URL2 : "+ url);
 
             sharedResource.getZipFileDownloader().setZipFileSetting(url, sharedResource.getClassId(),
-                    conId, sharedResource.getIdentification());
+                    conId, sharedResource.getIdentification(), sharedResource.getIndex());
 
-           // sharedResource.plusIndex();
+            sharedResource.plusIndex();
 
             try {
                 if (sharedResource.getZipFileDownloader().downloadRecording() != null) {

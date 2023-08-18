@@ -53,7 +53,7 @@ public class ZipFileDownloader{
 
     private String classId;
 
-   // private String title; // classId + index
+    private String title; // classId + index
 
     private VideoCombine videoCombine;
 
@@ -61,10 +61,10 @@ public class ZipFileDownloader{
 
     private String identification;
 
-    public void setZipFileSetting(String zipFileUrl,String classId, String recordingId, String identification){
+    public void setZipFileSetting(String zipFileUrl,String classId, String recordingId, String identification, int index){
         this.zipFileUrl = zipFileUrl;
         this.classId = classId;
-     //   this.title = classId + index;
+        this.title = classId + "(" + index + ")";
         this.recordingId = recordingId;
         this.identification = identification;
     }
@@ -103,7 +103,7 @@ public class ZipFileDownloader{
 
             byte[] zipBytes = response.getBody();
 
-            Path pathName = Paths.get(totalZipFilePath).resolve(classId+".zip");
+            Path pathName = Paths.get(totalZipFilePath).resolve(title+".zip");
 
             Files.write(pathName, zipBytes);
 
@@ -111,7 +111,7 @@ public class ZipFileDownloader{
             // unzipDir에 압축 해제된 파일들을 저장함
            // Path unzipDir = Files.createTempDirectory(Paths.get(totalZipFilePath),title);
 
-            Path unzipDir = Files.createDirectories(Paths.get(totalZipFilePath).resolve(classId));
+            Path unzipDir = Files.createDirectories(Paths.get(totalZipFilePath).resolve(title));
             try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(pathName))) {
                 ZipEntry entry;
                 while ((entry = zipInputStream.getNextEntry()) != null) {
@@ -128,8 +128,13 @@ public class ZipFileDownloader{
 
             // 녹화한 파일 삭제
             logger.info("녹화한 파일 삭제 : "+ recordingId);
+            try{
+                this.openvidu.stopRecording(recordingId);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
             this.openvidu.deleteRecording(recordingId);
-            logger.info("완료!");
+
 
             // 파일을 합친다.
             videoCombine.compressVideos(classId);
