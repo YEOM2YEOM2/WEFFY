@@ -76,7 +76,7 @@ public class ConferenceController {
     @Value("${local.recording.path}")
     private String recordingFilePath;
     // i9d107.p.ssafy.io
-    private String meetingUrl = "http://i9d107.p.ssafy.io:3000/meeting/";
+    private String meetingUrl = "http://localhost:3000/meeting/";
 
     @PostConstruct
     public void init() throws OpenViduJavaClientException, OpenViduHttpException, IOException {
