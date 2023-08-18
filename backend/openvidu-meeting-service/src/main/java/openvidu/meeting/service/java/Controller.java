@@ -42,7 +42,7 @@ public class Controller {
 
 	private Logger logger = LoggerFactory.getLogger(Controller.class);
 	private OpenVidu openvidu;
-	private String root = "http://localhost:8082/";
+	private String root = "http://i9d107.p.ssafy.io:8082/";
 	//  private Map<String, String> mapIdentificationTokens;
 	private Map<String, Map<String, UserRole>> mapSessionNamesTokens; // <sessionId, <token, role>>
 	//private Map<String, Boolean> sessionRecordings;
