@@ -15,7 +15,7 @@ public class OpenviduDB {
 
     private static OpenVidu openvidu;
 
-    private static String OPENVIDU_URL = "http://i9d107.p.ssafy.io:4443/";
+    private static String OPENVIDU_URL = "http://localhost:4443/";
 
     private static String OPENVIDU_SECRET = "MY_SECRET";
 
