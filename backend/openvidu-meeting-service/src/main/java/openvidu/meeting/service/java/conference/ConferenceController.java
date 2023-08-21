@@ -344,6 +344,7 @@ public class ConferenceController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(500, "해당 방이 없습니다."));
         }
 
+        // 녹화를 정지하고 파일을 합치는 순서로 진행하기 위한 스레드
         VideoRecorder videoRecorder = currentRecordingList.get(classId);
         Thread recordingThread = new Thread(() -> {
             videoRecorder.recordingStop();
@@ -566,16 +567,16 @@ public class ConferenceController {
         try{
 
             // 녹화를 중지하기
-            VideoRecorder videoRecorder = currentRecordingList.get(classId);
-            videoRecorder.recordingStop();
+//            VideoRecorder videoRecorder = currentRecordingList.get(classId);
+//            videoRecorder.recordingStop();
 
             // 로컬의 녹화 파일들 삭제하기
-            zipFileDownloader.removeFolder(recordingFilePath,classId,false);
+//            zipFileDownloader.removeFolder(recordingFilePath,classId,false);
 
             // 녹화 기능을 목록에서 삭제한다.
-            currentRecordingList.remove(classId);
+//            currentRecordingList.remove(classId);
 
-            logger.info("녹화를 중지하고 삭제함");
+//            logger.info("녹화를 중지하고 삭제함");
 
             //history REC_END
             HistoryReqDto dto = new HistoryReqDto();

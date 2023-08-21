@@ -19,11 +19,7 @@ public class OpenviduDB {
 
     private static String OPENVIDU_SECRET = "MY_SECRET";
 
-    private static Map<String, Map<String, UserRole>> mapSessionNamesTokens;
-
     private static Map<String, String> hostToken;
-
-    private static Map<String, Integer> sessionRecordingNumber;
 
     private static Map<String, String> hostConnectionId;
 
@@ -34,13 +30,6 @@ public class OpenviduDB {
             openvidu = new OpenVidu(OPENVIDU_URL,OPENVIDU_SECRET);
         }
         return openvidu;
-    }
-
-    public static Map<String, Map<String, UserRole>> getMapSessionNameTokens(){
-        if(mapSessionNamesTokens == null){
-            mapSessionNamesTokens = new ConcurrentHashMap<>();
-        }
-        return mapSessionNamesTokens;
     }
 
     public static Map<String, String> getHostToken(){
@@ -63,7 +52,6 @@ public class OpenviduDB {
         }
         return sessionConnectionList;
     }
-
 
 
 }
