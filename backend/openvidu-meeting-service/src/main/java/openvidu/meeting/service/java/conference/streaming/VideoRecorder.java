@@ -68,7 +68,7 @@ class WaitThread extends Thread{
     @Override
     public void run(){
         try{
-            Thread.sleep(30000); // 테스트 : 5분 300000
+            Thread.sleep(300000); // 테스트 : 5분 300000
             if(Thread.interrupted() || !sharedResource.isTotalStatue()){
                 return;
             }
@@ -91,7 +91,6 @@ class StartAndStopRecording extends Thread{
     @Override
     public void run(){
         while(sharedResource.isRecordingStatus()){
-            sharedResource.getLogger().info("===================================StartAndStopRecording START==================================");
             try{
                 // 녹화 설정
                 RecordingProperties properties = new RecordingProperties.Builder()
@@ -118,6 +117,7 @@ class StartAndStopRecording extends Thread{
                 if(!sharedResource.isTotalStatue()){
                     sharedResource.getLogger().info("come-1");
                     thread.interrupt();
+                    sharedResource.setRecordingStatus(false);
                     sharedResource.getLogger().info("come-2");
                     break;
                 }else{
@@ -126,7 +126,7 @@ class StartAndStopRecording extends Thread{
                         thread.join(); // 현재 스레드를 thread가 끝날 때까지 기다림
                     } catch (InterruptedException e) {
                         sharedResource.getLogger().info("come-4");
-//                        thread.interrupt();
+                        sharedResource.setRecordingStatus(false);
                         e.printStackTrace();
                     }
                 }
@@ -141,7 +141,6 @@ class StartAndStopRecording extends Thread{
                 sharedResource.getLogger().info("STATUE : "+ sharedResource.getThread2().getState());
 
                 // 파일 다운로드 스레드 시작
-
                 sharedResource.getSendUrlList().add(recording.getUrl());
                 sharedResource.getSendRecordingIdList().add(recording.getId());
 
@@ -159,7 +158,6 @@ class StartAndStopRecording extends Thread{
             }catch (OpenViduJavaClientException | OpenViduHttpException e) {
                 e.printStackTrace(); // 예외 정보를 출력하거나 다른 처리를 수행할 수 있습니다.
             }
-            sharedResource.getLogger().info("===================================StartAndStopRecording END ==================================");
         }
 
     }
@@ -176,7 +174,6 @@ class FileDownload extends Thread{
 
     @Override
     public void run(){
-        sharedResource.getLogger().info("====================FileDownload===================");
         while(!sharedResource.getSendUrlList().isEmpty()){
             String url = sharedResource.getSendUrlList().get(0);
             String conId = sharedResource.getSendRecordingIdList().get(0);
@@ -201,8 +198,6 @@ class FileDownload extends Thread{
             sharedResource.getSendUrlList().remove(0);
             sharedResource.getSendRecordingIdList().remove(0);
         }
-
-
     }
 }
 

@@ -64,7 +64,7 @@ public class ZipFileDownloader{
     public void setZipFileSetting(String zipFileUrl,String classId, String recordingId, String identification, int index){
         this.zipFileUrl = zipFileUrl;
         this.classId = classId;
-        this.title = classId + "(" + index + ")";
+        this.title = classId; // + "(" + index + ")"
         this.recordingId = recordingId;
         this.identification = identification;
     }
@@ -109,9 +109,12 @@ public class ZipFileDownloader{
 
             // 다운로드한 zip 파일을 압축 해제하고 내부의 파일을 처리한다.
             // unzipDir에 압축 해제된 파일들을 저장함
-           // Path unzipDir = Files.createTempDirectory(Paths.get(totalZipFilePath),title);
+            Path unzipDir;
+            if(!Files.exists(Paths.get(totalZipFilePath).resolve(title))){
+                unzipDir = Files.createDirectories(Paths.get(totalZipFilePath).resolve(title));
+            }
+            unzipDir = Paths.get(totalZipFilePath).resolve(title);
 
-            Path unzipDir = Files.createDirectories(Paths.get(totalZipFilePath).resolve(title));
             try (ZipInputStream zipInputStream = new ZipInputStream(Files.newInputStream(pathName))) {
                 ZipEntry entry;
                 while ((entry = zipInputStream.getNextEntry()) != null) {
@@ -127,27 +130,27 @@ public class ZipFileDownloader{
 
 
             // 녹화한 파일 삭제
-            logger.info("녹화한 파일 삭제 : "+ recordingId);
-            try{
-                this.openvidu.stopRecording(recordingId);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-            this.openvidu.deleteRecording(recordingId);
-
-
-            // 파일을 합친다.
-            videoCombine.compressVideos(classId);
-
-            //videoCombine.compressVideos("SessionA");
+//            logger.info("녹화한 파일 삭제 : "+ recordingId);
+//
+//            try{
+//                this.openvidu.stopRecording(recordingId);
+//            }catch(Exception e){
+//                e.printStackTrace();
+//            }
+//            this.openvidu.deleteRecording(recordingId);
+//
+//            // 파일을 합친다.
+//            videoCombine.compressVideos(classId);
+//
+//            videoCombine.compressVideos("SessionA");
 
 
             // [폴더&파일 삭제]
-             this.removeFolder(totalZipFilePath, classId, true); // C://recording/TotalZipFile/세션이름 폴더에 있는 모든 파일을 지운다 + 폴더도 지운다.
+            // this.removeFolder(totalZipFilePath, classId, true); // C://recording/TotalZipFile/세션이름 폴더에 있는 모든 파일을 지운다 + 폴더도 지운다.
 
-             //Files.deleteIfExists(Paths.get(totalZipFilePath+classId+".zip")); // zip 파일을 삭제한다.
+            Files.deleteIfExists(Paths.get(totalZipFilePath+classId+".zip")); // zip 파일을 삭제한다.
 
-             Files.deleteIfExists(Paths.get(totalTextFile+classId+".txt")); // C://recording/TotalTextFile/세션이름.txt 파일을 지운다.
+            Files.deleteIfExists(Paths.get(totalTextFile+classId+"_temp.txt")); // C://recording/TotalTextFile/세션이름.txt 파일을 지운다.
 
             // S3 통신
 //            try{
