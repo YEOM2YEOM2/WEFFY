@@ -51,37 +51,33 @@ public class StreamController {
         if(OpenviduDB.getHostConnectionId().get(classId).equals(connectionId)){
             // 파일 경로 C:\recording\TotalTextFile\classId.txt
             String newFilePath = new StringBuilder().append(totalTextFilePath).append(classId).append(".txt").toString();
+            String newFilePathTemp = new StringBuilder().append(totalTextFilePath).append(classId).append("_temp.txt").toString();
 
             Path streamFilePath = Paths.get(newFilePath);
-
+            Path streamFilePathTemp = Paths.get(newFilePathTemp);
 
             // 존재하지 않는 txt 파일이면 만든다.
             if(!Files.exists(streamFilePath)){
                 Files.createFile(streamFilePath);
-                logger.info("make file-1");
-
-                logger.info(new StringBuilder().append(totaRecordingFilePath)
-                        .append(classId).append(".webm").toString());
-
-                if(Files.exists(Paths.get(new StringBuilder().append(totaRecordingFilePath)
-                        .append(classId).append(".webm").toString()))){
-
-                    FileWriter w1 = new FileWriter(newFilePath , true);
-                    w1.write(new StringBuilder().append("file \'").append(totaRecordingFilePath)
-                            .append(classId).append(".webm\'\n").toString());
-                    w1.close();
-                    logger.info("make file-2");
-                }
-
             }
 
+            // 존재하지 않는 txt 파일이면 만든다.
+            if(!Files.exists(streamFilePathTemp)){
+                Files.createFile(streamFilePathTemp);
+            }
 
 
             try{
                 FileWriter writer = new FileWriter(newFilePath, true);
                 writer.write(new StringBuilder().append("file \'").append(totalZipFilePath).append(classId).append("\\").append(streamId).append(".webm\'\n").toString());
                 writer.close();
-                logger.info("파일에 내용을 추가함");
+                logger.info("메인 파일에 내용을 추가함");
+
+                writer = new FileWriter(newFilePathTemp, true);
+                writer.write(new StringBuilder().append("file \'").append(totalZipFilePath).append(classId).append("\\").append(streamId).append(".webm\'\n").toString());
+                writer.close();
+                logger.info("임시 파일에 내용을 추가함");
+
                 return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "파일에 내용을 추가함"));
             }catch (Exception e){
                 e.printStackTrace();

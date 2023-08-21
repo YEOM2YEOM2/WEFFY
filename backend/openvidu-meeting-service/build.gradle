@@ -28,6 +28,7 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web:2.7.0'
     implementation 'io.openvidu:openvidu-java-client:2.28.0'
+    implementation 'org.projectlombok:lombok:1.18.26'
     runtimeOnly 'mysql:mysql-connector-java:8.0.28'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.7.0'
