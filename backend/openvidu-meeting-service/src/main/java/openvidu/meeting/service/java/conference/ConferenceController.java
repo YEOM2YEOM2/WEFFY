@@ -14,6 +14,7 @@ import openvidu.meeting.service.java.conference.service.ConferenceService;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import openvidu.meeting.service.java.conference.streaming.VideoCombine;
 import openvidu.meeting.service.java.conference.streaming.VideoRecorder;
 import openvidu.meeting.service.java.conference.streaming.VideoSender;
 import openvidu.meeting.service.java.conference.streaming.ZipFileDownloader;
@@ -52,10 +53,11 @@ public class ConferenceController {
 
     private Logger logger = LoggerFactory.getLogger(ConferenceController.class);
     private OpenVidu openvidu;
-
     @Value("${spring.connection.path}")
     private String root;
-    //private Map<String, Map<String, String>> sessionConnectionList; // classId, <identification, connectionId>
+
+    private VideoCombine videoCombine;
+
     private Map<String, List<String>> sessionParticipantList; // <classId, [participant Name1, Name2, ... ]>
     private Map<String, String> sessionHostList; // <classId, identification>
     private Map<String, VideoRecorder> currentRecordingList; // <classId, VideoRecorder>
@@ -98,6 +100,12 @@ public class ConferenceController {
 
         // 로컬에 폴더를 생성한다.
         fileOrDirectorySetting();
+
+        // 이전에 남아있는 녹화 기록을 모두 지운다
+        recordingSetting();
+
+        videoCombine = new VideoCombine();
+
     }
 
 
@@ -119,25 +127,33 @@ public class ConferenceController {
         }
     }
 
+    public void recordingSetting() throws OpenViduJavaClientException, OpenViduHttpException {
+        List<Recording> recordings = this.openvidu.listRecordings();
+        for(Recording rec : recordings){
+            try{
+                this.openvidu.stopRecording(rec.getId());
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            this.openvidu.deleteRecording(rec.getId());
+        }
+    }
+
     public void fileOrDirectorySetting(){
-        Path recordingPath, totalTextFile, totalZipFile;
         try{
             if(Files.isDirectory(Paths.get(recordingFilePath+"RecordingFile"))){
                 zipFileDownloader.removeFolder(recordingFilePath,"RecordingFile", true);
             }
-
             if(Files.isDirectory(Paths.get(recordingFilePath+"TotalTextFile"))){
                 zipFileDownloader.removeFolder(recordingFilePath,"TotalTextFile", true);
             }
-
             if(Files.isDirectory(Paths.get(recordingFilePath+"TotalZipFile"))){
                 zipFileDownloader.removeFolder(recordingFilePath,"TotalZipFile", true);
             }
 
-
-            recordingPath = Files.createDirectories(Paths.get(recordingFilePath).resolve("RecordingFile"));
-            totalTextFile = Files.createDirectories(Paths.get(recordingFilePath).resolve("TotalTextFile"));
-            totalZipFile = Files.createDirectories(Paths.get(recordingFilePath).resolve("TotalZipFile"));
+            Files.createDirectories(Paths.get(recordingFilePath).resolve("RecordingFile"));
+            Files.createDirectories(Paths.get(recordingFilePath).resolve("TotalTextFile"));
+            Files.createDirectories(Paths.get(recordingFilePath).resolve("TotalZipFile"));
 
             logger.info("로컬에 RecordingFile, TotalTextFile, TotalZipFile 폴더를 생성함");
         }catch(Exception e){
@@ -163,7 +179,6 @@ public class ConferenceController {
         if (conferenceRepository.findByClassId((String) reqDto.getClassId()) != null) {
             return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, root+ reqDto.getClassId()));
         }
-
 
         // Openvidu에서 방(세션)을 생성함
         try {
@@ -200,7 +215,7 @@ public class ConferenceController {
         }
     }
 
-    // 사용자가 HOST인 방 리스트 가져오기(방 이름, 설명, url을 반환함)
+    // 사용자가 HOST인 방 리스트 가져오기(방 이름, url을 반환함)
     @ApiOperation(value = "사용자가 HOST인 활성화가 되어있는 방 리스트 가져오기", notes = "지정된 ID를 기준으로 회의 목록 반환")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = BaseResponseBody.class),
@@ -245,12 +260,10 @@ public class ConferenceController {
 
         Session session = openvidu.getActiveSession(classId);
 
-
         // 존재하지 않는 방인 경우
         if (session == null) {
             return new ResponseEntity<>("방이 없음", HttpStatus.NOT_FOUND);
         }
-
 
         boolean firstCome = false;
         if(!sessionParticipantList.containsKey(classId)){
@@ -262,7 +275,6 @@ public class ConferenceController {
             firstCome = true;
         }
 
-
         try {
             // 연결 설정
             ConnectionProperties properties = ConnectionProperties.fromJson(info).build();
@@ -270,7 +282,7 @@ public class ConferenceController {
 
             // 방에 제일 처음 입장하는 경우(host인 경우)
             if (firstCome) {
-                logger.info("처음 입장합니다");
+                logger.info("HOST가 방에 처음 입장합니다.");
 
                 // 방에 참가한 사람들을 담을 map을 세팅한다.
                 sessionParticipantList.put(classId, new ArrayList<>());
@@ -282,17 +294,13 @@ public class ConferenceController {
                 // accessToken을 받아서 저장한다.
                 String accessToken = request.getHeader("Authorization");
                 OpenviduDB.getHostToken().put(identification, accessToken);
-                logger.info(identification+"////-> "+ accessToken);
 
                 // 녹화를 시작한다.
                 currentRecordingList.put(classId, new VideoRecorder(classId, identification));
 
                 // 해당 세션을 스레드로 시작한다.
                 executorService.submit(() -> currentRecordingList.get(classId).recordingMethod());
-
             }
-
-            logger.info("userInfo : "+ classId+","+identification);
 
             // 어디 방에 들어간 사람인지 구분하기 위함(참가자 리스트에 추가함)
             sessionParticipantList.get(classId).add(identification);
@@ -313,6 +321,7 @@ public class ConferenceController {
         }
     }
 
+
     // 사용자가 방을 나가는 경우 => connection에서 삭제, participant 비우고 host 에서도 삭제
     @ApiOperation(value = "방 연결 해제", notes = "제공된 class ID와 identification을 기반으로 특정 회의에서 사용자 연결 해제")
     @ApiResponses(value = {
@@ -329,72 +338,83 @@ public class ConferenceController {
             @ApiParam(value = "연결 해제를 위한 사용자 식별 정보", required = true)
             @PathVariable("identification") String identification)
 
-            throws OpenViduJavaClientException, OpenViduHttpException
-    {
+            throws OpenViduJavaClientException, OpenViduHttpException, IOException, InterruptedException {
+        Session session = openvidu.getActiveSession(classId);
+        if(session == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(500, "해당 방이 없습니다."));
+        }
+
+        VideoRecorder videoRecorder = currentRecordingList.get(classId);
+        Thread recordingThread = new Thread(() -> {
+            videoRecorder.recordingStop();
+        });
+        recordingThread.start();
+        recordingThread.join();
+
+        logger.info("TERMINATED CHECK-1");
+
+        // 전체 파일을 합친다.
+        videoCombine.compressVideos(classId);
+
+        // C://recording/TotalZipFile/세션이름 폴더에 있는 모든 파일을 지운다 + 폴더도 지운다.
+        zipFileDownloader.removeFolder(recordingFilePath+"TotalZipFile/", classId, true);
+
+        logger.info("TERMINATED CHECK-2");
+
+        Conference nowConference = conferenceRepository.findByClassId(classId);
 
         // Host가 회의 종료를 누른 경우
         if(identification.equals(sessionHostList.get(classId))){
+
             try {
-                // 회의에 참가하고 있는 사용자 전체 삭제
-                sessionParticipantList.remove(classId);
+                for(String participantId : sessionParticipantList.get(classId)){
+                    String participantConnectionId = OpenviduDB.getSessionConnectionList().get(classId).get(participantId);
+                    session.forceDisconnect(participantConnectionId);
 
-                // connectionId 삭제
-                OpenviduDB.getHostConnectionId().remove(classId);
-
-                // 호스트 토큰 삭제
-                OpenviduDB.getHostToken().remove(classId);
-
-                // openvidu에서 session과 연결되어있는 connection을 모두 삭제함
-                Session session = openvidu.getActiveSession(classId);
-                for(String conId : OpenviduDB.getSessionConnectionList().get(classId).keySet()){
-                    session.forceDisconnect(conId);
+                    HistoryReqDto dto = new HistoryReqDto();
+                    dto.setConference_id(nowConference.getId());
+                    dto.setIdentification(participantId);
+                    historyService.createHistory(dto, "EXIT");
                 }
 
-                // 회의에 참가하고 있는 connectionId 전부 삭제
+                sessionParticipantList.remove(classId);
+
                 OpenviduDB.getSessionConnectionList().remove(classId);
 
-                // videoRecorder 연결 끊기
-                currentRecordingList.get(classId).recordingStop();
-                currentRecordingList.remove(classId);
+                HistoryReqDto dto = new HistoryReqDto();
+                dto.setConference_id(nowConference.getId());
+                dto.setIdentification(identification);
+                historyService.createHistory(dto, "LEAVE");
+
 
                 return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "호스트가 회의를 종료했습니다."));
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_HOST_NOT_TERMINATED));
             }
         }
-
-        // 사용자가 회의 종료를 누른 경우
-        for (String id : sessionParticipantList.get(classId)) {
-            if (id.equals(identification)) {
-                // 참가자 목록에서 삭제함
-                sessionParticipantList.remove(id);
-
-                // openvidu와 연결을 해제
+        else{ // 호스트 아님
+            try{
                 String connectionId = OpenviduDB.getSessionConnectionList().get(classId).get(identification);
-                openvidu.getActiveSession(classId).forceDisconnect(connectionId);
+                if(connectionId == null){
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4002, ExceptionEnum.CONFERENCE_HISTORY_FAILED));
+                }
 
+                session.forceDisconnect(connectionId);
 
-                // sessionConnectionList에서 삭제함
+                sessionParticipantList.get(classId).remove(identification);
                 OpenviduDB.getSessionConnectionList().get(classId).remove(identification);
-                break;
+
+                HistoryReqDto dto = new HistoryReqDto();
+                dto.setConference_id(nowConference.getId());
+                dto.setIdentification(identification);
+                historyService.createHistory(dto, "EXIT");
+
+                return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "사용자가 회의를 종료했습니다."));
+            }catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4001, ExceptionEnum.CONFERENCE_HOST_NOT_TERMINATED));
             }
         }
 
-        try {
-            //history exit/leave
-            HistoryReqDto dto = new HistoryReqDto();
-            Conference nowConference = conferenceRepository.findByClassId(classId);
-            dto.setConference_id(nowConference.getId());
-            dto.setIdentification(identification);
-            historyService.createHistory(dto, "EXIT");
-            //방을 나갔는데 모두 나가게 되어서 LEAVE
-            if(OpenviduDB.getSessionConnectionList().get(classId).size() == 0){
-                historyService.createHistory(dto,"LEAVE");
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(BaseResponseBody.of(200, "사용자가 회의를 종료했습니다."));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(BaseResponseBody.of(4002, ExceptionEnum.CONFERENCE_HISTORY_FAILED));
-        }
     }
 
     // 회의 상세 보기(1개)
@@ -482,12 +502,16 @@ public class ConferenceController {
             conferenceRepository.save(conference);
 
             // 녹화를 중지하기
-//            VideoRecorder videoRecorder = currentRecordingList.get(classId);
-//            videoRecorder.recordingStop();
+            VideoRecorder videoRecorder = currentRecordingList.get(classId);
+            Thread recordingThread = new Thread(()->{
+                videoRecorder.recordingStop();
+            });
+
+            recordingThread.start();
+            recordingThread.join();
 
             // 로컬의 녹화 파일들 삭제하기
-            // 로컬의 녹화 파일들 삭제하기
-//            zipFileDownloader.removeFolder(recordingFilePath,classId,false);
+            zipFileDownloader.removeFolder(recordingFilePath,classId,false);
 
             //history DELETE
             HistoryReqDto dto = new HistoryReqDto();
@@ -540,27 +564,16 @@ public class ConferenceController {
             @ApiParam(value = "녹화를 중지할 회의의 식별자 class_id", required = true)
             @PathVariable(name = "class_id") String classId) throws IOException, OpenViduJavaClientException, OpenViduHttpException {
         try{
-//            List<Recording> list = this.openvidu.listRecordings();
-//            for(Recording rec : list){
-//                this.openvidu.deleteRecording(rec.getId());
-//            }
 
             // 녹화를 중지하기
             VideoRecorder videoRecorder = currentRecordingList.get(classId);
             videoRecorder.recordingStop();
 
             // 로컬의 녹화 파일들 삭제하기
-            //zipFileDownloader.removeFolder(recordingFilePath,classId,false);
+            zipFileDownloader.removeFolder(recordingFilePath,classId,false);
 
             // 녹화 기능을 목록에서 삭제한다.
             currentRecordingList.remove(classId);
-
-            // 이전의 녹화기록 삭제하기
-//        List<Recording> list = this.openvidu.listRecordings();
-//        for(Recording rec : list){
-//            this.openvidu.deleteRecording(rec.getId());
-//        }
-//
 
             logger.info("녹화를 중지하고 삭제함");
 
